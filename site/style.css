@@ -445,3 +445,8 @@ h1 .wd{display:inline-block;white-space:nowrap}
 .notes .sec-head{order:2;max-width:520px}
 .printer{order:1}
 @media(min-width:1100px){.notes .sec-head{position:absolute;left:0;bottom:6px;text-align:left;max-width:calc(50% - 250px)}.notes .sub{margin-inline:0}}
+
+.fl-sign{color:#b9c4b4}
+.fl-sign a,.dl-sign a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.fl-note a{min-height:0}
+.dl-sign{margin-top:6px}
