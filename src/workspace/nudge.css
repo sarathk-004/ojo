@@ -1,0 +1,20 @@
+*,*::before,*::after{box-sizing:border-box}
+html,body,#root{margin:0;height:100%;background:transparent!important;overflow:hidden;font-family:'Geist Variable',sans-serif;letter-spacing:-.04em;user-select:none}
+.nudge-wrap{width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.nudge-card-toast{width:100%;background:#1d231b;color:#fffef9;border-radius:22px;padding:14px 16px 14px;display:flex;flex-direction:column;gap:11px;border:1px solid #ffffff14}
+.nudge-card-toast .row{display:flex;align-items:center;gap:12px}
+.emoji{font-size:32px;line-height:1;width:48px;height:48px;display:grid;place-items:center;background:#ffffff12;border-radius:15px;flex:none}
+.txt{display:flex;flex-direction:column;min-width:0;flex:1}
+.txt b{font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txt span{font-size:12.5px;color:#a9bba3;margin-top:1px}
+.more{font-style:normal;font-size:11.5px;font-weight:700;background:#ffffff1c;border-radius:999px;padding:3px 8px;color:#d9e6d4}
+.pips{display:flex;gap:5px;flex-wrap:wrap}
+.pips i{width:16px;height:6px;border-radius:3px;background:#ffffff1f;display:block;transition:background .3s}
+.pips i.on{background:#7fc17f}
+.btns{display:flex;gap:7px}
+.btns button{font:inherit;letter-spacing:inherit;border:0;cursor:pointer;border-radius:11px;padding:9px 12px;font-size:13px;font-weight:600;background:#ffffff14;color:#e6eee1;transition:background .15s,transform .1s}
+.btns button:hover{background:#ffffff24}
+.btns button:active{transform:scale(.96)}
+.btns .done{background:#4d8a52;color:#fff;flex:1}
+.btns .done:hover{background:#5a9c5f}
+.btns .quiet{background:none;color:#93a88e;padding-left:8px;padding-right:8px}

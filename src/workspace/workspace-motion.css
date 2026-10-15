@@ -1,0 +1,51 @@
+/* Small motions that make the workspace feel alive. All of them switch off for people who prefer reduced motion. */
+
+/* Buttons press in and rise on hover */
+.ws button{transition:transform .14s cubic-bezier(.3,1.5,.5,1),background .15s,box-shadow .18s,color .15s,border-color .15s,opacity .15s}
+.ws button:active:not(:disabled){transform:scale(.95)}
+.ws .primary:hover:not(:disabled){box-shadow:0 8px 20px #2f3a2c40}
+.ws .primary:active:not(:disabled){transform:scale(.97)}
+.ws .icon-btn:hover:not(:disabled){transform:scale(1.12)}
+.ws .nav-item{transition:background .15s,transform .18s cubic-bezier(.3,1.4,.5,1)}
+.ws .nav-item:hover:not(.on){transform:translateX(3px)}
+.ws .nav-item.on svg{animation:navPop .4s cubic-bezier(.3,1.6,.5,1)}
+@keyframes navPop{0%{transform:scale(.7) rotate(-12deg)}100%{transform:none}}
+
+/* Ticks and check boxes spring when they are switched on */
+.ws .tick.on,.ws .pl-tick.on{animation:tickPop .4s cubic-bezier(.3,1.6,.5,1)}
+.ws .tick.on svg,.ws .pl-tick.on svg{animation:tickDraw .32s ease-out .05s both}
+.ws input[type=checkbox]:checked{animation:tickPop .32s cubic-bezier(.3,1.6,.5,1)}
+@keyframes tickPop{0%{transform:scale(.72)}55%{transform:scale(1.22)}100%{transform:scale(1)}}
+@keyframes tickDraw{from{opacity:0;transform:scale(.3) rotate(-25deg)}}
+.task-row.done .task-text b{transition:color .35s}
+.task-row{transition:background .2s,border-color .2s,box-shadow .2s,transform .2s cubic-bezier(.3,1.4,.5,1)}
+.task-row:hover{box-shadow:0 6px 18px #3c4c3315}
+
+/* New things slide in, one after another */
+.task-row,.bill-row,.sd-row,.pl-task,.note-row,.card,.rv-card,.rv-stat,.fx-card,.sd-card,.bill-stats>div,.pl-habit,.sd-win,.rv-write{animation:rowIn .36s cubic-bezier(.2,.8,.3,1) both}
+:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(2){animation-delay:.04s}
+:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(3){animation-delay:.08s}
+:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(4){animation-delay:.12s}
+:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(5){animation-delay:.16s}
+:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(n+6){animation-delay:.2s}
+@keyframes rowIn{from{opacity:0;transform:translateY(10px) scale(.985)}}
+.pl-block{animation:blockIn .42s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes blockIn{from{opacity:0;transform:scale(.92)}}
+
+/* Each page eases in when you switch to it */
+:is(.tasks,.notes,.saved,.pdfs,.fin,.jobs,.planner,.focus,.bills,.review,.reminders,.cal-main){animation:pageIn .34s cubic-bezier(.2,.8,.3,1) backwards}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}}
+
+/* Tabs and chips */
+.task-tabs button,.shelf-tabs .seg button,.filter,.fx-chips button,.week-pick button{transition:background .18s,color .18s,transform .14s cubic-bezier(.3,1.5,.5,1)}
+
+.snooze-row button,.sd-acts button,.sd-bulk button,.overdue-bar button{transition:background .15s,transform .14s cubic-bezier(.3,1.5,.5,1)}
+
+
+/* Pop-ups */
+.undo-toast{animation:none}
+.pk,.sel-menu,.nh-pop,.pop{transform-origin:top center}
+
+@media (prefers-reduced-motion:reduce){
+ .ws *,.ws *::before,.ws *::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
+}

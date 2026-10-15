@@ -1,0 +1,9 @@
+﻿release*/
+downloads/
+dist/
+qa/
+desktop-stage/
+android/app/build/
+android/.gradle/
+android/keystore/
+*.txt

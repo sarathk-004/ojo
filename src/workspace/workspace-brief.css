@@ -1,0 +1,33 @@
+/* Daily brief */
+.mode-switch{display:inline-flex;background:#ece8dc;border-radius:11px;padding:3px;margin:6px 0 2px}
+.ws .mode-switch button{padding:5px 13px;border-radius:8px;font-weight:600;font-size:13px;color:#6b7266}
+.ws .mode-switch button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px #3c4c3322}
+.brief-bar{display:flex;align-items:center;gap:10px}
+.brief-date{display:flex;flex-direction:column;line-height:1.25;min-width:200px}
+.brief-date b{font-size:18px;letter-spacing:-.05em}
+.brief-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;max-width:860px}
+.brief-item{display:grid;grid-template-columns:44px 1fr auto;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px 20px 14px;transition:box-shadow .18s,border-color .18s}
+.brief-item:hover{box-shadow:0 10px 28px #3c4c3320;border-color:#d6d1c1}
+.brief-item.read h3{color:#7b8176}
+.brief-n{font-size:22px;font-weight:700;color:#c3beaf;letter-spacing:-.06em;line-height:1.3;font-variant-numeric:tabular-nums}
+.brief-main{display:flex;flex-direction:column;gap:7px;min-width:0}
+.brief-main h3{margin:2px 0 0;font-size:20px;line-height:1.25;letter-spacing:-.05em;cursor:pointer}
+.brief-main h3:hover{text-decoration:underline;text-decoration-color:#b9b4a4;text-underline-offset:3px}
+.brief-main .explain{font-size:15.5px;line-height:1.45;color:#2f362c;font-weight:500;letter-spacing:-.03em}
+.brief-main .detail{font-size:13.5px;line-height:1.5;color:#6b7266;letter-spacing:-.02em}
+.brief-main .news-meta .also{color:var(--muted)}
+.brief-thumb{width:150px;height:96px;border-radius:13px;overflow:hidden;background:#e8e4d8;cursor:pointer;align-self:start;margin-top:4px}
+.brief-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.brief-empty{padding:70px 20px}
+.brief-set{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+.brief-set label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--muted);font-weight:500}
+.sources .src-group>.muted{font-size:12px;margin:2px 0 0}
+.brief-set label.wide{grid-column:1/-1}
+.brief-progress{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#6b7266;background:#ece8dc;border-radius:999px;padding:5px 12px;margin-left:6px}
+.brief-progress i{width:8px;height:8px;border-radius:50%;background:#567458;animation:bp 1s ease-in-out infinite}
+@keyframes bp{50%{opacity:.25;transform:scale(.7)}}
+/* Loading: a soft morphing blob, and a shimmer over text that is about to be replaced */
+.blob{display:inline-block;width:12px;height:12px;background:#567458;border-radius:60% 40% 55% 45%/50% 60% 40% 50%;animation:blobmorph 1.8s ease-in-out infinite}
+.brief-progress .blob{background:#2f3a2c}
+@keyframes blobmorph{0%{border-radius:60% 40% 55% 45%/50% 60% 40% 50%;transform:rotate(0) scale(1)}33%{border-radius:40% 60% 45% 55%/60% 40% 60% 40%;transform:rotate(120deg) scale(.82)}66%{border-radius:55% 45% 60% 40%/45% 55% 45% 55%;transform:rotate(240deg) scale(1.08)}100%{border-radius:60% 40% 55% 45%/50% 60% 40% 50%;transform:rotate(360deg) scale(1)}}
+

@@ -1,0 +1,72 @@
+/* Collapsible sidebars */
+.ws{transition:grid-template-columns .3s cubic-bezier(.3,.9,.3,1)}
+.ws-nav{overflow:hidden;transition:opacity .2s,padding .3s}
+.ws.nav-closed{grid-template-columns:0 1fr}
+.ws.nav-closed .ws-nav{padding-left:0;padding-right:0;border-right:0;opacity:0;pointer-events:none}
+.ws.panel-closed .notes,.ws.panel-closed .pdfs,.ws.panel-closed .calendar,.ws.panel-closed .tasks{grid-template-columns:1fr}
+.ws.panel-closed .notes-list,.ws.panel-closed .pdf-list,.ws.panel-closed .cal-side,.ws.panel-closed .tasks-side{display:none}
+.ws.panel-closed .tasks-main{max-width:860px}
+.bars{position:absolute;left:12px;top:6px;z-index:15;display:flex;gap:2px;-webkit-app-region:no-drag}
+.ws .bar-btn{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:#5b6256;-webkit-app-region:no-drag}
+.ws .bar-btn:hover{background:#e2ddcf}
+.ws .bar-btn.on{color:var(--sage)}
+.ws .nav-toggle{position:absolute;right:10px;top:6px}
+
+/* Notes: images, tables, boards, toggles */
+.note-body img{display:block;max-width:100%;border-radius:10px;margin:10px 0;cursor:default}
+.note-body img:hover{box-shadow:0 0 0 2px #d9e4d3}
+.note-body table.nb-table{width:100%;border-collapse:collapse;margin:12px 0;table-layout:fixed;font-size:15px;line-height:1.5}
+.note-body .nb-table th,.note-body .nb-table td{border:1px solid #ddd8ca;padding:8px 11px;vertical-align:top;min-width:60px;word-break:break-word;letter-spacing:-.02em}
+.note-body .nb-table th{background:#f0ece0;font-weight:600;text-align:left}
+.note-body .nb-table td:focus,.note-body .nb-table th:focus{outline:none}
+.note-body details.toggle{margin:8px 0;padding:2px 0}
+.note-body details.toggle>summary{cursor:pointer;font-weight:600;list-style:none;display:flex;align-items:center;gap:8px}
+.note-body details.toggle>summary::-webkit-details-marker{display:none}
+.note-body details.toggle>summary:before{content:'';width:0;height:0;border-left:7px solid #6b7266;border-top:5px solid transparent;border-bottom:5px solid transparent;transition:transform .15s}
+.note-body details.toggle[open]>summary:before{transform:rotate(90deg)}
+.note-body details.toggle>*:not(summary){margin-left:20px}
+.table-bar{position:fixed;z-index:35;display:flex;align-items:center;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:4px;box-shadow:0 8px 24px #2c3a2526;font-family:'Geist Variable',sans-serif;letter-spacing:-.04em}
+.table-bar button{font:inherit;letter-spacing:inherit;border:0;background:none;color:#4a5046;padding:5px 9px;border-radius:7px;font-size:12.5px;font-weight:500;cursor:pointer}
+.table-bar button:hover{background:#ece8dc}
+.table-bar button.danger:hover{background:#f3dcd5;color:var(--danger)}
+.table-bar .sep{width:1px;height:16px;background:var(--line);margin:0 3px}
+
+.note-body .kanban{margin:14px 0;padding:12px;border:1px solid var(--line);border-radius:16px;background:#f6f3ea;font-size:14px;line-height:1.4;letter-spacing:-.03em}
+.kb-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.kb-name{font-weight:700;font-size:15px;outline:none;min-width:40px}
+.ws .kb-del{border:0;background:none;color:#9a9f93;font:inherit;font-size:12px;cursor:pointer;padding:3px 7px;border-radius:7px}
+.ws .kb-del:hover{background:#f3dcd5;color:var(--danger)}
+.kb-cols{display:flex;gap:10px;overflow-x:auto;align-items:flex-start;padding-bottom:4px}
+.kb-col{flex:0 0 230px;background:#ece8dc;border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:7px}
+.kb-head{display:flex;align-items:center;gap:6px;padding:2px 4px}
+.kb-title{flex:1;font-weight:700;font-size:13px;outline:none;min-width:20px}
+.kb-cards{display:flex;flex-direction:column;gap:6px;min-height:14px}
+.kb-card{display:flex;align-items:flex-start;gap:6px;background:#fffef9;border:1px solid #e1dccd;border-radius:10px;padding:7px 7px 7px 4px;box-shadow:0 1px 2px #3c4c3314}
+.kb-card.dragging{opacity:.4}
+.kb-grip{cursor:grab;color:#b2b6a9;font-size:12px;line-height:1.5;padding:0 2px;user-select:none;letter-spacing:-.2em}
+.kb-grip:active{cursor:grabbing}
+.kb-text{flex:1;min-width:0;outline:none;word-break:break-word;min-height:1.4em}
+.ws .kb-x,.ws .kb-colx{border:0;background:none;color:#aab0a2;font-size:15px;line-height:1;width:20px;height:20px;border-radius:6px;cursor:pointer;opacity:0;transition:opacity .15s}
+.kb-card:hover .kb-x,.kb-head:hover .kb-colx{opacity:1}
+.ws .kb-x:hover,.ws .kb-colx:hover{background:#f3dcd5;color:var(--danger)}
+.ws .kb-add,.ws .kb-addcol{border:0;background:none;color:#7b8176;font:inherit;font-size:12.5px;text-align:left;padding:6px 8px;border-radius:8px;cursor:pointer}
+.ws .kb-add:hover,.ws .kb-addcol:hover{background:#e2ddcf;color:#4a5046}
+.ws .kb-addcol{margin-top:8px}
+
+/* Heading navigator on the right edge of a page */
+.note-pane{position:relative}
+.outline{position:absolute;right:10px;top:200px;z-index:12;display:flex;flex-direction:column;align-items:flex-end;padding:8px 4px 8px 16px}
+.outline-dashes{display:flex;flex-direction:column;align-items:flex-end;gap:7px;transition:opacity .15s}
+.outline .dash{display:block;height:3px;border-radius:2px;background:#cfcabb;transition:background .15s,width .15s}
+.outline .dash.l1{width:20px}.outline .dash.l2{width:14px}.outline .dash.l3{width:9px}
+.outline .dash.on{background:#2f3a2c}
+.outline-panel{position:absolute;right:0;top:0;width:230px;max-height:min(60vh,420px);overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 36px #2c3a2526;padding:8px;display:flex;flex-direction:column;gap:1px;opacity:0;transform:translateX(10px) scale(.97);transform-origin:top right;pointer-events:none;transition:opacity .16s,transform .2s cubic-bezier(.3,1.2,.5,1)}
+.outline:hover .outline-panel{opacity:1;transform:none;pointer-events:auto}
+.outline:hover .outline-dashes{opacity:0}
+.outline-panel b{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);padding:4px 8px}
+.ws .outline-panel button{text-align:left;padding:5px 8px;border-radius:8px;font-size:13px;color:#4a5046;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.ws .outline-panel button:hover{background:#ece8dc}
+.ws .outline-panel button.on{color:var(--ink);font-weight:600;background:#f1eee3}
+.outline-panel .l1{padding-left:8px}.outline-panel .l2{padding-left:20px}.outline-panel .l3{padding-left:32px;font-size:12.5px}
+
+.ws .ws-nav{position:relative}

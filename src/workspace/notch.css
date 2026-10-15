@@ -1,0 +1,162 @@
+*,*::before,*::after{box-sizing:border-box}
+html,body,#root{margin:0;height:100%;background:transparent!important;overflow:hidden;font-family:'Geist Variable',sans-serif;letter-spacing:-.04em;user-select:none}
+.notch{width:100%;height:100%;display:flex;justify-content:center;align-items:flex-start;cursor:default;background:transparent}
+.notch .pill{will-change:transform,opacity,width,height;background:#1d231b;color:#fffef9;--r:11px;border-radius:0 0 var(--r) var(--r);display:flex;align-items:flex-start;justify-content:center;overflow:hidden;position:relative;flex:none;box-shadow:none;border:0}
+.notch.hidden .pill{opacity:.55}
+.notch.over>.pill{background:linear-gradient(160deg,#34432f,#2a3527)}
+.notch.done .pill{background:linear-gradient(160deg,#2d4a33,#233a29)}
+.notch.error .pill{background:#7d3a2d}
+.idle{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:26px;cursor:pointer}
+.idle .logo,.hd .logo{display:block;opacity:.95}
+.idle{position:relative}
+.grip{position:absolute;left:calc(50% + 16px);top:12px;display:block;width:24px;height:3px;border-radius:2px;background:#fffef9}
+.panel{width:100%;height:100%;display:flex;flex-direction:column;padding:0 30px 26px;gap:12px}
+.notch button{font:inherit;letter-spacing:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.hd{display:flex;align-items:center;justify-content:center;gap:9px;height:26px;margin:0 -30px;padding:0 30px;flex:none;cursor:pointer}
+.hd b{font-size:12.5px;font-weight:600;color:#dfe9d9}
+.hd svg{color:#9fb59a}
+.zone{border:2px dashed #ffffff30;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 10px;color:#c3d3bd;font-size:13.5px;font-weight:500}
+.mini-hints{display:flex;gap:14px;color:#9fb59a}
+.recent{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;flex:1;min-height:0}
+.recent li{display:flex;align-items:center;gap:9px;font-size:12.5px;color:#e6eee1;background:#ffffff0f;border-radius:11px;padding:7px 12px;cursor:pointer;transition:background .15s}
+.recent li:hover{background:#ffffff1c}
+.recent li span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent li em{font-style:normal;color:#93a88e;font-size:11px}
+.recent li.none{color:#93a88e;justify-content:center}
+.pill>.over{position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.dash-ring{position:absolute;inset:9px;border:2px dashed #b9cfb3;border-radius:2px 2px 24px 24px;pointer-events:none}
+.hints{display:flex;gap:14px}
+.hint{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#ffffff14;color:#e7f1e2}
+.over-text,.done-text{font-size:21px;font-weight:600;display:flex}
+.ch{display:inline-block}
+.pill>.saving{display:flex;align-items:center;gap:14px;height:100%}
+.saving-text{font-size:16px;font-weight:600}
+.pill>.done{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:100%}
+.tick-wrap{position:relative;width:64px;height:64px;display:grid;place-items:center}
+.pulse{position:absolute;inset:6px;border-radius:50%;border:2px solid #9ec79a;pointer-events:none}
+.tick-svg{overflow:visible}
+.tick-disc{transform-origin:32px 32px}
+.done-sub{font-size:12.5px;color:#bcd0b6}
+.err{font-size:15px;align-self:center}
+
+.notch.intro>.pill{background:linear-gradient(160deg,#34432f,#2a3527)}
+.pill>.intro{display:flex;align-items:flex-start;gap:14px;width:100%;height:100%;padding:36px 26px 0;cursor:pointer;text-align:left;align-items:center}
+.intro .logo{flex:none;margin-top:2px}
+.intro-text{display:flex;flex-direction:column;gap:5px;min-width:0}
+.intro-text b{font-size:14.5px;font-weight:600}
+.intro-text>span{font-size:12px;line-height:1.35;color:#c3d3bd}
+.intro-hints{display:flex;gap:7px;margin-top:3px}
+.intro-hints .hint{width:24px;height:24px;border-radius:8px}
+
+.pill>.saving{flex-direction:column;justify-content:center;gap:8px}
+.pill>.done{gap:4px}
+.error-face{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;height:100%;padding-top:14px}
+.mascot{display:block;overflow:visible}
+
+/* The notch can sit on any screen edge and always opens away from it. */
+.notch.e-bottom{align-items:flex-end}
+.notch.e-left{justify-content:flex-start;align-items:center}
+.notch.e-right{justify-content:flex-end;align-items:center}
+.e-top .pill{border-radius:0 0 var(--r) var(--r)}
+.e-bottom .pill{border-radius:var(--r) var(--r) 0 0;align-items:flex-end}
+.e-left .pill{border-radius:0 var(--r) var(--r) 0;justify-content:flex-start}
+.e-right .pill{border-radius:var(--r) 0 0 var(--r);justify-content:flex-end}
+.e-left .idle,.e-right .idle{height:100%}
+.e-bottom .pill>.intro{padding:0 26px 36px}
+.e-left .pill>.intro{padding:0 26px 0 36px}
+.e-right .pill>.intro{padding:0 36px 0 26px}
+.e-bottom .error-face{padding:0 0 14px}
+.e-bottom .dash-ring{border-radius:24px 24px 2px 2px}
+.e-left .dash-ring{border-radius:2px 24px 24px 2px}
+.e-right .dash-ring{border-radius:24px 2px 2px 24px}
+.idle{touch-action:none;cursor:grab}
+
+/* Left and right edges: the same cards stood on end, text still upright. */
+.e-left .pill>.intro,.e-right .pill>.intro{flex-direction:column;justify-content:center;gap:10px;text-align:center}
+.e-left .pill>.intro{padding:18px 14px 18px 30px}
+.e-right .pill>.intro{padding:18px 30px 18px 14px}
+.e-left .intro-text,.e-right .intro-text{align-items:center;gap:6px}
+.e-left .intro-hints,.e-right .intro-hints{flex-wrap:wrap;justify-content:center;max-width:116px}
+.e-left .done-sub,.e-right .done-sub{text-align:center;padding:0 12px;line-height:1.35}
+.e-left .pill>.over,.e-right .pill>.over{gap:14px}
+.e-left .over-text,.e-right .over-text{font-size:19px}
+.e-left .idle,.e-right .idle{width:100%}
+
+/* Side edges: every card fills the pill and centres its content (no pushing toward the screen edge). */
+.e-left .pill,.e-right .pill{justify-content:center;align-items:center}
+.e-left .pill>*,.e-right .pill>*{width:100%;height:100%}
+.e-left .pill>.over,.e-right .pill>.over,.e-left .pill>.saving,.e-right .pill>.saving,.e-left .pill>.done,.e-right .pill>.done,.e-left .error-face,.e-right .error-face{align-items:center;justify-content:center;padding:0}
+.e-left .pill>.done,.e-right .pill>.done{gap:8px}
+.e-left .pill>.idle,.e-right .pill>.idle{height:100%}
+.e-bottom .pill{align-items:flex-end}
+
+/* A small marker shows where the notch lives while it is tucked away. Rest the cursor on it, or click it, to bring the notch out. */
+.marker{position:absolute;display:block;background:#1d231b;box-shadow:0 0 0 1px #ffffff55;opacity:0;transition:opacity .35s;pointer-events:none}
+.notch.hidden .marker{opacity:.85}
+.e-top .marker{top:0;left:50%;width:46px;height:4px;margin-left:-23px;border-radius:0 0 4px 4px}
+.e-bottom .marker{bottom:0;left:50%;width:46px;height:4px;margin-left:-23px;border-radius:4px 4px 0 0}
+.e-left .marker{left:0;top:50%;height:46px;width:4px;margin-top:-23px;border-radius:0 4px 4px 0}
+.e-right .marker{right:0;top:50%;height:46px;width:4px;margin-top:-23px;border-radius:4px 0 0 4px}
+
+/* Near a corner the pill slides along its edge by --shift (set from the main process). */
+.notch{--shift:0}
+.e-top .pill,.e-bottom .pill{left:calc(var(--shift)*1px)}
+.e-left .pill,.e-right .pill{top:calc(var(--shift)*1px)}
+/* a clearer marker for the tucked-away notch */
+.e-top .marker,.e-bottom .marker{width:64px;margin-left:calc(-32px + var(--shift)*1px);height:6px}
+.e-left .marker,.e-right .marker{height:64px;margin-top:calc(-32px + var(--shift)*1px);width:6px}
+.e-top .marker{top:6px}.e-bottom .marker{bottom:6px}.e-left .marker{left:6px}.e-right .marker{right:6px}
+
+/* The corner question. It sits in the corner it was dropped into. */
+.notch.ask .pill{opacity:0}
+.cq{position:absolute;width:176px;padding:12px;border-radius:18px;background:#1d231b;color:#f4f1e8;box-shadow:0 0 0 1px #ffffff1f,0 18px 36px -12px #000b;display:grid;gap:8px;z-index:10}
+.ask-t{margin:0;font-size:12.5px;font-weight:600;letter-spacing:-.02em;color:#dfe9d9;padding:0 2px}
+.ask-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ask-opt{display:grid;justify-items:center;gap:7px;padding:9px 4px 8px;border-radius:12px;background:#ffffff0f;transition:background .2s;cursor:pointer}
+.ask-opt:hover{background:#ffffff1f}
+.ask-l{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;line-height:1.1;text-align:center}
+.ask-keep{font-size:11px;color:#9fb59a;padding:3px;border-radius:8px;cursor:pointer}
+.ask-keep:hover{color:#fff}
+/* a tiny screen with a bar on the edge the notch would take */
+.ask-ico{position:relative;display:block;width:54px;height:36px;border-radius:5px;background:#2f3a2b;box-shadow:inset 0 0 0 1.5px #ffffff30}
+.ask-ico i{position:absolute;background:#f2d46b;border-radius:3px}
+.ask-ico.e-top i{left:50%;top:2px;width:16px;height:5px;margin-left:-8px}
+.ask-ico.e-bottom i{left:50%;bottom:2px;width:16px;height:5px;margin-left:-8px}
+.ask-ico.e-left i{top:50%;left:2px;height:16px;width:5px;margin-top:-8px}
+.ask-ico.e-right i{top:50%;right:2px;height:16px;width:5px;margin-top:-8px}
+/* corner placement (the window sits against the notch's edge; add the few pixels it overhangs) */
+.ask-tl{top:12px;left:12px}.ask-tr{top:12px;right:12px}.ask-bl{bottom:12px;left:12px}.ask-br{bottom:12px;right:12px}
+.cq.on-top.ask-tl,.cq.on-top.ask-tr{top:18px}.cq.on-bottom.ask-bl,.cq.on-bottom.ask-br{bottom:18px}
+.cq.on-left.ask-tl,.cq.on-left.ask-bl{left:18px}.cq.on-right.ask-tr,.cq.on-right.ask-br{right:18px}
+.cq button{font:inherit;color:inherit;border:0;background:none}
+.ask-opt{background:#ffffff0f}
+
+/* The window overhangs the screen edge by 6 px; the resting tab's logo is centred in what is visible, so nothing is cut off. */
+.e-top .pill>.idle{height:100%;padding-top:6px;box-sizing:border-box}
+.e-bottom .pill>.idle{height:100%;padding-bottom:6px;box-sizing:border-box}
+.e-left .pill>.idle{padding-left:6px;box-sizing:border-box}
+.e-right .pill>.idle{padding-right:6px;box-sizing:border-box}
+
+/* Recently saved: a panel that opens from the notch's edge. */
+.notch.recent .pill{opacity:0}
+.rc-wrap{position:absolute;inset:0;display:flex;z-index:10;pointer-events:none}
+.rc-wrap>*{pointer-events:auto}
+.rc-wrap.on-top{align-items:flex-start;justify-content:center;padding-top:10px}
+.rc-wrap.on-bottom{align-items:flex-end;justify-content:center;padding-bottom:10px}
+.rc-wrap.on-left{align-items:center;justify-content:flex-start;padding-left:10px}
+.rc-wrap.on-right{align-items:center;justify-content:flex-end;padding-right:10px}
+.rc{position:relative;width:292px;padding:8px;border-radius:18px;background:#1b211a;color:#f4f1e8;box-shadow:0 0 0 1px #ffffff1c,0 20px 40px -14px #000c;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+.rc-wrap.on-top .rc,.rc-wrap.on-bottom .rc{left:calc(var(--cs)*1px)}
+.rc-wrap.on-left .rc,.rc-wrap.on-right .rc{top:calc(var(--cs)*1px);width:270px}
+.rc-t{margin:0;display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:#93a88e;padding:4px 8px 6px;letter-spacing:0}
+.rc-list{display:flex;flex-direction:column;gap:2px}
+.rc-row,.rc-all{font:inherit;color:inherit;border:0;background:none;cursor:pointer;text-align:left;width:100%}
+.rc-row{display:flex;align-items:center;gap:10px;height:42px;padding:0 8px 0 6px;border-radius:12px;transition:background .15s}
+.rc-row:hover{background:#ffffff12}
+.rc-ico{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:9px;color:var(--k);background:color-mix(in srgb,var(--k) 16%,#1b211a)}
+.rc-txt{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.2}
+.rc-n{font-size:12.5px;font-weight:600;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rc-s{font-size:11px;color:#8fa38a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.rc-all{margin-top:4px;height:34px;padding:0 10px;font-size:12px;font-weight:600;color:#cfe3c8;border-top:1px solid #ffffff17;border-radius:0 0 10px 10px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.rc-all:hover{background:#ffffff12}
+.rc-empty{margin:0;padding:6px 8px 10px;font-size:12.5px;color:#c3d3bd;line-height:1.4}

@@ -1,0 +1,55 @@
+TERMS OF USE
+Version 2026-10-15 - ojo
+
+ojo is free personal software provided as it is. Your data and your decisions stay yours. ojo is not financial, tax, legal or medical advice.
+
+Agreeing to these terms
+
+By installing or using ojo you agree to these terms. If you do not agree, please do not use it. You must be old enough to make a binding agreement where you live, or have a parent or guardian's permission.
+
+What you may do
+
+You get a personal, non-exclusive, non-transferable licence to install and use ojo for your own use, free of charge. Please do not copy, sell, rent or redistribute it, remove its notices, or try to take it apart except where the law allows. Parts of ojo come from open-source and third-party projects that keep their own licences (see Open-source notices).
+
+Your content
+
+What you put into ojo is yours and stays on your device. You are responsible for it and for keeping backups (use Export my data). Only save material you have the right to keep, and respect the copyright and terms of the websites, files and PDFs you save.
+
+Not professional advice
+
+  - Finance, budgets, bills and statement import are bookkeeping aids. They are not financial, tax, accounting or legal advice, and imported statements can be read wrongly, so check the numbers.
+  - Water, walking, posture, eye-rest, medicine and other repeating reminders are conveniences, not medical advice or a medical device. Do not rely on them for health decisions.
+  - Pop-ups and overlays: ojo can show reminders, notifications and a small notch above other windows. Before an exam, a proctored or invigilated test, a presentation or a screen share, turn on Quiet mode (tray icon or Settings) or quit ojo. You are responsible for making sure nothing from ojo can interfere, and for following the rules of any exam. Some exam or security software does not allow a desktop helper that watches clicks, so if in doubt, quit ojo.
+  - Notifications can fail (for example if the app is closed, your computer is asleep, or Focus assist or notification settings block them). Do not depend on ojo alone for deadlines, payments, medication or anything where a missed alert would cause harm.
+
+Acceptable use
+
+Do not use ojo to break the law, to store or spread unlawful material, or to harm others.
+
+Third-party websites
+
+The app on your computer can open or fetch links you give it. Those sites are not controlled by the publisher, and ojo is not responsible for them or what they contain.
+
+No warranty
+
+ojo is provided "as is" and "as available", without promises of any kind, to the fullest extent the law allows. That includes promises that it will be error-free, uninterrupted, fit for a particular purpose, or that data will never be lost.
+
+Limit of liability
+
+To the fullest extent the law allows, the publisher is not liable for indirect or consequential loss, lost data, lost profits, or missed reminders arising from use of ojo, and its total liability is limited to the amount you paid for ojo (which is nothing). Nothing in these terms limits liability that cannot be limited by law, or your statutory consumer rights.
+
+Ending
+
+You can stop using ojo and uninstall it at any time. The publisher may stop offering it or change it. Sections that by their nature should survive (such as no warranty and limit of liability) continue.
+
+Changes
+
+These terms may be updated. When they change materially, ojo will show them again and ask you to accept. Version 2026-10-15, effective 15 October 2026.
+
+Governing law
+
+These terms are governed by the laws of India, and the courts there have jurisdiction, without taking away any mandatory rights you have as a consumer where you live.
+
+Contact
+
+You can reach the publisher at ojo.workspace.app@gmail.com.

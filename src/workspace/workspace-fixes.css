@@ -1,0 +1,32 @@
+/* Bookmark ribbon: a still card, no swinging */
+.ws .ribbon-swing{display:block;position:relative;width:38px;height:112px;padding:0;border:0;background:none;cursor:pointer;transform:none!important}
+.ws .ribbon-swing svg{display:block;overflow:visible;pointer-events:none}
+.ribbon{top:-4px}
+.ribbon-tag{top:76px}
+.ws .ribbon-swing:active{transform:none!important}
+
+/* No coloured focus halos on writing surfaces */
+.ws .note-title:focus,.ws .note-title:focus-visible,
+.ws .note-body:focus,.ws .note-body:focus-visible,
+.ws .search input:focus-visible,.ws .quick-add input:focus-visible,.ws .task-add input:focus-visible,
+.ws .toolbar select:focus-visible,.ws .pg input:focus-visible{outline:none;box-shadow:none}
+.ws .note-body ::selection,.ws .note-title::selection{background:#d9e4d3}
+
+/* Delete in the notes sidebar */
+.row-actions-inline{display:none;gap:2px;align-items:center}
+.note-row:hover .row-actions-inline,.note-row.confirm .row-actions-inline{display:flex}
+.row-add,.row-del{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;color:#6b7266}
+.row-add:hover{background:#e2ddcf}
+.row-del:hover{background:#f3dcd5;color:var(--danger)}
+.note-row.confirm .row-del{background:var(--danger);color:#fff;width:auto;padding:0 6px;font-size:11px;font-weight:600;display:inline-flex;gap:4px;align-items:center}
+
+/* Source brand on Save later cards */
+.card-brand .brand-chip{margin-bottom:2px}
+.card.k-youtube .card-brand,.card.k-instagram .card-brand{padding-top:12px}
+
+/* Online PDF fallback */
+.pdf-fallback{position:absolute;inset:0;display:flex;flex-direction:column;background:#fff}
+.fb-bar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--card);border-bottom:1px solid var(--line);flex:none;font-size:12.5px}
+.fb-bar .muted{flex:1;min-width:0}
+.pdf-fallback iframe{flex:1;width:100%;border:0;min-height:0}
+.reader-wrap:has(.pdf-fallback) :is(.pg,.zoom,.reader-progress,.reader-bar .icon-btn){display:none}

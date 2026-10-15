@@ -1,0 +1,242 @@
+/* Polish: small refinements that make everything feel calm, exact and responsive.
+   Principles taken from Apple's Human Interface Guidelines (clarity, deference, depth) and applied inside ojo's own sage and paper look. */
+
+/* Numbers line up in columns and do not jiggle as they change */
+.ws{font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1,'cv11' 1}
+
+/* Better line breaks: balanced headings, no lonely last words */
+.ws h1,.ws h2,.ws h3,.ws h4{text-wrap:balance}
+.ws p,.ws .muted,.ws .lead,.ws li{text-wrap:pretty}
+
+/* Secondary text stays readable: at least 4.5:1 on paper */
+.ws{--muted:#686f63}
+.ws .muted{color:var(--muted)}
+
+/* Every control has a comfortable target, even when it is drawn small (44pt on touch, about 32px with a mouse) */
+.ws .tick,.ws .pl-check,.ws .pl-tick,.ws .swatches button,.ws .shelf-tabs .seg button,.ws .bulk-all{position:relative}
+.ws .tick::after,.ws .pl-check::after,.ws .pl-tick::after,.ws .swatches button::after{content:'';position:absolute;inset:-6px}
+.ws .shelf-tabs .seg button{min-height:28px}
+.ws .filter,.ws .chips-row .filter{min-height:28px}
+
+/* One keyboard focus ring: soft, round, and only for keyboard users */
+.ws button:focus-visible,.ws [role=button]:focus-visible,.ws a:focus-visible{outline:2px solid color-mix(in srgb,var(--sage) 75%,transparent);outline-offset:2px}
+.ws button:focus:not(:focus-visible){outline:none}
+
+/* Motion: one shared easing family. Quick out, gentle settle. */
+.ws{--ease-out:cubic-bezier(.2,.8,.2,1);--ease-spring:cubic-bezier(.3,1.35,.5,1);--t-fast:.14s;--t-base:.22s}
+.ws button,.ws .task-row,.ws .card,.ws .bill-row,.ws .note-row,.ws .nav-item,.ws .filter{transition-timing-function:var(--ease-out)}
+
+/* Scrolling stays inside the pane that is scrolling */
+.ws .list-scroll,.ws .modal-body,.ws .sheet,.ws .shutdown,.ws .task-list-ws,.ws .cards,.ws .sel-menu,.ws .pop{overscroll-behavior:contain}
+
+/* Text can always be selected where it is content, never on chrome */
+.ws button,.ws .nav-item,.ws .subnav,.ws .task-tabs{user-select:none;-webkit-user-select:none}
+
+/* Images and icons render crisply */
+.ws img,.ws svg{image-rendering:auto}
+
+/* Press feedback only on the thing pressed, never on whole rows (it made lists feel jumpy) */
+.ws .task-row:active,.ws .note-row:active,.ws .card:active{transform:none}
+
+/* Header rows: title block and actions share one centre line */
+.ws .bills-head,.ws .saved-head{align-items:center}
+.ws .bill-ic{width:40px;height:40px}
+.ws .saved-head .select-toggle,.ws .jobs-head .select-toggle,.ws .bills-head .select-toggle{height:36px}
+
+/* Selecting: nothing moves, nothing competes. The row keeps its place, the boxes fade in, and the row's own buttons stay out of the way. */
+.sel-cover{animation:selIn .18s var(--ease-out) both}
+@keyframes selIn{from{opacity:0}}
+.task-row.sel-tasks>.icon-btn,.task-row.sel-tasks .task-focus{display:none}
+.task-row.sel-host:hover{transform:none;box-shadow:none}
+.sel-host{transition:padding-left .22s var(--ease-out),background .15s,border-color .15s}
+.note-row.sel-host,.txn-row.sel-host,.bill-row.sel-host,.jt-row.sel-host,.pdf-row.sel-host{transition:padding-left .22s var(--ease-out),padding .22s var(--ease-out),background .15s}
+/* Bill form: the app search is one pill, and the logo grid shows whole rows */
+.ws .bill-form .brand-search{display:flex;flex-direction:row;align-items:center;gap:8px;padding:0 12px;height:38px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.ws .bill-form .brand-search input{flex:1;height:auto;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;font-size:13px}
+.ws .bill-form .brand-search input:focus{box-shadow:none}
+.ws .bill-form .brand-search:focus-within{border-color:var(--sage)}
+.brand-grid{max-height:168px;padding-bottom:2px;scrollbar-width:none;-webkit-mask-image:linear-gradient(#000 calc(100% - 14px),transparent);mask-image:linear-gradient(#000 calc(100% - 14px),transparent)}
+.brand-grid::-webkit-scrollbar{display:none}
+
+/* The selection bar adapts to the width it is given (the Notes and PDF lists are narrow) and never wraps a label */
+.bulk-bar{container-type:inline-size;flex-wrap:nowrap;min-width:0}
+.bulk-bar *{white-space:nowrap}
+.bulk-short{display:none}
+.bulk-count{overflow:hidden;text-overflow:ellipsis;min-width:0}
+@container (max-width:460px){
+ .bulk-full{display:none}
+ .bulk-short{display:inline}
+ .bulk-bar{gap:8px;padding:6px 8px}
+ .bulk-bar .bulk-delete,.bulk-bar .bulk-act{padding:6px 10px}
+}
+@container (max-width:250px){.bulk-count{display:none}}
+/* Narrow windows: the side panel gives way before anything is pushed off screen */
+.ws .tasks{grid-template-columns:minmax(0,1fr) minmax(250px,300px)}
+.ws .tasks-main,.ws .tasks-side{min-width:0}
+.ws .task-tabs{overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.ws .task-tabs::-webkit-scrollbar{display:none}
+.ws .task-tabs button{flex:none;white-space:nowrap}
+/* Buttons and chips never break their label onto two lines */
+.ws .primary,.ws .ghost,.ws .filter,.ws .subnav button,.ws .task-tabs button,.ws .seg button,.ws .view-toggle button,.ws .bulk-all,.ws .bulk-delete,.ws .bulk-act,.ws .skip-btn{white-space:nowrap}
+.ws .tasks-head{flex-wrap:wrap;gap:6px 12px}
+/* Counting numbers inherit the surrounding number style, whatever list they sit in */
+.ws b>span,.ws strong>span{font:inherit;color:inherit;display:inline}
+
+/* Pop-ups under a button: one calm motion, no scaling (scaling from a corner made them drift sideways as they opened) */
+.ws .sel-menu,.ws .pk,.ws .cal-picker,.ws .nh-pop,.ws .pop,.ws .slash,.ws .hl-pop,.ws .code-bar{animation-name:sel-in;animation-duration:.16s;animation-timing-function:var(--ease-out);animation-fill-mode:both}
+
+/* Breathing room: controls that sit side by side are never closer than 8px, and segmented pills have a 4px rim */
+.ws .note-bar{gap:8px}
+.ws .note-bar .ghost{margin:0}
+.ws .seg,.ws .seg-toggle,.ws .view-toggle,.ws .mode-switch{padding:4px;gap:4px}
+.ws .subnav{padding:4px;gap:6px}
+.ws .head-actions,.ws .list-head .head-actions{gap:8px}
+.ws .form-actions{gap:10px}
+.ws .modal footer,.ws .modal .modal-actions{gap:10px}
+
+/* De-slop: no coloured rails on the edge of cards, no lift-on-hover shadows, no tinted banners, no row of separate stat tiles.
+   State is carried by a word, a dot or the content itself. */
+.job-card{border-left:1px solid #e3decf;box-shadow:none}
+.job-card:hover{box-shadow:none;border-color:#cbc5b2}
+.job-card.p-High,.job-card.p-Medium,.job-card.p-Low{border-left-color:#e3decf}
+.job-meta .prio{color:var(--danger);font-weight:600}
+.job-card .next{color:var(--ink);font-weight:500}
+.job-card .next.late{color:var(--danger);font-weight:600}
+.pl-block.event{border-left:0;background:color-mix(in srgb,var(--c) 22%,#fff)}
+.pl-block.event b::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:1px}
+.hl-item{border-left:0;border:1px solid var(--line);padding-left:26px}
+.hl-item::before{content:'';position:absolute;left:10px;top:13px;width:8px;height:8px;border-radius:50%;background:var(--hl)}
+.followups{background:none;border:1px solid var(--line);padding:6px 10px}
+.ws .followups button{background:var(--paper)}
+.bill-group h5{text-transform:none;letter-spacing:0;font-size:13px;font-weight:600;color:var(--muted)}
+.bill-group h5 em{background:none;padding:0;font-size:12.5px;font-weight:500}
+/* One quiet summary strip instead of separate tiles */
+.stat-cards,.bill-stats,.rv-stats{gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.stat-cards>.stat,.bill-stats>div,.rv-stats>.rv-stat{background:var(--card);border:0;border-radius:0;box-shadow:none;padding:12px 16px}
+/* A repeated action in a list is quiet; the loud button is kept for the one primary action of a page */
+.ws .bill-row .primary.small{background:none;color:var(--ink)!important;border:1px solid var(--line);box-shadow:none;font-weight:600}
+.ws .bill-row .primary.small:hover:not(:disabled){background:var(--paper);box-shadow:none}
+
+/* Repeater form: the chosen preset is marked, and the unit picker is wide enough to show its word */
+.ws .nudge-form .preset-row button.on{border-color:var(--sage);background:var(--sage-soft)}
+.ws .nudge-form .inline{display:flex;gap:8px}
+.ws .nudge-form .inline input{flex:1;min-width:0}
+.ws .nudge-form .inline .sel{flex:none;min-width:104px}
+
+/* The timer's digits are the control: click them and type the minutes you want */
+
+/* Weekly review: the summary strip is never squeezed shorter than its numbers */
+.review>*{flex-shrink:0}
+.rv-stats,.stat-cards,.bill-stats{flex:none}
+/* Note rows keep a fixed height, so revealing their buttons on hover moves nothing */
+.note-row .row-top{min-height:22px}
+.note-row .row-actions-inline{display:flex!important;opacity:0;pointer-events:none;transition:opacity .12s}
+.note-row:hover .row-actions-inline,.note-row.confirm .row-actions-inline,.row-actions-inline.always{opacity:1;pointer-events:auto}
+/* Trash confirmation, in place */
+.trash-ask{display:inline-flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink);flex-wrap:wrap}
+.ws .link-btn.solid{background:var(--danger);color:#fff;border-radius:8px;padding:5px 10px}
+/* Erase confirmation */
+.erase-box{display:flex;flex-direction:column;gap:12px}
+.erase-box p{margin:0;line-height:1.5}
+.erase-box label{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.ws .danger-fill{background:var(--danger);color:#fff;padding:9px 16px;border-radius:11px;font-weight:600}
+.ws .danger-fill:disabled{opacity:.4}
+
+/* Selecting: one calm cue. A clean box in the corner, and a ring around what is chosen. No tint, no inner frame. */
+.sel-cover,.sel-cover:hover,.sel-cover.on{background:transparent!important;border:0!important}
+.sel-host:has(>.sel-cover.on){box-shadow:0 0 0 2px var(--sage)!important}
+.sel-host:has(>.sel-cover:hover):not(:has(>.sel-cover.on)){box-shadow:0 0 0 1px var(--line)}
+.notes-list .bulk-bar,.pdf-list .bulk-bar{margin:0 14px 10px}
+.card.sel-host .sel-cover .sel-box{left:12px;top:12px;box-shadow:0 1px 4px #0003}
+
+/* Pages inside pages: indented, quieter, with a corner arrow, and a path above the title */
+.ws .note-row.child{padding-top:8px;padding-bottom:8px}
+.ws .note-row.child .row-top b{font-weight:500;font-size:13px}
+.ws .note-row.child>span:last-child,.ws .note-row.child .row-prev{font-size:11.5px}
+.ws .child-mark{flex:none;color:var(--muted);margin-right:2px}
+
+/* App picker: one line of suggestions that scrolls sideways; search narrows it */
+.ws .bill-form .brand-grid{display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;max-height:none;gap:8px;padding:2px 0 4px;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);overscroll-behavior:contain}
+.ws .bill-form .brand-grid::-webkit-scrollbar{display:none}
+.ws .bill-form .brand-grid .brand-chip-btn,.ws .bill-form .brand-grid .muted{flex:none}
+.chip-spin{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--sage);animation:chipSpin .7s linear infinite;margin-left:2px}
+@keyframes chipSpin{to{transform:rotate(360deg)}}
+
+/* Section labels read like sentences: no tracked capitals, no pill counts */
+.ws h5,.ws .fx-stats h5,.ws .pl-side h5,.ws .tasks-side h5,.ws .cal-side h5,.ws .side-card h5{text-transform:none;letter-spacing:0;font-size:13px;font-weight:600;color:var(--muted)}
+.ws h5 em{background:none;padding:0;border-radius:0;font-size:12.5px;font-weight:500;color:var(--muted);margin-left:6px}
+.ws .cal-grid.dow span{text-transform:none;letter-spacing:0;font-size:12.5px;font-weight:500}
+.card.sel-host .sel-cover .sel-box,.job-card.sel-host .sel-cover .sel-box{left:auto;right:12px;top:12px}
+.card.sel-host .card-actions{display:none}
+
+/* Timer digits: a button that turns into a minutes field showing exactly what is typed */
+.ws .fx-digits{font:inherit;font-size:44px;font-weight:600;letter-spacing:-.05em;color:var(--ink);padding:0 10px;border-radius:12px;line-height:1.1}
+.ws .fx-digits:hover{background:var(--paper)}
+.fx-digits-edit{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
+.ws .fx-digits-edit input{width:150px;border:0;outline:0;background:var(--paper);border-radius:12px;text-align:center;font:inherit;font-size:44px;font-weight:600;letter-spacing:-.05em;color:var(--ink);padding:0 6px;line-height:1.1}
+.ws .fx-digits-edit input::placeholder{color:var(--muted);opacity:.5}
+.fx-digits-edit em{font-style:normal;font-size:13px;color:var(--muted);white-space:nowrap}
+
+/* A link from an unknown site gets a quiet globe, not a coloured tile pretending to be a brand */
+.ws .brand-badge.plain{background:none;color:var(--muted);border:1px solid var(--line)}
+.ws .fx-head:has(>div:empty),.ws .rv-head>div:empty{display:none}
+
+/* No spaced-out capital eyebrows anywhere: small labels are sentence case */
+.ws .outline-panel b,.ws .day-head,.ws .timeline>b,.ws .slash-label,.ws .sp-head,.ws .pop-title,.ws .nav-label,.ws .kind,.ws .jt-head,.ws .pk-dow span,.ws .src-group h5,.ws .sd-card h5,.ws .fx-card h5,.ws .pl-side h5,.ws .bill-group h5{text-transform:none;letter-spacing:0;font-size:12.5px;font-weight:600}
+.ws .note-body pre[data-label]:before{text-transform:none;letter-spacing:0}
+.ws .kind{color:var(--muted)}
+/* Focus: the right-hand cards sit snugly one under the other instead of stretching to the timer's height */
+.ws .fx-grid{align-items:start;align-content:start}
+.ws .fx-week{min-height:0}
+.ws .fx-grid>.fx-timer{grid-row:span 2}
+.ws .fx-grid{grid-template-rows:auto 1fr}
+
+/* Saved cards: the actions are a quiet row at the foot of the card, never floating over the text; the star sits inline */
+.ws .card-actions{position:static;opacity:1;display:flex;justify-content:flex-end;align-items:center;gap:2px;padding:6px 8px;background:none;border-radius:0;box-shadow:none;border-top:1px solid var(--line)}
+.ws .card-actions .icon-btn{opacity:.55;transition:opacity .15s,background .15s}
+.ws .card:hover .card-actions .icon-btn,.ws .card:focus-within .card-actions .icon-btn,.ws .card-actions .icon-btn.on,.ws .card-actions .icon-btn.fav.on{opacity:1}
+.ws .card-actions.always .icon-btn{opacity:1}
+.ws .card-actions.always .tleft{margin-right:auto}
+.ws .fav-badge{position:static;flex:none;color:#c9a13a;filter:none;margin-right:5px;vertical-align:-2px}
+.ws .card-brand{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ws .card .kind{display:inline-flex;align-items:center}
+
+/* Selecting tasks: the ring replaces the border (no double line) and the list keeps room so the ring is never clipped */
+.task-list-ws{padding:3px 3px 8px}
+.task-row.sel-host:has(>.sel-cover.on){border-color:var(--sage);box-shadow:0 0 0 1px var(--sage)!important}
+.task-row.sel-host:has(>.sel-cover:hover):not(:has(>.sel-cover.on)){border-color:var(--line);box-shadow:none!important}
+.task-list-ws{gap:8px}
+
+/* Calendar day cells hint; the side panel lists */
+.ws .cell .task-count{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);padding:0 2px;white-space:nowrap}
+.ws .cell .task-count i{width:6px;height:6px;border-radius:50%;background:var(--sage);flex:none}
+.ws .cell .more{font-size:10.5px;color:var(--muted);padding:0 2px}
+
+/* Regular vendors */
+.ws .regulars .muted{font-size:12.5px;margin:2px 0 8px}
+.ws .reg-row{display:grid;gap:2px;width:100%;text-align:left;padding:8px 10px;border-radius:11px;transition:background .15s}
+.ws .reg-row:hover{background:var(--hover,#1f241e0d)}
+.ws .reg-name{display:flex;align-items:center;gap:8px}
+.ws .reg-name b{font-weight:600;font-size:13.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ws .reg-name em{font-style:normal;font-size:11.5px;font-weight:500;color:var(--sage);padding:1px 7px;border-radius:999px;background:var(--sage-soft,#e3ecdb);flex:none}
+.ws .reg-meta{font-size:12.5px!important;margin:0!important}
+.ws .stmt-months{font-size:12.5px;margin:0 0 8px}
+
+
+/* Accordion: a section that opens and closes (the calendar's tasks) */
+.ws .acc{margin-top:10px;border-top:1px solid var(--line);padding-top:6px}
+.ws .acc-head{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:0 4px;border-radius:9px;font-weight:600;font-size:13.5px;text-align:left;color:var(--ink);transition:background .15s}
+.ws .acc-head:hover{background:var(--hover,#1f241e0d)}
+.ws .acc-head svg{color:var(--muted);transition:transform .3s var(--ease-out,cubic-bezier(.22,1,.36,1))}
+.ws .acc.open .acc-head svg{transform:rotate(90deg)}
+.ws .acc-head em{font-style:normal;font-weight:500;font-size:12.5px;color:var(--muted);margin-left:auto}
+.ws .acc-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease-out,cubic-bezier(.22,1,.36,1))}
+.ws .acc.open .acc-body{grid-template-rows:1fr}
+.ws .acc-inner{min-height:0;overflow:hidden;opacity:0;transition:opacity .25s}
+.ws .acc.open .acc-inner{opacity:1}
+
+/* Quiet mode */
+.ws .quiet-state{display:flex;align-items:center;gap:8px;margin:10px 0;font-weight:600;font-size:13.5px}
+.ws .quiet-state.on{color:var(--sage)}
+.ws .quiet-auto{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:13px;line-height:1.45}
+.ws .quiet-note{font-size:12.5px;margin-top:10px}

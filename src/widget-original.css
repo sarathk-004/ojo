@@ -1,0 +1,44 @@
+/* ojo's own widget layout: one paper card, a soft colour wash that fades into it, a big date numeral on the left and the
+   quick actions on the right. No separate art strip, no overlapping lip, no framed border. */
+main:not(.mobile) .widget{border:0;border-radius:24px;background:var(--paper)}
+main:not(.mobile) .art-header{height:84px;background-position:center;-webkit-mask-image:linear-gradient(#000 45%,transparent);mask-image:linear-gradient(#000 45%,transparent)}
+main:not(.mobile) .art-header:before{display:none}
+main:not(.mobile) .datebar{padding:14px 16px 0 18px;gap:9px;color:#2a3028;text-shadow:none;align-items:center}
+main:not(.mobile) .datebar .d-num{font-size:34px;font-weight:600;line-height:1;letter-spacing:-.06em}
+main:not(.mobile) .datebar .d-txt{display:flex;flex-direction:column;gap:1px;font-style:normal;line-height:1.15}
+main:not(.mobile) .datebar .d-txt i{font-style:normal;font-size:11.5px;font-weight:500;color:#2a3028;white-space:nowrap}
+main:not(.mobile) .datebar .d-txt i:last-child{color:#4b5448;font-weight:450}
+main:not(.mobile) .datebar time{background:none;padding:0;margin:0;font-size:inherit;color:inherit;border-radius:0}
+main:not(.mobile) .datebar .collapse{margin-left:auto;background:#ffffff66;border-radius:9px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;-webkit-app-region:no-drag}
+main:not(.mobile) .datebar .collapse:hover{background:#ffffffb3}
+main:not(.mobile) .paper{background:transparent;border-radius:0;margin-top:-4px;height:264px;padding:0 16px 14px}
+main:not(.mobile) .paper.panel-tasks .title-row{position:absolute;top:-64px;right:52px;gap:2px;z-index:3}
+main:not(.mobile) .paper.panel-tasks .title-row h2,main:not(.mobile) .paper.panel-tasks .title-row .current-view{display:none}
+main:not(.mobile) .paper.panel-tasks .title-row .icon{background:#ffffff66;border-radius:9px;width:28px;height:28px;display:flex;align-items:center;justify-content:center}
+main:not(.mobile) .paper.panel-tasks .title-row .icon:hover{background:#ffffffb3}
+main:not(.mobile) .paper:not(.panel-tasks){background:var(--paper);border-radius:20px 20px 0 0;margin-top:-18px;height:276px;padding-top:16px}
+main:not(.mobile) .datebar .collapse{color:#2a3028}main:not(.mobile) .paper.panel-tasks .title-row .icon{color:#2a3028}
+
+/* Tabs are plain words with an underline for the open one (no icons). */
+main:not(.mobile) .list-tabs{gap:14px;padding:8px 0 0;border-bottom:1px solid #2936261a}
+main:not(.mobile) .list-tabs button{padding:4px 0 8px;border-radius:0;font-size:11.5px;font-weight:500;background:transparent;color:#6d7665;position:relative}
+main:not(.mobile) .list-tabs button svg{display:none}
+main:not(.mobile) .list-tabs button.active{background:transparent;color:#262d24}
+main:not(.mobile) .list-tabs button.active:after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:2px;background:#4f6b4f}
+/* Ticks are soft squares, finished tasks are struck through. */
+main:not(.mobile) .check{width:17px;height:17px;border-radius:6px;border-width:1.4px}
+main:not(.mobile) .check[aria-checked=true]{background:#4f6b4f;border-color:#4f6b4f}
+main:not(.mobile) .task.done .task-title{text-decoration:line-through;text-decoration-color:#8a9384}
+/* Appearance control in the widget's settings. */
+.look-row{margin:10px 0 4px}
+.look-pick{display:flex;gap:6px;margin-top:6px}
+.look-pick button{flex:1;padding:7px 6px;border-radius:9px;background:var(--accent);font-size:11px;white-space:nowrap}
+.look-pick button.on{background:#4f6b4f;color:#f4f6ef}
+
+/* Dark mode: the whole card is inverted, like the workspace, so the cover turns into deep tones of the same hues. */
+html[data-wtheme=dark] main:not(.mobile) .widget{filter:invert(1) hue-rotate(180deg) contrast(.92) brightness(.98)}
+html[data-wtheme=dark] main:not(.mobile) .widget :is(.look-pick button.on,.check[aria-checked=true],.themes img){filter:invert(1) hue-rotate(180deg)}
+html[data-wtheme=dark] main:not(.mobile) .widget .look-pick button.on{background:#3f5c42;color:#f4f6ef}
+html[data-wtheme=dark] main:not(.mobile) .widget .check[aria-checked=true]{background:#3f5c42;border-color:#3f5c42;color:#f4f6ef}
+main:not(.mobile) .art-header{-webkit-app-region:no-drag;cursor:grab}main:not(.mobile) .art-header:active{cursor:grabbing}
+main:not(.mobile) .datebar{pointer-events:auto}

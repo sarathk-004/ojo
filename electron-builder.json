@@ -1,0 +1,8 @@
+{
+  "appId": "app.taskit.desktop",
+  "productName": "Taskit",
+  "directories": { "output": "downloads" },
+  "win": { "target": "nsis", "icon": "public/brand/taskit.ico", "signAndEditExecutable": false },
+  "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true, "createDesktopShortcut": true, "createStartMenuShortcut": true, "deleteAppDataOnUninstall": false, "artifactName": "Taskit-Setup-${version}-x64.exe", "installerIcon": "public/brand/taskit.ico", "uninstallerIcon": "public/brand/taskit.ico" },
+  "publish": null
+}

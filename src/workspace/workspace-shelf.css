@@ -1,0 +1,36 @@
+/* Favorites and Trash (Notes, Saved, PDFs) */
+.shelf-tabs{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 8px}
+.shelf-tabs .seg{display:inline-flex;background:#ece8dc;border-radius:11px;padding:3px;gap:2px}
+.ws .shelf-tabs .seg button{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:8px;font-weight:600;font-size:12.5px;color:#6b7266}
+.ws .shelf-tabs .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px #3c4c3322}
+.shelf-tabs .seg em{font-style:normal;font-size:11px;color:var(--muted);font-weight:500}
+.shelf-tabs.compact .seg button{padding:4px 8px;font-size:12px;gap:4px}
+.shelf-tabs .link-btn{font-size:12.5px;font-weight:600;color:var(--muted)}
+.shelf-tabs .link-btn.danger{color:var(--danger)}
+.trash-note{margin:-2px 0 8px;font-size:12.5px}
+.row-actions-inline.always{display:flex}
+.row-star{color:#c9a13a;flex:none}
+.icon-btn.fav.on{color:#c9a13a}
+.card-actions.always{opacity:1;align-items:center;gap:6px;padding:4px 6px}
+.card-actions .tleft{font-size:11.5px;padding:0 4px}
+.fav-badge{position:absolute;top:10px;left:10px;color:#c9a13a;z-index:2;filter:drop-shadow(0 1px 2px #0003)}
+.card.in-trash{opacity:.82}
+.ws .restore{display:inline-flex;align-items:center;gap:5px}
+.row-actions.always{display:flex}
+
+/* Note templates and export menus */
+.head-actions{display:inline-flex;align-items:center;gap:8px}
+.pop-anchor{position:relative;display:inline-flex}
+.pop{position:absolute;top:calc(100% + 8px);left:0;z-index:30;min-width:240px;background:#fbfaf5;border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 44px #1c241933;padding:6px;display:flex;flex-direction:column}
+.pop.right{left:auto;right:0;min-width:210px}
+.ws .pop button{display:flex;align-items:center;gap:10px;text-align:left;padding:9px 11px;border-radius:10px;width:100%}
+.ws .pop button:hover{background:#ece8dc}
+.pop.tpl button{flex-direction:column;align-items:flex-start;gap:1px}
+.pop.tpl button span{font-size:12px;color:var(--muted)}
+.pop-title{padding:6px 11px 4px;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8a9081}
+.ws .round.ghost{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#ece8dc;color:#2f3a2c}
+
+.icon-btn.queue.on{color:#4a6b4d}
+
+
+.card-cta .mins{font-size:12px;align-self:center}

@@ -1,0 +1,161 @@
+/* One look for every form control in the workspace. Loaded last. */
+
+/* Text fields that had no style of their own (for example the wins box) get the modal look. */
+.ws .sd-add input,.ws .field-input{border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:9px 12px;font:inherit;letter-spacing:inherit;color:var(--ink);outline:0;min-width:0;transition:border-color .15s,box-shadow .15s}
+.ws .sd-add input:focus,.ws .field-input:focus{border-color:var(--sage);box-shadow:0 0 0 3px #56745822}
+.ws .sd-add input::placeholder{color:#9aa08f}
+
+/* Check boxes: small, rounded, the same sage tick everywhere (they used to inherit a full-width text-field style). */
+.ws input[type=checkbox],.ws .modal input[type=checkbox],.ws .modal label input[type=checkbox]{
+ appearance:none;-webkit-appearance:none;flex:none;width:19px;height:19px;min-width:19px;padding:0;margin:0;
+ border:1.8px solid #9aa291;border-radius:6px;background:#fff;display:inline-grid;place-content:center;cursor:pointer;
+ transition:background .15s,border-color .15s,box-shadow .15s}
+.ws input[type=checkbox]:hover{border-color:var(--sage)}
+.ws input[type=checkbox]:checked{background:var(--sage) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.8 8.6l2.7 2.7 5.7-5.9' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/13px no-repeat;border-color:var(--sage)}
+.ws input[type=checkbox]:focus-visible{outline:none;box-shadow:0 0 0 3px #56745833}
+.ws input[type=checkbox]:disabled{opacity:.5;cursor:default}
+/* A checkbox and its words sit on one line, centred. */
+.ws label.check,.ws .auto-copy,.ws .modal .auto-copy,.ws .bill-form .auto-copy,.ws .src-item{display:flex;flex-direction:row;align-items:center;gap:10px;color:var(--ink);font-size:13.5px}
+
+/* Date and time fields share the dropdown's look. */
+.ws .field-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-width:0;border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:9px 12px;font:inherit;letter-spacing:inherit;color:var(--ink);cursor:pointer;text-align:left;transition:border-color .15s,box-shadow .15s}
+.ws .field-btn:hover:not(:disabled){border-color:#cfc9b8}
+.ws .field-btn.open,.ws .field-btn:focus-visible{outline:none;border-color:var(--sage);box-shadow:0 0 0 3px #56745822}
+.ws .field-btn:disabled{opacity:.5;cursor:default}
+.ws .field-btn.empty .field-label{color:#9aa08f}
+.ws .field-btn svg{flex:none;color:#7b8176}
+.ws .field-label{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* The dropdown button matches, too. */
+.ws .sel{border-radius:12px;padding:9px 12px}
+.ws .sel.compact{padding:5px 10px;border-radius:10px}
+.ws .modal .sel,.ws .modal .field-btn{background:var(--paper)}
+
+/* The picker pop-ups */
+.pk{position:fixed;z-index:90;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 44px #2c3a2533;padding:10px;font-family:'Geist Variable',sans-serif;letter-spacing:-.04em;color:var(--ink);outline:0;animation:sel-in .16s cubic-bezier(.3,1.2,.5,1)}
+.pk button{font:inherit;letter-spacing:inherit;color:inherit;cursor:pointer}
+.pk-date{width:296px}
+.pk-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.pk-head b{font-size:14.5px}
+.pk-dow,.pk-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;justify-items:center}
+.pk-dow span{font-size:11px;font-weight:600;color:#8a9081;padding:4px 0;text-transform:uppercase;letter-spacing:.06em}
+.pk-day{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:13.5px;font-weight:500;background:none;border:0;padding:0}
+.pk-day:hover{background:#ece8dc}
+.pk-day.out{color:#b4b8a9}
+.pk-day.now{box-shadow:0 0 0 1.5px #c9a13a inset}
+.pk-day.on{background:#2f3a2c;color:#fffef9;font-weight:600;box-shadow:none}
+.pk-foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding:0 4px}
+.pk-foot .link-btn{font-size:12.5px;font-weight:600;color:var(--sage);background:none;border:0;display:inline-flex;gap:4px;align-items:center}
+.pk-foot .muted-btn{color:var(--muted)}
+.pk-time{width:172px}
+.pk-cols{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pk-col{height:216px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;scrollbar-width:none;padding:2px}
+.pk-col::-webkit-scrollbar{display:none}
+.pk-col button{padding:8px 0;border-radius:10px;font-size:14px;font-variant-numeric:tabular-nums;background:none;border:0;text-align:center}
+.pk-col button:hover{background:#ece8dc}
+.pk-col button.on{background:#2f3a2c;color:#fffef9;font-weight:600}
+
+/* Margins around the list panels (Notes, PDFs): the tabs line up with the heading and the search box. */
+.shelf-tabs.compact{margin:2px 14px 6px}
+.list-scroll{padding:0 14px 14px}
+
+/* Task ticks: the circle is centred on the first line and the check sits in the middle of it. */
+.ws .tick{padding:0;line-height:0;margin-top:-2px;display:grid;place-items:center}
+.ws .tick svg{display:block}
+
+/* Search sits just left of the sidebar toggle */
+.ws .nav-search{position:absolute;right:44px;top:6px}
+
+/* Page tabs for the sidebar's grouped places */
+.drag-strip{display:flex;align-items:center;justify-content:center}
+.subnav{display:flex;gap:4px;padding:3px;border-radius:999px;background:#ece8dc;-webkit-app-region:no-drag}
+.ws .subnav button{padding:5px 13px;border-radius:999px;font-size:13px;font-weight:600;color:#5b6256;display:inline-flex;gap:6px;align-items:center}
+.ws .subnav button:hover:not(.on){background:#e2ddcc}
+.ws .subnav button.on{background:#2f3a2c;color:#fffef9}
+.subnav em{font-style:normal;font-size:11px;opacity:.75}
+.task-note{cursor:text;white-space:pre-wrap}
+.ws .task-note-edit{width:100%;margin-top:6px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fbfaf5;font:inherit;font-size:13px;resize:vertical}
+
+/* The page tabs sit below the window's top edge, away from the notch's hot zone */
+.drag-strip{display:block}
+.ws-main>.subnav-row{flex:none;display:flex;justify-content:flex-start;padding:2px 28px 10px}
+
+/* No boxy focus ring on text fields; the caret and the field's own state are enough. Buttons keep a ring for keyboard users. */
+.ws input:focus-visible,.ws textarea:focus-visible,.ws select:focus-visible,.ws [contenteditable]:focus-visible{outline:none}
+/* Browsers give every button 1px 6px of hidden padding, which pushed small icons off centre. Start from none; rules that set padding still win. */
+:where(.ws button){padding:0}
+.ws .round.ghost{padding:0}
+
+.ws .brand{gap:0;padding-left:6px}
+.ws .brand-mascot{color:var(--ink)}
+
+/* Task notes: a quiet preview, and a small rich editor when the task is opened */
+.task-row{cursor:pointer}
+.task-note-preview{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12.5px;line-height:1.45;max-width:640px}
+.task-note-rich{margin-top:8px;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden;cursor:text}
+.tn-bar{display:flex;gap:2px;padding:4px 6px;border-bottom:1px solid var(--line);background:var(--paper)}
+.ws .tn-bar .tn-tool{width:28px;height:28px}
+.tn-body{padding:10px 14px;min-height:64px;max-height:320px;overflow-y:auto;font-size:13.5px;line-height:1.55;outline:none;color:var(--ink)}
+.tn-body:empty::before{content:attr(data-placeholder);color:var(--muted)}
+.tn-body h1,.tn-body h2,.tn-body h3,.tn-body h4{margin:10px 0 4px;font-size:14.5px;font-weight:650}
+.tn-body p,.tn-body div{margin:0 0 4px}
+.tn-body ul,.tn-body ol{margin:4px 0 8px;padding-left:20px}
+.tn-body li{margin:2px 0}
+.tn-body blockquote{margin:6px 0;padding-left:10px;border-left:3px solid var(--line);color:var(--muted)}
+
+.ws .lead{font-size:13.5px;line-height:1.5;max-width:640px}
+.ws .tasks-head h2{font-size:21px}
+/* Close the day: the sheet scrolls inside itself */
+.sheet .shutdown{min-height:0;flex:1 1 auto;overflow-y:auto}
+/* Icons never swallow the click; the button is always the target */
+.ws button svg{pointer-events:none}
+.ws .icon-btn:hover:not(:disabled){transform:none}
+.ws .skip-btn{padding:5px 10px;font-size:12px;gap:5px;color:var(--muted)}
+.ws .auto-note{margin:-4px 0 0 29px;line-height:1.45}
+.pop.tpl{max-height:min(70vh,520px);overflow-y:auto}
+
+/* Inside dialogs the base box rule is more specific, so the ticked state must be too (the tick used to vanish there). */
+.ws .modal input[type=checkbox]:checked,.ws .modal label input[type=checkbox]:checked,.ws label input[type=checkbox]:checked{background:var(--sage) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.8 8.6l2.7 2.7 5.7-5.9' fill='none' stroke='white' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/13px no-repeat;border-color:var(--sage)}
+
+/* Service logos on bills */
+.brand-logo{display:inline-grid;place-items:center;flex:none;color:#fff;font-weight:700;line-height:1}
+.brand-pick{display:flex;flex-direction:column;gap:6px}
+.brand-grid{display:flex;flex-wrap:wrap;gap:6px;max-height:132px;overflow-y:auto}
+.ws .brand-chip-btn{display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 6px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:12.5px;font-weight:600}
+.ws .brand-chip-btn:hover{background:var(--paper)}
+.ws .brand-chip-btn.on{border-color:var(--sage);background:var(--sage-soft)}
+.ws .brand-more{padding:5px 12px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.ws .brand-more:hover{background:var(--paper)}
+.name-with-logo{display:flex;align-items:center;gap:8px}
+.name-with-logo input{flex:1;min-width:0}
+.bill-logo{box-shadow:0 1px 3px #0002}
+
+/* Selecting several things at once */
+.select-toggle.on{background:var(--paper);color:var(--ink)}
+.bulk-bar{display:flex;align-items:center;gap:12px;padding:8px 12px;margin:0 0 10px;border:1px solid var(--line);border-radius:14px;background:var(--card);position:sticky;top:0;z-index:7;animation:ws-fade .15s}
+.ws .bulk-all{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13px;padding:4px 8px 4px 4px;border-radius:9px}
+.ws .bulk-all:hover{background:var(--paper)}
+.bulk-all em{font-style:normal;color:var(--muted);font-size:12px}
+.bulk-count{font-size:12.5px;color:var(--muted)}
+.sel-box{width:19px;height:19px;border-radius:6px;border:1.8px solid #9aa291;background:#fff;display:inline-grid;place-items:center;flex:none;color:transparent;transition:background .15s,border-color .15s}
+.bulk-all.on .sel-box,.sel-cover.on .sel-box{background:var(--sage);border-color:var(--sage);color:#fff}
+.ws .bulk-delete{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:10px;font-weight:600;font-size:13px;color:var(--danger);background:#f3dcd5}
+.ws .bulk-delete:hover:not(:disabled){background:#eecbc1}
+.ws .bulk-delete.armed{background:var(--danger);color:#fff}
+.ws .bulk-act{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:10px;font-weight:600;font-size:13px;background:var(--paper)}
+.ws .bulk-act:hover:not(:disabled){background:#e4e0d2}
+.sel-cover{position:absolute;inset:0;z-index:6;border-radius:inherit;border:2px solid transparent;background:transparent;cursor:pointer;text-align:left}
+.sel-cover .sel-box{position:absolute;left:12px;top:50%;margin-top:-9.5px}
+.sel-cover:hover{background:#56745810}
+.sel-cover.on{border-color:var(--sage);background:#56745814}
+.sel-host{position:relative}
+.sel-host.pad-left{padding-left:44px!important}
+.card.sel-host .sel-cover .sel-box,.job-card.sel-host .sel-cover .sel-box{top:12px;margin-top:0}
+/* While selecting tasks, the tick circle gives its place to the selection box so the two never sit side by side. */
+.task-row.sel-tasks .tick{visibility:hidden}
+.task-row.sel-tasks .sel-cover .sel-box{left:14.5px;top:12.5px;margin-top:0}
+
+.brand-logo.brand-file{background:#fff;border:1px solid var(--line)}
+.brand-logo.brand-file img{object-fit:contain;display:block}
+.brand-search{display:flex;align-items:center;gap:8px;padding:0 12px;height:36px;border:1px solid var(--line);border-radius:11px;background:var(--paper);color:var(--muted)}
+.brand-search input{flex:1;border:0;background:transparent;outline:none;font-size:13px;min-width:0}
+.name-with-logo .small{flex:none}

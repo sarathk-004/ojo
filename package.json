@@ -1,0 +1,39 @@
+{
+  "name": "tnkr",
+  "version": "1.0.24",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/prepare-sites-build.mjs",
+    "preview": "vite preview",
+    "test:sites": "node --test tests/sites-worker.test.mjs",
+    "desktop": "npm run build && node scripts/build-native.mjs && electron .",
+    "package": "npm run build && node scripts/build-native.mjs && node scripts/package-desktop.mjs",
+    "test": "node --test tests/tasks.test.mjs tests/geometry.test.mjs tests/visibility.test.mjs tests/master.test.mjs tests/mobile-lists.test.mjs tests/workspace.test.mjs tests/workspace-modules.test.mjs tests/nudges.test.mjs tests/statement.test.mjs tests/search.test.mjs tests/capture.test.mjs tests/note-export.test.mjs tests/bills.test.mjs tests/focus.test.mjs tests/planner-review.test.mjs tests/recurrence.test.mjs tests/coverfit.test.mjs tests/legal.test.mjs tests/richtext.test.mjs tests/templates.test.mjs tests/vendor.test.mjs",
+    "legal": "node scripts/build-legal-docs.mjs",
+    "installer": "node scripts/build-legal-docs.mjs && npm run package && node scripts/build-installer.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist": "^5.3.0",
+    "@phosphor-icons/react": "^2.1.10",
+    "@vitejs/plugin-react": "5.0.4",
+    "gsap": "^3.15.0",
+    "highlight.js": "^11.11.1",
+    "pdfjs-dist": "^4.10.38",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "simple-icons": "^16.35.0",
+    "simple-icons-v9": "npm:simple-icons@^9.21.0",
+    "vite": "6.4.4"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "^44.4.3",
+    "electron-builder": "^26.15.3"
+  },
+  "main": "electron/main.cjs",
+  "productName": "ojo",
+  "description": "A quiet desktop home for your tasks",
+  "author": "ojo"
+}

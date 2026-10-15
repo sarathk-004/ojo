@@ -1,0 +1,23 @@
+/* Dark mode: the sage and paper palette is inverted as a whole, then pictures are turned back so they keep their real colours. */
+html[data-theme=dark]{background:#1a1813;color-scheme:dark}
+html[data-theme=dark] .ws{filter:invert(1) hue-rotate(180deg) contrast(.9) brightness(.97)}
+html[data-theme=dark] .ws :is(img,video,.nh-cover-art,.thumb,.brand-badge,.brand-logo,.pk-swatch,.swatches button,.nh-swatches button,.cover-chip){filter:invert(1) hue-rotate(180deg)}
+html[data-theme=dark] .ws .nh-cover-art.nh-photo img{filter:none}
+html[data-theme=dark] .ws .nh-photo{filter:invert(1) hue-rotate(180deg)}
+
+/* Overlays are dark in light mode, so they must be pale here to come out as a soft dim after inversion. */
+html[data-theme=dark] .ws :is(.modal-back,.sp-back,.sheet-back,.viewer){background:#f1eee6c4}
+/* Filled controls keep real colours instead of turning into pale chips with heavy black text. */
+html[data-theme=dark] .ws :is(.primary,.task-tabs button.on,.subnav button.on,.shelf-tabs .seg button.on,.filter.on,.week-pick button.on,.fx-chips button.on,.nh-adjust button.ok,.theme-pick button.on,.sp-types button.on,.pk-day.on,.pk-col button.on,.tick.on,.days-row button.on,.news-tabs>button.on,.outline .dash.on){filter:invert(1) hue-rotate(180deg);background:#3f5c42;color:#f4f6ef!important}
+html[data-theme=dark] .ws :is(.primary,.task-tabs button.on,.subnav button.on,.shelf-tabs .seg button.on,.filter.on,.week-pick button.on,.fx-chips button.on) svg{color:#f4f6ef}
+html[data-theme=dark] .ws button{font-weight:500}
+html[data-theme=dark] .ws :is(.primary,.subnav button,.task-tabs button,.shelf-tabs .seg button){font-weight:500}
+html[data-theme=dark] .ws h1,html[data-theme=dark] .ws h2,html[data-theme=dark] .ws h3{font-weight:560}
+html[data-theme=dark] .ws{-webkit-font-smoothing:antialiased}
+
+/* Shadows are dark in light mode and would turn into pale halos after inversion, so they are written pale here. */
+html[data-theme=dark] .ws :is(.modal,.sp,.sheet,.pk,.sel-menu,.nh-pop,.cal-picker,.slash,.hl-pop,.undo-toast,.bill-toast,.outline-panel,.table-bar,.code-bar,.pop,.nh-adjust,.card-actions){box-shadow:0 18px 50px #ffffff40}
+html[data-theme=dark] .ws :is(.task-row,.card,.job-card,.news-card,.brief-item,.nh-icon,.pl-block.task.live):hover,
+html[data-theme=dark] .ws .nh-icon,html[data-theme=dark] .ws .pl-block.task.live{box-shadow:0 6px 18px #ffffff2a}
+html[data-theme=dark] .ws :is(.nav-item.on,.note-row.on,.pdf-row.on,.kb-card,.job-card,.pdf-page){box-shadow:0 1px 3px #ffffff30}
+html[data-theme=dark] .ws .primary:hover:not(:disabled){box-shadow:none}

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 260" width="600" height="260" preserveAspectRatio="xMidYMid slice">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dfe8e4"/><stop offset="1" stop-color="#cfdcea"/></linearGradient>
+<filter id="b" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="34"/></filter>
+<filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7"/><feColorMatrix values="0 0 0 0 .3  0 0 0 0 .3  0 0 0 0 .3  0 0 0 .5 0"/></filter>
+</defs>
+<rect width="600" height="260" fill="url(#g)"/>
+<g filter="url(#b)"><ellipse cx="0" cy="70" rx="193" ry="90" fill="#a9c4b0" opacity="0.78" transform="rotate(-11 0 70)"/><ellipse cx="168" cy="38" rx="206" ry="64" fill="#b7c9e4" opacity="0.71" transform="rotate(4 168 38)"/><ellipse cx="445" cy="87" rx="174" ry="129" fill="#f1d3c2" opacity="0.78" transform="rotate(-2 445 87)"/><ellipse cx="378" cy="217" rx="163" ry="51" fill="#c4d8d2" opacity="0.83" transform="rotate(-19 378 217)"/><ellipse cx="22" cy="59" rx="160" ry="124" fill="#e8e0f0" opacity="0.73" transform="rotate(-17 22 59)"/></g>
+<rect width="600" height="260" filter="url(#n)" opacity=".16"/>
+</svg>

@@ -1,0 +1,64 @@
+PRIVACY NOTICE
+Version 2026-10-15 - ojo
+
+ojo keeps everything on your computer. ojo does not receive, collect, sell or share your data. There is no account, no analytics, no tracking and no cloud.
+
+The short version
+
+  - We cannot see or read your data. It never leaves your device and the publisher has no access to it. When this notice says "ojo reads" something, it means the app running on your own computer opens it for you.
+  - Your tasks, notes, files and money entries stay on this computer. They are never sent to us.
+  - There is no sign-up, no analytics, no crash reports, no advertising and no cloud sync.
+  - ojo only goes online when you ask it to open or read a link you saved, and then it talks straight to that website, not to us.
+  - You can take a copy of all your data or erase all of it at any time from Settings.
+
+What ojo keeps on your device
+
+To do its job ojo stores what you type or add: tasks and their history, notes (with pictures you add), calendar events, saved links, files and PDFs (with your reading position and highlights), finance entries, budgets and bills, job applications, focus sessions, repeating reminders, weekly reviews, and settings such as theme, currency and sidebar order.
+
+On Windows this lives in your user profile, in the folder %APPDATA%\Taskit. ojo does not encrypt it; it is protected by your Windows account. Anyone who can sign in as you can read it, so keep your device locked and consider turning on Windows device encryption (BitLocker).
+
+When ojo uses the internet
+
+Only when you save or open something, and only to the place you pointed it at:
+
+  - Saving a link: the app on your computer visits that page directly to read its title, description and preview picture. If the link is a PDF or another file, ojo downloads it so you can read it offline.
+  - Choosing a service for a bill (Netflix, Prime Video and so on): the app asks the website of that service, once, for the icon it publishes, and keeps it on your device.
+  - Saving a YouTube link: ojo asks youtube.com for the video title and shows the thumbnail from img.youtube.com.
+  - Opening a link: it opens in your default browser.
+  - If a web PDF cannot be downloaded, ojo may show it in an online view inside the app.
+
+Those websites can see your internet address and the request, as with any visit, and their own privacy policies apply. ojo does not contact any server run by the publisher, and it does not check for updates by itself.
+
+What else the Windows app does on your computer
+
+  - Notifications for tasks, bills, repeating reminders and budget alerts.
+  - A global keyboard shortcut (Ctrl+Shift+Space by default) for Quick capture.
+  - An optional "start with Windows" setting.
+  - Quiet mode, which holds back pop-ups, notifications and shortcuts for a while, or automatically while another app is full screen.
+  - A small helper program (DesktopWatch) that watches which window is in front, whether another app is full screen, and where you click or scroll, so the desktop widget and the top-of-screen notch can show, hide and scroll correctly. It works only on your computer. It does not record, save or send what you do.
+
+Files and statements you choose
+
+The app opens a file only when you pick, drop or paste it, and it never sends the file anywhere. Bank or payment statements you import are processed on your computer only; if a PDF needs a password, it is used once and not stored.
+
+Your choices and rights
+
+Because your data never reaches us, you already hold all of it. Settings has "Export my data" (a readable copy of everything) and "Erase all data" (deletes everything ojo stores). Uninstalling ojo does not delete your data folder unless you erase it first, so use Erase all data if you want it gone.
+
+Where laws such as India's Digital Personal Data Protection Act 2023, the EU/UK GDPR or the California CCPA give you rights of access, correction, erasure or portability, you can exercise them yourself in the app. The publisher is not a controller or processor of the content you keep in ojo, because it never receives it.
+
+Other people's information
+
+If you put other people's details into ojo (for example a recruiter's name in the Job tracker), you are responsible for handling them properly. They stay on your device.
+
+Children
+
+ojo is not directed at children. If you are under the age of majority where you live, use it with a parent or guardian.
+
+Changes to this notice
+
+If ojo ever changes how it handles data, this notice will change before the new behaviour ships, and ojo will ask you to read it again. Version 2026-10-15, effective 15 October 2026.
+
+Contact
+
+You can reach the publisher at ojo.workspace.app@gmail.com.

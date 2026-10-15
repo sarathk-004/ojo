@@ -1,0 +1,25 @@
+/* Statement import */
+.stmt{display:flex;flex-direction:column;gap:12px;min-width:0}
+.stmt-private{display:flex;align-items:center;gap:8px;margin:0;font-size:12.5px;color:#4a6b4d;background:#e4ece1;border-radius:10px;padding:8px 12px}
+.stmt-drop{display:grid;justify-items:center;gap:6px;text-align:center;border:2px dashed #cfcab8;border-radius:18px;padding:34px 20px;cursor:pointer;color:#6b7266;transition:background .15s,border-color .15s}
+.stmt-drop:hover,.stmt-drop.over{background:#ece8dc;border-color:#9bab94}
+.stmt-drop b{color:var(--ink);font-size:15px}
+.stmt-how{margin:0;padding-left:18px;font-size:12.5px;display:grid;gap:3px}
+.stmt-pw{display:grid;justify-items:center;gap:8px;text-align:center;padding:12px 0}
+.stmt-pw input{width:260px}
+.stmt-sum{display:flex;align-items:center;gap:14px;font-size:13px;flex-wrap:wrap}
+.stmt-sum span{display:inline-flex;align-items:center;gap:5px}
+.stmt-sum em{font-style:normal;color:var(--muted)}
+.sp-out{color:#a4552f;font-weight:600}.sp-in{color:#3f7a46;font-weight:600}
+.stmt-table{max-height:min(46vh,420px);overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--card);scrollbar-width:none}
+.stmt-table::-webkit-scrollbar{display:none}
+.stmt-row{display:grid;grid-template-columns:22px 46px minmax(0,1fr) 150px 44px 96px;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid #eeeadf;font-size:13px}
+.stmt-row:last-child{border-bottom:0}
+.stmt-row.off{opacity:.45}
+.stmt-row .d{color:var(--muted);font-variant-numeric:tabular-nums}
+.stmt-row .n{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.stmt-row .badge{font-style:normal;font-size:10.5px;font-weight:600;color:#8a6d2f;background:#f3ead2;border-radius:999px;padding:1px 7px;margin-left:8px}
+.stmt-row .tt{font-size:11.5px;font-weight:700;border-radius:8px;padding:3px 0;text-align:center}
+.stmt-row .tt.expense{background:#f3e0d6;color:#a4552f}.stmt-row .tt.income{background:#dcebdc;color:#3f7a46}
+.stmt-row .a{text-align:right;font-variant-numeric:tabular-nums}
+.stmt-row .a.income{color:#3f7a46}
