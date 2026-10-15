@@ -61,7 +61,7 @@ No account, no other software needed. Windows 10 or 11, 64-bit. All releases are
 
 ## Website
 
-The site is live at https://ojo-workspace.vercel.app (deployed with Vercel: `cd site && npx vercel deploy --prod`). A one-page site for ojo lives in [`site/`](site). It is plain HTML, CSS and JavaScript (GSAP for the motion), so any static host can serve it, for example GitHub Pages. Run it locally with `python -m http.server 5180 --directory site`.
+The site is live at https://ojo-workspace.vercel.app (deployed with Vercel; every push to main redeploys the `site` folder). A one-page site for ojo lives in [`site/`](site). It is plain HTML, CSS and JavaScript (GSAP for the motion), so any static host can serve it, for example GitHub Pages. Run it locally with `python -m http.server 5180 --directory site`.
 
 ## Build from source
 
