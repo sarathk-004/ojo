@@ -1,5 +1,5 @@
 PRIVACY NOTICE
-Version 2026-10-15 - ojo
+Version 2026-10-15.2 - ojo
 
 ojo keeps everything on your computer. ojo does not receive, collect, sell or share your data. There is no account, no analytics, no tracking and no cloud.
 
@@ -57,7 +57,7 @@ ojo is not directed at children. If you are under the age of majority where you 
 
 Changes to this notice
 
-If ojo ever changes how it handles data, this notice will change before the new behaviour ships, and ojo will ask you to read it again. Version 2026-10-15, effective 15 October 2026.
+If ojo ever changes how it handles data, this notice will change before the new behaviour ships, and ojo will ask you to read it again. Version 2026-10-15.2, effective 15 October 2026.
 
 Contact
 

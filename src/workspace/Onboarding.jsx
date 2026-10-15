@@ -57,7 +57,7 @@ export function Onboarding({onAccept,replay=false,legalOnly=false}){
 
     {id==='terms'&&!read&&<div className="onb-body">
      <h2 data-in>{legalOnly?'We updated our notices':'One last thing'}</h2>
-     <p data-in className="onb-lead">{legalOnly?'We updated our notices: they now explain pop-ups and Quiet mode (use it before exams, tests and screen shares). Please read the changes and accept to continue.':'Please read how ojo treats your data and the rules for using it. They are short and written in plain language.'}</p>
+     <p data-in className="onb-lead">{legalOnly?'We updated our notices: ojo is now open source under the MIT licence. Please read the changes and accept to continue.':'Please read how ojo treats your data and the rules for using it. They are short and written in plain language.'}</p>
      <div data-in className="onb-docs">
       <button onClick={()=>setRead(PRIVACY)}><ShieldCheck size={18}/><span><b>Privacy Notice</b><i>What stays on your device, and when ojo goes online</i></span><ArrowRight size={16}/></button>
       <button onClick={()=>setRead(TERMS)}><Scales size={18}/><span><b>Terms of Use</b><i>Your licence, your responsibilities, and our limits</i></span><ArrowRight size={16}/></button>

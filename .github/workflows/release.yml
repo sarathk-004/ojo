@@ -1,0 +1,117 @@
+# Builds the Windows installer from the source in this repository and, once the SignPath Foundation has approved the project,
+# signs it. Free code signing is provided by SignPath.io, with a certificate from the SignPath Foundation.
+#
+# Run it from the Actions tab ("Run workflow") or by publishing a version tag such as v1.0.25.
+# Until the SignPath values below are set, it builds and uploads the UNSIGNED installer, nothing else.
+#
+# One-time SignPath setup (after approval), in the repository's Settings > Secrets and variables > Actions:
+#   Secret    SIGNPATH_API_TOKEN            (a CI user token from SignPath)
+#   Variables SIGNPATH_ORGANIZATION_ID      (your SignPath organization id)
+#             SIGNPATH_PROJECT_SLUG         (for example: ojo)
+#             SIGNPATH_SIGNING_POLICY_SLUG  (for example: release-signing)
+#             SIGNPATH_ARTIFACT_CONFIG_SLUG (optional; the artifact configuration that signs the installer .exe)
+name: Release installer
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+  actions: read          # SignPath reads the build's metadata
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    outputs:
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
+      version: ${{ steps.ver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install
+        run: npm ci --no-audit --no-fund
+      - name: Test
+        run: npm test
+      - name: Build the installer
+        run: npm run installer
+      - name: Read the version
+        id: ver
+        shell: bash
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Upload the unsigned installer
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ojo-installer-unsigned
+          path: downloads/ojo-Setup-${{ steps.ver.outputs.version }}-x64.exe
+          if-no-files-found: error
+
+  sign:
+    needs: build
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      SIGNPATH_ORG: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+      HAVE_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN != '' }}
+    steps:
+      - name: Sign with SignPath
+        id: sign
+        if: env.SIGNPATH_ORG != '' && env.HAVE_TOKEN == 'true'
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ vars.SIGNPATH_ARTIFACT_CONFIG_SLUG }}
+          github-artifact-id: ${{ needs.build.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed
+      - name: Keep the signed installer
+        if: steps.sign.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ojo-installer-signed
+          path: signed
+          if-no-files-found: error
+      - name: Note when signing is not set up yet
+        if: steps.sign.outcome == 'skipped'
+        shell: bash
+        run: echo "::notice::SignPath is not configured yet, so only the unsigned installer was built. See the comments at the top of release.yml."
+
+  publish:
+    needs: [build, sign]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ojo-installer-*
+          path: dl
+          merge-multiple: false
+      - name: Attach it to the release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          set -e
+          dir=dl/ojo-installer-unsigned
+          [ -d dl/ojo-installer-signed ] && dir=dl/ojo-installer-signed
+          file=$(ls "$dir"/*.exe | head -n 1)
+          echo "Publishing $file"
+          cp "$file" "ojo-Setup-${VERSION}-x64.exe"
+          cp "$file" "ojo-Setup-x64.exe"
+          gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || \
+            gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --title "ojo ${VERSION}" --notes "Windows 10/11 (64-bit) installer."
+          gh release upload "$GITHUB_REF_NAME" "ojo-Setup-${VERSION}-x64.exe" "ojo-Setup-x64.exe" --clobber --repo "$GITHUB_REPOSITORY"

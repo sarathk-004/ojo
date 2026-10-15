@@ -44,7 +44,7 @@ export const TERMS={
  summary:'ojo is free personal software provided as it is. Your data and your decisions stay yours. ojo is not financial, tax, legal or medical advice.',
  sections:[
   {h:'Agreeing to these terms',p:['By installing or using ojo you agree to these terms. If you do not agree, please do not use it. You must be old enough to make a binding agreement where you live, or have a parent or guardian\'s permission.']},
-  {h:'What you may do',p:['You get a personal, non-exclusive, non-transferable licence to install and use ojo for your own use, free of charge. Please do not copy, sell, rent or redistribute it, remove its notices, or try to take it apart except where the law allows. Parts of ojo come from open-source and third-party projects that keep their own licences (see Open-source notices).']},
+  {h:'What you may do',p:['ojo is free, open-source software released under the MIT licence. You may use it, copy it, change it and share it, for any purpose, as long as the licence text and copyright notice stay with it. The full text is in the LICENSE file that comes with ojo and in its public source repository. These terms add the notes below about using the app; they do not take away any right the MIT licence gives you. Parts of ojo come from other open-source and third-party projects that keep their own licences (see Open-source notices).']},
   {h:'Your content',p:['What you put into ojo is yours and stays on your device. You are responsible for it and for keeping backups (use Export my data). Only save material you have the right to keep, and respect the copyright and terms of the websites, files and PDFs you save.']},
   {h:'Not professional advice',list:[
    'Finance, budgets, bills and statement import are bookkeeping aids. They are not financial, tax, accounting or legal advice, and imported statements can be read wrongly, so check the numbers.',
@@ -74,6 +74,7 @@ export const NOTICES={
    'highlight.js, by Ivan Sagalaev and contributors, BSD-3-Clause licence.',
    'GSAP, by GreenSock, used under the GreenSock Standard "no charge" licence (gsap.com/standard-license).',
    'Phosphor Icons (@phosphor-icons/react), by Helena Zhang and Tobias Fried, MIT licence.',
+   'ojo itself, by the ojo contributors, MIT licence.',
    'Simple Icons (simple-icons, and an earlier release of it kept for logos since withdrawn), by the Simple Icons contributors, CC0 1.0 licence: the shapes used to show service logos next to bills.',
    'Geist font (@fontsource-variable/geist), by Vercel, SIL Open Font License 1.1.'
   ]},

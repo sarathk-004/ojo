@@ -1,5 +1,5 @@
 TERMS OF USE
-Version 2026-10-15 - ojo
+Version 2026-10-15.2 - ojo
 
 ojo is free personal software provided as it is. Your data and your decisions stay yours. ojo is not financial, tax, legal or medical advice.
 
@@ -9,7 +9,7 @@ By installing or using ojo you agree to these terms. If you do not agree, please
 
 What you may do
 
-You get a personal, non-exclusive, non-transferable licence to install and use ojo for your own use, free of charge. Please do not copy, sell, rent or redistribute it, remove its notices, or try to take it apart except where the law allows. Parts of ojo come from open-source and third-party projects that keep their own licences (see Open-source notices).
+ojo is free, open-source software released under the MIT licence. You may use it, copy it, change it and share it, for any purpose, as long as the licence text and copyright notice stay with it. The full text is in the LICENSE file that comes with ojo and in its public source repository. These terms add the notes below about using the app; they do not take away any right the MIT licence gives you. Parts of ojo come from other open-source and third-party projects that keep their own licences (see Open-source notices).
 
 Your content
 
@@ -44,7 +44,7 @@ You can stop using ojo and uninstall it at any time. The publisher may stop offe
 
 Changes
 
-These terms may be updated. When they change materially, ojo will show them again and ask you to accept. Version 2026-10-15, effective 15 October 2026.
+These terms may be updated. When they change materially, ojo will show them again and ask you to accept. Version 2026-10-15.2, effective 15 October 2026.
 
 Governing law
 

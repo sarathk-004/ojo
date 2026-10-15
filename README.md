@@ -51,7 +51,7 @@ ojo is a desktop app with a small widget that sits on your desktop like a clock 
 
 ## Download
 
-**[Download ojo for Windows (.exe)](../../releases/latest/download/ojo-Setup-1.0.24-x64.exe)**
+**[Download ojo for Windows (.exe)](../../releases/latest/download/ojo-Setup-1.0.25-x64.exe)**
 
 1. Click the link above and open the file when it finishes downloading.
 2. If Windows shows a blue "Windows protected your PC" box, click **More info**, then **Run anyway**. This appears because the installer is not code-signed yet; the app is the same one you can read in this repository.
@@ -89,4 +89,12 @@ Questions, problems or security reports: ojo.workspace.app@gmail.com.
 
 ## Licence
 
-Free for personal use. See [`legal/LICENSE.txt`](legal/LICENSE.txt) and [`legal/PRIVACY.txt`](legal/PRIVACY.txt).
+ojo is open source under the [MIT licence](LICENSE). Use it, change it and share it freely. The Privacy Policy and Terms of Use are in [`legal/`](legal) and on the website.
+
+## Code signing policy
+
+Free code signing for the Windows installer is provided by [SignPath.io](https://signpath.io), with a certificate from the [SignPath Foundation](https://signpath.org). Once approved, only installers built by this repository's GitHub Actions workflow ([`release.yml`](.github/workflows/release.yml)) from the public source are submitted for signing.
+
+- **Committers and reviewers:** the repository owner, [sarathk-004](https://github.com/sarathk-004), and anyone they accept through reviewed pull requests.
+- **Approver:** [sarathk-004](https://github.com/sarathk-004) approves each signing request.
+- **Privacy:** this program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it. ojo keeps all data on your computer; see the [Privacy Policy](legal/PRIVACY.txt).

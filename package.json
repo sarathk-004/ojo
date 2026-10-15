@@ -1,6 +1,6 @@
 {
   "name": "tnkr",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "private": true,
   "type": "module",
   "scripts": {
@@ -35,5 +35,15 @@
   "main": "electron/main.cjs",
   "productName": "ojo",
   "description": "A quiet desktop home for your tasks",
-  "author": "ojo"
+  "author": "ojo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sarathk-004/ojo.git"
+  },
+  "homepage": "https://ojo-workspace.vercel.app",
+  "bugs": {
+    "email": "ojo.workspace.app@gmail.com",
+    "url": "https://github.com/sarathk-004/ojo/issues"
+  }
 }

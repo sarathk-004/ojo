@@ -6,7 +6,8 @@ const rule=String.fromCharCode(10)+'='.repeat(70)+String.fromCharCode(10)+String
 await fs.writeFile('legal/PRIVACY.txt',toText(PRIVACY));
 await fs.writeFile('legal/TERMS.txt',toText(TERMS));
 await fs.writeFile('legal/NOTICES.txt',toText(NOTICES));
-await fs.writeFile('legal/LICENSE.txt',[toText(TERMS),toText(PRIVACY),toText(NOTICES)].join(rule));
+const mit=await fs.readFile('LICENSE','utf8');
+await fs.writeFile('legal/LICENSE.txt',[mit.trim()+String.fromCharCode(10),toText(TERMS),toText(PRIVACY),toText(NOTICES)].join(rule));
 console.log('legal documents written');
 
 // Full licence texts of what ojo is built with, installed beside the app.
