@@ -58,3 +58,5 @@ skills-lock.json
 android/
 scripts/*android*
 scripts/widget-design.mjs
+
+site/.vercel/

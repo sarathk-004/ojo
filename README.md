@@ -1,5 +1,7 @@
 # ojo
 
+**Website: https://ojo-workspace.vercel.app**
+
 **A calm, private home for your tasks, notes, plans, money and saved things. Free, and it lives entirely on your computer.**
 
 ojo is a desktop app with a small widget that sits on your desktop like a clock and a full workspace behind it. There is no account, no cloud, no tracking and nothing to pay for. Anyone can download it and use it for free.
@@ -59,7 +61,7 @@ No account, no other software needed. Windows 10 or 11, 64-bit. All releases are
 
 ## Website
 
-A one-page site for ojo lives in [`site/`](site). It is plain HTML, CSS and JavaScript (GSAP for the motion), so any static host can serve it, for example GitHub Pages. Run it locally with `python -m http.server 5180 --directory site`.
+The site is live at https://ojo-workspace.vercel.app (deployed with Vercel: `cd site && npx vercel deploy --prod`). A one-page site for ojo lives in [`site/`](site). It is plain HTML, CSS and JavaScript (GSAP for the motion), so any static host can serve it, for example GitHub Pages. Run it locally with `python -m http.server 5180 --directory site`.
 
 ## Build from source
 
