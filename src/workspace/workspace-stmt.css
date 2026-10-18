@@ -57,3 +57,10 @@
 .remind-form{display:flex;flex-direction:column;gap:14px;min-width:280px}
 .remind-form label{display:flex;flex-direction:column;gap:6px;font-size:13px}
 .folder-bar .link-btn{display:inline-flex;align-items:center;gap:6px}
+
+.folder-ask em{font-style:normal}
+.pm-new{align-items:center;gap:8px;padding:8px 4px 4px;margin-top:4px;border-top:1px solid var(--line,#ddd)}
+.pm-new input{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line,#ccd);background:transparent;font-size:13px;outline:0;box-shadow:none}
+.pm-new .pm-create{height:32px;padding:0 14px;border-radius:999px;border:0;background:var(--sage,#567458);color:#fff;font-size:12px;cursor:pointer}
+.pm-new .pm-create:disabled{opacity:.4;cursor:default}
+.pick-menu{padding:8px;border-radius:14px}

@@ -820,7 +820,7 @@ module.exports=function workspace({root,userData,getTasks,addTask,aumid,resetTas
  ipcMain.handle('ws-focus-state',()=>focusView());
  ipcMain.handle('ws-focus-start',(_,opts)=>{startFocus(opts||{});return focusView();});
  ipcMain.handle('ws-focus-pause',(_,shownSecs)=>{
-  if(focus&&!focus.paused){focus.activeMs=activeMs(focus);const real=Math.max(0,focus.endsAt-Date.now()),shown=Number(shownSecs)*1000;focus.left=Number.isFinite(shown)&&shown>=real&&shown-real<=1500?shown:real;focus.paused=true;clearTimeout(focus.timer);tellFocus();}
+  if(focus&&!focus.paused){focus.activeMs=activeMs(focus);const real=Math.max(0,focus.endsAt-Date.now()),shown=Number(shownSecs)*1000;focus.left=real;focus.paused=true;clearTimeout(focus.timer);tellFocus();}
   return focusView();
  });
  ipcMain.handle('ws-focus-resume',()=>{

@@ -26,7 +26,7 @@ export function FolderBar({folders,setFolders,items,current,setCurrent,onDeleted
    {cur&&!renaming&&!adding&&<>
     <button className="icon-btn" aria-label="Rename folder" onClick={()=>{setName(cur.name);setRenaming(true);}}><PencilSimple size={14}/></button>
     {confirm
-     ?<span className="folder-ask">Delete this folder? Items stay in Saved.<button className="ask-yes" onClick={remove}>Delete</button><button className="ask-no" onClick={()=>setConfirm(false)}>Keep</button></span>
+     ?<span className="folder-ask"><button className="ask-yes" autoFocus onClick={remove}>Delete folder</button><button className="ask-no" onClick={()=>setConfirm(false)}>Keep</button><em>Items stay in Saved.</em></span>
      :<button className="icon-btn danger" aria-label="Delete folder" onClick={()=>setConfirm(true)}><Trash size={14}/></button>}
    </>}
    {!folders.length&&!adding&&<span className="muted folder-hint">Try:{STARTER_FOLDERS.map(n=><button key={n} className="link-btn" onClick={()=>make(n)}>{n}</button>)}</span>}
@@ -52,7 +52,7 @@ export function PickMenu({menu,folders,onFolder,onRemind,onNewFolder,onClose}){
     <p className="pm-title">Move to folder</p>
     {folders.map(f=><button key={f.id} role="menuitem" className={menu.current===f.id?'on':''} onClick={()=>onFolder(f.id)}><FolderSimple size={14}/>{f.name}{menu.current===f.id&&<Check size={13}/>}</button>)}
     {menu.current&&<button role="menuitem" onClick={()=>onFolder('')}><X size={14}/>Take out of folder</button>}
-    <form className="pm-new" onSubmit={e=>{e.preventDefault();if(draft.trim())onNewFolder(draft);}}><input value={draft} maxLength={40} placeholder="New folder" onChange={e=>setDraft(e.target.value)}/><button className="icon-btn" aria-label="Create folder"><Plus size={14}/></button></form>
+    <form className="pm-new" onSubmit={e=>{e.preventDefault();if(draft.trim())onNewFolder(draft);}}><input value={draft} maxLength={40} placeholder="Name a new folder" onChange={e=>setDraft(e.target.value)}/><button className="pm-create" disabled={!draft.trim()}>Create</button></form>
    </>}
    {menu.kind==='remind'&&<>
     <p className="pm-title">Remind me</p>
