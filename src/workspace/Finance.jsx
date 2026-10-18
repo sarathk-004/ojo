@@ -105,7 +105,7 @@ export function Finance({focusId}){
  const donut=summary.byCategory.map(c=>({...catOf(c.category),amount:c.amount}));
  const list=useMemo(()=>{
   const q=query.trim().toLowerCase();
-  return txns.filter(t=>monthOf(t.date)===month&&(filter==='all'||t.type===filter)&&(!q||(t.note||'').toLowerCase().includes(q)||vendorName(t.note).toLowerCase().includes(q)||(t.detail||'').toLowerCase().includes(q)||catOf(t.category).name.toLowerCase().includes(q)||String(t.amount).includes(q)))
+  return txns.filter(t=>monthOf(t.date)===month&&(filter==='all'||t.type===filter)&&(!q||(t.note||'').toLowerCase().includes(q)||vendorName(t.note).toLowerCase().includes(q)||(t.detail||'').toLowerCase().includes(q)||(t.account||'').toLowerCase().includes(q)||catOf(t.category).name.toLowerCase().includes(q)||String(t.amount).includes(q)))
    .sort((a,b)=>b.date.localeCompare(a.date)||(b.created||0)-(a.created||0));
  },[txns,month,filter,query]);
  const groups=useMemo(()=>{
@@ -202,7 +202,7 @@ export function Finance({focusId}){
          <div className={'txn-row'+(bulk.on?' sel-host pad-left':'')} key={t.id}>
           <SelectMark bulk={bulk} id={t.id}/>
           <i className="cat-dot" style={{background:c.color}}/>
-          <div className="txn-main"><b>{vendorName(t.note)||c.name}</b>{t.note&&<span className="muted">{c.name}{t.type==='expense'&&cycleOfVendor.get(vendorName(t.note).toLowerCase())?' · '+cycleOfVendor.get(vendorName(t.note).toLowerCase()).label:''}</span>}</div>
+          <div className="txn-main"><b>{vendorName(t.note)||c.name}</b>{t.note&&<span className="muted">{c.name}{t.type==='expense'&&cycleOfVendor.get(vendorName(t.note).toLowerCase())?' · '+cycleOfVendor.get(vendorName(t.note).toLowerCase()).label:''}{t.account?' · '+t.account:''}</span>}</div>
           <span className={'amt '+t.type}>{t.type==='income'?'+':'−'}{fmtMoney(t.amount,sym).replace('−','')}</span>
           <button className="icon-btn" aria-label="Edit" onClick={()=>setModal({...t,amount:String(t.amount)})}><PencilSimple size={14}/></button>
          </div>

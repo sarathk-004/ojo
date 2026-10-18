@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {parseDate,toNumber,parseCSV,fromCSV,fromLines,fromGooglePay,htmlToLines,parseStatement,markDuplicates,guessCategory} from '../src/workspace/statement.mjs';
+import {parseDate,toNumber,parseCSV,fromCSV,fromLines,fromGooglePay,htmlToLines,parseStatement,markDuplicates,guessCategory,detectAccount} from '../src/workspace/statement.mjs';
 
 test('dates in the formats statements use',()=>{
  assert.equal(parseDate('31/12/2026'),'2026-12-31');
@@ -47,4 +47,15 @@ test('duplicates are flagged against existing transactions',()=>{
  const out=markDuplicates(rows,[{date:'2026-10-12',type:'expense',amount:349,note:'Swiggy',ref:'T1'}]);
  assert.deepEqual(out.map(r=>r.duplicate),[true,false,false]);
  assert.equal(guessCategory('Netflix','expense'),'fun');
+});
+
+test('two accounts in the same month are not duplicates of each other',()=>{
+ const rows=[{date:'2026-10-05',type:'expense',amount:200,note:'Zomato',detail:'UPI/Zomato',ref:''}];
+ const saved=[{date:'2026-10-05',type:'expense',amount:200,note:'Zomato',detail:'UPI/Zomato',account:'HDFC'}];
+ assert.equal(markDuplicates(rows,saved,'ICICI')[0].duplicate,false);
+ assert.equal(markDuplicates(rows,saved,'HDFC')[0].duplicate,true);
+});
+test('detectAccount reads a masked number or falls back to the file name',()=>{
+ assert.equal(detectAccount('Statement for A/c No: XXXXXX1234'),'Account ending 1234');
+ assert.equal(detectAccount('nothing here','icici_oct.pdf'),'icici oct');
 });

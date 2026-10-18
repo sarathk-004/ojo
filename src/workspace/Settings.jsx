@@ -45,7 +45,7 @@ function QuietSection(){
 export function Settings({onClose,onTour}){
  const [confirmErase,setConfirmErase]=useState(false),[typed,setTyped]=useState('');
  const [theme,setT]=useState(getTheme),[doc,setDoc]=useState(null),[note,setNote]=useState('');
- const [settings]=useCollection('settings');
+ const [settings,setSettings]=useCollection('settings');
  const accepted=settings[0]?.legalAccepted;
  const pick=id=>{setT(id);setTheme(id);};
  const exportAll=async()=>{
@@ -89,6 +89,11 @@ export function Settings({onClose,onTour}){
      <ThemePicker value={theme} onChange={pick}/>
     </section>
     <QuietSection/>
+    <section>
+     <h4>Saved</h4>
+     <label className="set-check"><input type="checkbox" checked={settings[0]?.savedNudge!==false} onChange={e=>setSettings(l=>[{...(l[0]||{id:'settings'}),savedNudge:e.target.checked},...l.slice(1)])}/>Once a week, remind me about saved things I have not opened</label>
+     <p className="muted">The reminder is a notification on this computer. Nothing leaves it.</p>
+    </section>
     <section>
      <h4>Welcome</h4>
      <div className="set-links">

@@ -15,7 +15,7 @@ const clock=n=>new Date(n).toLocaleTimeString([],{hour:'numeric',minute:'2-digit
 export function useFocus(){
  const [f,setF]=useState(null),[now,setNow]=useState(Date.now());
  useEffect(()=>{api.focusState().then(setF);return api.onFocus(setF);},[]);
- useEffect(()=>{if(!f||f.paused)return;const t=setInterval(()=>setNow(Date.now()),500);return()=>clearInterval(t);},[f]);
+ useEffect(()=>{if(!f||f.paused)return;const t=setInterval(()=>setNow(Date.now()),200);return()=>clearInterval(t);},[f]);
  const left=f?(f.paused?f.left:Math.max(0,(f.endsAt||0)-now)):0;
  return {focus:f,left};
 }
@@ -101,7 +101,7 @@ export function Focus({focusId}){
       <button className="primary fx-go" onClick={start}><Play size={16} weight="fill"/>Start {kind==='focus'?'focus':'break'}</button>
      </>}
      {focus&&<div className="fx-controls">
-      {focus.paused?<button className="primary" onClick={()=>api.focusResume()}><Play size={15} weight="fill"/>Resume</button>:<button className="ghost" onClick={()=>api.focusPause()}><Pause size={15} weight="fill"/>Pause</button>}
+      {focus.paused?<button className="primary" onClick={()=>api.focusResume()}><Play size={15} weight="fill"/>Resume</button>:<button className="ghost" onClick={()=>api.focusPause(Math.ceil(left/1000))}><Pause size={15} weight="fill"/>Pause</button>}
       <button className="ghost danger" onClick={()=>api.focusStop()}><Stop size={15} weight="fill"/>{focus.kind==='focus'?'Stop and save':'Skip break'}</button>
      </div>}
     </section>

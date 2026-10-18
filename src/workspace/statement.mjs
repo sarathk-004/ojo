@@ -224,7 +224,9 @@ export function parseStatement({name='',text='',lines=null}={}){
 
 // Marks rows that already exist so importing the same statement twice adds nothing.
 export const rowKey=r=>[r.date,r.type,r.amount.toFixed(2),String(r.detail||r.note||'').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12)].join('|');
-export function markDuplicates(rows,existing){
+export function markDuplicates(rows,existing,account=''){
+ // Only entries from the same account can be duplicates: two accounts may share a date, amount and shop.
+ existing=existing.filter(t=>String(t.account||'')===String(account||''));
  const seen=new Set(existing.map(t=>t.ref?'ref|'+t.ref:rowKey({...t,amount:Number(t.amount)||0}))),
   seenLoose=new Set(existing.map(t=>[t.date,t.type,Number(t.amount).toFixed(2)].join('|')));
  return rows.map(r=>{
@@ -232,4 +234,13 @@ export function markDuplicates(rows,existing){
   if(r.ref)seen.add('ref|'+r.ref);
   return {...r,duplicate:!!dup};
  });
+}
+
+// Guesses which account a statement belongs to from its text (masked number, "A/c No") or its file name.
+export function detectAccount(text='',name=''){
+ const t=String(text).slice(0,6000);
+ const m=t.match(/(?:a\/c|account)\s*(?:no\.?|number|#)?\s*[:\-]?\s*[xX*\d]{0,12}?(\d{4})\b/i)||t.match(/[xX*]{3,}\s*(\d{4})\b/);
+ if(m)return 'Account ending '+m[1];
+ const base=String(name).replace(/\.[a-z0-9]+$/i,'').replace(/[_-]+/g,' ').trim();
+ return base.slice(0,40);
 }

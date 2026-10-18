@@ -2,7 +2,7 @@ import React,{useMemo,useRef,useState} from 'react';
 import {DownloadSimple,FileText,LockSimple,ShieldCheck,ArrowDownLeft,ArrowUpRight} from '@phosphor-icons/react';
 import {Modal} from './Modal.jsx';
 import {Select} from './Select.jsx';
-import {parseStatement,markDuplicates} from './statement.mjs';
+import {parseStatement,markDuplicates,detectAccount} from './statement.mjs';
 import {EXPENSE_CATS,INCOME_CATS,fmtMoney,catOf,monthLabel} from './finance.mjs';
 
 const readText=file=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result||''));r.onerror=()=>rej(r.error);r.readAsText(file);});
@@ -12,19 +12,22 @@ const readBuffer=file=>file.arrayBuffer();
 export function StatementImport({existing,sym,onImport,onClose}){
  const [stage,setStage]=useState('pick'),[rows,setRows]=useState([]),[format,setFormat]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const [pending,setPending]=useState(null),[password,setPassword]=useState(''),[wrong,setWrong]=useState(false),[over,setOver]=useState(false);
- const input=useRef(null);
+ const input=useRef(null),[account,setAccount]=useState(''),sourceRows=useRef([]);
+ const known=useMemo(()=>[...new Set(existing.map(t=>t.account).filter(Boolean))],[existing]);
 
  const load=async(file,pw)=>{
   setBusy(true);setError('');
   try{
-   let result;
+   let result,sample='';
    if(/\.pdf$/i.test(file.name)||file.type==='application/pdf'){
     const {pdfLines}=await import('./pdfText.js');
-    result=parseStatement({name:file.name,lines:await pdfLines(await readBuffer(file),pw)});
-   }else result=parseStatement({name:file.name,text:await readText(file)});
+    const lines=await pdfLines(await readBuffer(file),pw);sample=lines.slice(0,60).join(' ');result=parseStatement({name:file.name,lines});
+   }else{const text=await readText(file);sample=text;result=parseStatement({name:file.name,text});}
    if(!result.rows.length){setError('I could not find any transactions in that file. Try the CSV or PDF statement from the app or your bank.');setStage('pick');setPending(null);}
    else{
-    const marked=markDuplicates(result.rows,existing).map((r,i)=>({...r,key:i,keep:!r.duplicate}));
+    const acct=detectAccount(sample,file.name);
+    sourceRows.current=result.rows;setAccount(acct);
+    const marked=markDuplicates(result.rows,existing,acct).map((r,i)=>({...r,key:i,keep:!r.duplicate}));
     setRows(marked);setFormat(result.format);setStage('review');setPending(null);
    }
   }catch(e){
@@ -34,6 +37,8 @@ export function StatementImport({existing,sym,onImport,onClose}){
   setBusy(false);
  };
  const pick=files=>{const f=[...files||[]][0];if(f)load(f);};
+ // Changing the account re-checks which rows are already added for that account.
+ const changeAccount=name=>{setAccount(name);setRows(l=>{const kept=new Map(l.map(r=>[r.key,r]));return markDuplicates(sourceRows.current,existing,name).map((r,i)=>({...r,key:i,category:kept.get(i)?.category??r.category,type:kept.get(i)?.type??r.type,keep:!r.duplicate}));});};
  const patch=(key,change)=>setRows(l=>l.map(r=>r.key===key?{...r,...change}:r));
  const chosen=rows.filter(r=>r.keep);
  const totals=useMemo(()=>({out:chosen.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0),inn:chosen.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0)}),[rows]);
@@ -68,6 +73,7 @@ export function StatementImport({existing,sym,onImport,onClose}){
      <div className="form-actions"><button className="primary" disabled={!password||busy}>Open</button><button type="button" className="ghost" onClick={()=>{setStage('pick');setPending(null);setPassword('');}}>Back</button></div>
     </form>}
     {stage==='review'&&<>
+     <div className="stmt-acct"><label>Account<input value={account} maxLength={40} placeholder="e.g. HDFC savings" onChange={e=>changeAccount(e.target.value)}/></label>{known.filter(k=>k!==account).map(k=><button key={k} className="link-btn" onClick={()=>changeAccount(k)}>{k}</button>)}</div>
      <div className="stmt-sum">
       <span><FileText size={15}/> {rows.length} found{dups>0&&<em> · {dups} already added</em>}</span>
       <span className="sp-out"><ArrowUpRight size={14}/>{fmtMoney(totals.out,sym)}</span>
@@ -90,7 +96,7 @@ export function StatementImport({existing,sym,onImport,onClose}){
       ))}
      </div>
      <div className="form-actions">
-      <button className="primary" disabled={!chosen.length} onClick={()=>onImport(chosen.map(({date,type,amount,note,detail,category,ref})=>({date,type,amount,note,detail,category,ref,imported:true})))}>Add {chosen.length} transaction{chosen.length===1?'':'s'}</button>
+      <button className="primary" disabled={!chosen.length} onClick={()=>onImport(chosen.map(({date,type,amount,note,detail,category,ref})=>({date,type,amount,note,detail,category,ref,account:account.trim(),imported:true})))}>Add {chosen.length} transaction{chosen.length===1?'':'s'}</button>
       <button className="ghost" onClick={()=>{setStage('pick');setRows([]);}}>Choose another file</button>
      </div>
     </>}

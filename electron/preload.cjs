@@ -27,7 +27,7 @@ contextBridge.exposeInMainWorld('workspace', {
   open: section => ipcRenderer.invoke('ws-open', section),
   focusState: () => ipcRenderer.invoke('ws-focus-state'),
   focusStart: opts => ipcRenderer.invoke('ws-focus-start', opts),
-  focusPause: () => ipcRenderer.invoke('ws-focus-pause'),
+  focusPause: (shown) => ipcRenderer.invoke('ws-focus-pause', shown),
   focusResume: () => ipcRenderer.invoke('ws-focus-resume'),
   focusStop: () => ipcRenderer.invoke('ws-focus-stop'),
   focusDelete: id => ipcRenderer.invoke('ws-focus-delete', id),

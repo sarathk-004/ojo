@@ -2,7 +2,7 @@ const {BrowserWindow,ipcMain,screen,shell,dialog,nativeImage,net,Notification,gl
 const {fileURLToPath}=require('node:url');
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const quiet=require('./quiet.cjs');
-const COLLECTIONS=['notes','events','saved','pdfs','finance','budgets','jobs','settings','reminders','nudgelog','bills','focus','wins','reviews'];
+const COLLECTIONS=['notes','events','saved','pdfs','finance','budgets','jobs','settings','reminders','nudgelog','bills','focus','wins','reviews','folders'];
 const MAX_FILE=200*1024*1024;
 const ENT={amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",nbsp:' ',mdash:'—',ndash:'–',hellip:'…',rsquo:'’',lsquo:'‘',rdquo:'”',ldquo:'“'};
 const decode=s=>s.replace(/&(#x?[0-9a-f]+|\w+);/gi,(m,e)=>{
@@ -26,7 +26,7 @@ function readable(html){
 module.exports=function workspace({root,userData,getTasks,addTask,aumid,resetTasks}){
  const dir=path.join(userData,'Workspace'),files=path.join(dir,'files'),db=path.join(dir,'workspace.json');
  fs.mkdirSync(files,{recursive:true});
- let data={notes:[],events:[],saved:[],pdfs:[],finance:[],budgets:[],jobs:[],settings:[],reminders:[],nudgelog:[],bills:[],focus:[],wins:[],reviews:[]},win,notch,timer,classify;
+ let data={notes:[],events:[],saved:[],pdfs:[],finance:[],budgets:[],jobs:[],settings:[],reminders:[],nudgelog:[],bills:[],focus:[],wins:[],reviews:[],folders:[]},win,notch,timer,classify;
  const classifyReady=import('../src/workspace/classify.mjs').then(m=>{classify=m;});
  try{data={...data,...JSON.parse(fs.readFileSync(db,'utf8'))};}catch{}
  // PDFs now live in Save later; fold in any from the earlier PDFs-only library.
@@ -758,7 +758,28 @@ module.exports=function workspace({root,userData,getTasks,addTask,aumid,resetTas
   shutdownNotified=day;
   if(Notification.isSupported()){const n=new Notification({title:'Time to close your day',body:'See what you did, move what is left, and start tomorrow clean.',icon:iconPath,silent:false});n.on('click',()=>open('tasks','shutdown'));notify(n);}
  }
+ // ---- Saved reminders: a reminder the user set on one item, plus one gentle weekly nudge about things never opened ----
+ function savedTick(){
+  const now=Date.now();let changed=false;
+  for(const it of data.saved){
+   if(it.remindAt&&it.remindAt<=now&&!it.deleted){
+    it.remindAt=undefined;it.remindedAt=now;changed=true;
+    if(Notification.isSupported()){const n=new Notification({title:'Saved for later: '+String(it.title||it.url||'an item').slice(0,80),body:'You asked ojo to remind you about this.',icon:iconPath,silent:false});n.on('click',()=>open('saved',it.id));notify(n);}
+   }else if(it.remindAt&&it.deleted){it.remindAt=undefined;changed=true;}
+  }
+  if(changed){persist();broadcast('saved');}
+  const st=data.settings[0]||{};
+  if(st.savedNudge===false)return;
+  const d=new Date();if(d.getHours()<10)return;
+  if(st.lastSavedNudge&&now-st.lastSavedNudge<7*86400000)return;
+  const waiting=data.saved.filter(i=>!i.deleted&&!i.openedAt&&!i.progress&&!i.remindAt&&now-(i.created||now)>3*86400000);
+  if(waiting.length<3)return;
+  if(!data.settings[0])data.settings[0]={id:'settings'};
+  data.settings[0].lastSavedNudge=now;persist();broadcast('settings');
+  if(Notification.isSupported()){const n=new Notification({title:waiting.length+' saved things are waiting',body:'You have not opened '+String(waiting[0].title||'one of them').slice(0,60)+' and '+(waiting.length-1)+' more. Take a look when you have a minute.',icon:iconPath,silent:false});n.on('click',()=>open('saved'));notify(n);}
+ }
  function startDayTicks(){
+  setTimeout(savedTick,25000);setInterval(savedTick,60000);
   financeReady.then(()=>{setTimeout(budgetTick,20000);setInterval(budgetTick,30*60000);});
   setInterval(shutdownTick,60000);
  }
@@ -798,8 +819,8 @@ module.exports=function workspace({root,userData,getTasks,addTask,aumid,resetTas
  }
  ipcMain.handle('ws-focus-state',()=>focusView());
  ipcMain.handle('ws-focus-start',(_,opts)=>{startFocus(opts||{});return focusView();});
- ipcMain.handle('ws-focus-pause',()=>{
-  if(focus&&!focus.paused){focus.activeMs=activeMs(focus);focus.left=Math.max(0,focus.endsAt-Date.now());focus.paused=true;clearTimeout(focus.timer);tellFocus();}
+ ipcMain.handle('ws-focus-pause',(_,shownSecs)=>{
+  if(focus&&!focus.paused){focus.activeMs=activeMs(focus);const real=Math.max(0,focus.endsAt-Date.now()),shown=Number(shownSecs)*1000;focus.left=Number.isFinite(shown)&&shown>=real&&shown-real<=1500?shown:real;focus.paused=true;clearTimeout(focus.timer);tellFocus();}
   return focusView();
  });
  ipcMain.handle('ws-focus-resume',()=>{

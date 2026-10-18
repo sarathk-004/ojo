@@ -11,10 +11,13 @@ import {Star,BookOpenText,CheckCircle} from '@phosphor-icons/react';
 import {LangPicker} from './LangPicker.jsx';
 import {useBulk,SelectToggle,BulkBar,SelectMark} from './bulk.jsx';
 import {readMinutes} from './readText.js';
+import {FolderBar,PickMenu} from './SavedFolders.jsx';
+import {remindLabel} from './savedlib.mjs';
+import {FolderSimple,Bell} from '@phosphor-icons/react';
 import {ShelfTabs,FavButton,RestoreButton,modeCounts,inMode,expired,daysLeft,trashNote} from './shelf.jsx';
 
-const FILTERS=['all','toread','youtube','instagram','video','audio','image','pdf','md','text','code','link','file'];
-const LABEL={all:'All',toread:'To read',...KINDS};
+const FILTERS=['all','toread','unopened','youtube','instagram','video','audio','image','pdf','md','text','code','link','file'];
+const LABEL={all:'All',toread:'To read',unopened:'Not opened yet',...KINDS};
 const BRAND_ICON={youtube:YoutubeLogo,instagram:InstagramLogo,linkedin:LinkedinLogo,github:GithubLogo,x:XLogo,reddit:RedditLogo,medium:MediumLogo,article:Article,stackoverflow:StackOverflowLogo,notion:NotionLogo,figma:FigmaLogo,google:GoogleLogo,drive:GoogleDriveLogo,spotify:SpotifyLogo,facebook:FacebookLogo,discord:DiscordLogo,tiktok:TiktokLogo,twitch:TwitchLogo,pinterest:PinterestLogo,telegram:TelegramLogo,amazon:AmazonLogo,code:CodeIcon,globe:Globe};
 const KIND_ICON={pdf:FilePdf,md:FileMd,audio:MusicNotes,video:VideoCamera,text:FileText,file:FileText};
 
@@ -54,7 +57,7 @@ function CodeBlock({item,onLang}){
  );
 }
 
-function Card({item,mode,onDelete,onFav,onQueue,onRead,onRestore,onPurge,onOpen,onLang,go,bulk}){
+function Card({item,mode,onMenu,onOpened,onDelete,onFav,onQueue,onRead,onRestore,onPurge,onOpen,onLang,go,bulk}){
  const [copied,setCopied]=useState(false);
  const src=useSource(item);
  const Icon=KIND_ICON[item.kind];
@@ -100,9 +103,12 @@ function Card({item,mode,onDelete,onFav,onQueue,onRead,onRestore,onPurge,onOpen,
       <button className="icon-btn danger" aria-label="Delete forever" onClick={e=>{e.stopPropagation();onPurge(item);}}><Trash size={15}/></button>
      </div>
     :<div className="card-actions">
+     {item.remindAt&&<span className="muted remind-note"><Bell size={12} weight="fill"/>{remindLabel(item.remindAt)}</span>}
      <FavButton on={item.favorite} onClick={()=>onFav(item)}/>
+     <button className={'icon-btn'+(item.folder?' on':'')} aria-label="Move to folder" onClick={e=>{e.stopPropagation();onMenu('folder',item,e);}}><FolderSimple size={15} weight={item.folder?'fill':'regular'}/></button>
+     <button className={'icon-btn'+(item.remindAt?' on':'')} aria-label="Remind me" onClick={e=>{e.stopPropagation();onMenu('remind',item,e);}}><Bell size={15} weight={item.remindAt?'fill':'regular'}/></button>
      <button className={'icon-btn queue'+(item.toRead?' on':'')} aria-label={item.toRead?'Remove from reading list':'Read later'} onClick={e=>{e.stopPropagation();onQueue(item);}}><BookOpenText size={15} weight={item.toRead?'fill':'regular'}/></button>
-    {item.url&&<button className="icon-btn" aria-label="Open in browser" onClick={e=>{e.stopPropagation();api.openExternal(item.url);}}><ArrowUpRight size={15}/></button>}
+    {item.url&&<button className="icon-btn" aria-label="Open in browser" onClick={e=>{e.stopPropagation();onOpened(item);api.openExternal(item.url);}}><ArrowUpRight size={15}/></button>}
     {item.fileId&&!['image'].includes(item.kind)&&<button className="icon-btn" aria-label="Save a copy" onClick={download}><DownloadSimple size={15}/></button>}
     {copyText&&<button className="icon-btn" aria-label="Copy" onClick={copy}>{copied?<Check size={15}/>:<Copy size={15}/>}</button>}
     <button className="icon-btn danger" aria-label="Delete" onClick={e=>{e.stopPropagation();onDelete(item);}}><Trash size={15}/></button>
@@ -139,7 +145,8 @@ function Viewer({item,onClose}){
 }
 
 export function Saved({go,focusId}){
- const [items,setItems]=useCollection('saved');
+ const [items,setItems]=useCollection('saved'),[folders,setFolders]=useCollection('folders');
+ const [folder,setFolder]=useState('all'),[menu,setMenu]=useState(null);
  const [filter,setFilter]=useState('all'),[query,setQuery]=useState(''),[draft,setDraft]=useState(''),[view,setView]=useState(null),[over,setOver]=useState(false),[busy,setBusy]=useState(false);
  const [mode,setMode]=useState('all');
  const depth=useRef(0);
@@ -163,11 +170,11 @@ export function Saved({go,focusId}){
  },[]);
  const tabCounts=useMemo(()=>modeCounts(items),[items]);
  const inTab=useMemo(()=>items.filter(i=>inMode(i,mode)),[items,mode]);
- const counts=useMemo(()=>inTab.reduce((c,i)=>{c[i.kind]=(c[i.kind]||0)+1;if(i.toRead)c.toread=(c.toread||0)+1;return c;},{}),[inTab]);
+ const counts=useMemo(()=>inTab.reduce((c,i)=>{c[i.kind]=(c[i.kind]||0)+1;if(i.toRead)c.toread=(c.toread||0)+1;if(!i.openedAt&&!i.progress)c.unopened=(c.unopened||0)+1;return c;},{}),[inTab]);
  const shown=useMemo(()=>{
   const q=query.trim().toLowerCase();
-  return inTab.filter(i=>(filter==='all'||(filter==='toread'?!!i.toRead:i.kind===filter))&&(!q||[i.title,i.url,i.text,i.author,i.brand,i.page,i.description].some(v=>v&&String(v).toLowerCase().includes(q))));
- },[inTab,filter,query]);
+  return inTab.filter(i=>(filter==='all'||(filter==='toread'?!!i.toRead:filter==='unopened'?!i.openedAt&&!i.progress:i.kind===filter))&&(folder==='all'||(folder==='none'?!i.folder:i.folder===folder))&&(!q||[i.title,i.url,i.text,i.author,i.brand,i.page,i.description].some(v=>v&&String(v).toLowerCase().includes(q))));
+ },[inTab,filter,query,folder]);
  const bulk=useBulk();
  useEffect(()=>{bulk.clear();},[mode,filter,query]);
  // Many at once: to Trash (they can be brought back), and in Trash, back out or gone for good.
@@ -186,7 +193,12 @@ export function Saved({go,focusId}){
  const submit=async e=>{e.preventDefault();const text=draft;setDraft('');await add(await ingestText(text));};
  const onDrop=async e=>{e.preventDefault();depth.current=0;setOver(false);add(await ingest(e.dataTransfer));};
  const pick=async()=>{await api.pickFiles('any');const d=await api.load();setItems(d.saved);};
- const open=item=>{if(item.kind==='pdf')go('pdfs',item.id);else setView(item);};
+ const opened=item=>{if(!item.openedAt)patchItem(item,{openedAt:Date.now()});};
+ const open=item=>{opened(item);if(item.kind==='pdf')go('pdfs',item.id);else setView(item);};
+ const openMenu=(kind,item,e)=>{const r=e.currentTarget.getBoundingClientRect();setMenu({kind,ids:[item.id],x:r.right,y:r.bottom,current:item.folder,remindAt:item.remindAt});};
+ const moveTo=(ids,id)=>{setItems(l=>l.map(x=>ids.includes(x.id)?{...x,folder:id||undefined}:x));setMenu(null);bulk.stop();};
+ const remindAt=(ids,at)=>{setItems(l=>l.map(x=>ids.includes(x.id)?{...x,remindAt:at||undefined}:x));setMenu(null);};
+ const newFolder=(ids,name)=>{const t=name.trim().slice(0,40);if(!t)return;const found=folders.find(f=>f.name.toLowerCase()===t.toLowerCase());const f=found||{id:crypto.randomUUID(),name:t,created:Date.now()};if(!found)setFolders(l=>[...l,f]);moveTo(ids,f.id);};
  useEffect(()=>{if(!focusId)return;const it=items.find(i=>i.id===focusId);if(it){if(it.deleted)setMode('trash');open(it);}},[focusId,items.length]);
 
  return (
@@ -204,6 +216,7 @@ export function Saved({go,focusId}){
    </form>
    <ShelfTabs mode={mode} setMode={m=>{setMode(m);setFilter('all');}} counts={tabCounts} onEmpty={emptyTrash}/>
    {mode==='trash'&&<p className="muted trash-note">{trashNote(mode)}</p>}
+   <FolderBar folders={folders} setFolders={setFolders} items={inTab} current={folder} setCurrent={setFolder}/>
    <div className="chips-row">
     {FILTERS.filter(f=>f==='all'||counts[f]).map(f=>(
      <button key={f} className={'filter'+(filter===f?' on':'')} onClick={()=>setFilter(f)}>{LABEL[f]}<em>{f==='all'?inTab.length:counts[f]}</em></button>
@@ -211,15 +224,16 @@ export function Saved({go,focusId}){
    </div>
    {bulk.on&&(mode==='trash'
     ?<BulkBar bulk={bulk} ids={shown.map(i=>i.id)} noun="item" deleteLabel="Delete forever" confirmDelete onDelete={bulkPurge}><button className="bulk-act" disabled={!bulk.count} onClick={()=>bulkRestore([...bulk.sel])}>Restore</button></BulkBar>
-    :<BulkBar bulk={bulk} ids={shown.map(i=>i.id)} noun="item" deleteLabel="Move to Trash" onDelete={bulkTrash}/>)}
+    :<BulkBar bulk={bulk} ids={shown.map(i=>i.id)} noun="item" deleteLabel="Move to Trash" onDelete={bulkTrash}><button className="bulk-act" disabled={!bulk.count} onClick={e=>{const r=e.currentTarget.getBoundingClientRect();setMenu({kind:'folder',ids:[...bulk.sel],x:r.right,y:r.bottom});}}>Move to folder</button></BulkBar>)}
    <div className="cards">
-    {shown.map(i=><Card bulk={bulk} key={i.id} item={i} mode={mode} onDelete={del} onFav={fav} onQueue={queue} onRead={markRead} onRestore={restore} onPurge={purge} onOpen={open} onLang={setLang} go={go}/>)}
+    {shown.map(i=><Card bulk={bulk} key={i.id} item={i} mode={mode} onMenu={openMenu} onOpened={opened} onDelete={del} onFav={fav} onQueue={queue} onRead={markRead} onRestore={restore} onPurge={purge} onOpen={open} onLang={setLang} go={go}/>)}
    </div>
    {!shown.length&&<div className="empty-state">
     <BookmarkSimple size={34} weight="light"/>
     <h3>{mode==='trash'?'Trash is empty':mode==='fav'?'No favorites yet':items.some(i=>!i.deleted)?'Nothing matches':'Nothing saved yet'}</h3>
     <p className="muted">{mode==='trash'?'Deleted items wait here for 30 days so you can bring them back.':mode==='fav'?'Tap the star on anything you want to keep close.':'Videos, reels, PDFs, markdown, audio, images, code, web pages. Drop them on the notch and they land here, sorted.'}</p>
    </div>}
+   {menu&&<PickMenu menu={menu} folders={folders} onClose={()=>setMenu(null)} onFolder={id=>moveTo(menu.ids,id)} onRemind={at=>remindAt(menu.ids,at)} onNewFolder={n=>newFolder(menu.ids,n)}/>}
    {over&&<div className="drop-veil"><span>Drop to save</span></div>}
    {view&&<Viewer item={items.find(x=>x.id===view.id)||view} onClose={()=>setView(null)}/>}
   </div>

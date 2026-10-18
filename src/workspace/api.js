@@ -5,10 +5,10 @@ const memFiles=new Map();
 const key=n=>'tnkr-ws-'+n;
 const read=n=>{try{return JSON.parse(localStorage.getItem(key(n)))||[];}catch{return [];}};
 const mock={
- load:async()=>({notes:read('notes'),events:read('events'),saved:read('saved'),pdfs:read('pdfs'),finance:read('finance'),budgets:read('budgets'),jobs:read('jobs'),bills:read('bills'),focus:read('focus'),wins:read('wins'),reviews:read('reviews'),settings:read('settings'),reminders:read('reminders'),nudgelog:read('nudgelog'),tasks:[]}),
+ load:async()=>({notes:read('notes'),events:read('events'),saved:read('saved'),pdfs:read('pdfs'),finance:read('finance'),budgets:read('budgets'),jobs:read('jobs'),bills:read('bills'),focus:read('focus'),wins:read('wins'),reviews:read('reviews'),folders:read('folders'),settings:read('settings'),reminders:read('reminders'),nudgelog:read('nudgelog'),tasks:[]}),
  save:async(n,items)=>{try{localStorage.setItem(key(n),JSON.stringify(items));}catch{}return true;},
  focusState:async()=>null,focusStart:async()=>null,focusPause:async()=>null,focusResume:async()=>null,focusStop:async()=>null,focusDelete:async()=>true,onFocus:()=>()=>{},capTask:async()=>true,capNote:async()=>true,capHide:async()=>true,capInfo:async()=>({key:''}),onCapOpen:()=>()=>{},exportPdf:async()=>({ok:false}),aiTest:async()=>({ok:false,error:'Needs the desktop app.'}),onSummaryProgress:()=>()=>{},summarise:async()=>({ok:false,error:'Summaries need the desktop app.'}),nudgeLog:async()=>true,nudgeRects:async()=>true,nudgeTest:async()=>true,nudgeQueue:async()=>[],nudgeAction:async()=>true,onNudgeQueue:()=>()=>{},
- setTheme:async()=>true,notchIntro:async()=>true,exportAll:async()=>({ok:false}),eraseAll:async()=>{['notes','events','saved','finance','budgets','jobs','bills','focus','wins','reviews','settings','reminders'].forEach(n=>localStorage.removeItem(key(n)));return true;},
+ setTheme:async()=>true,notchIntro:async()=>true,exportAll:async()=>({ok:false}),eraseAll:async()=>{['notes','events','saved','finance','budgets','jobs','bills','focus','wins','reviews','folders','settings','reminders'].forEach(n=>localStorage.removeItem(key(n)));return true;},
  open:async()=>true,toggle:async()=>'opened',notch:async()=>true,
  putFile:async bytes=>{const id=crypto.randomUUID();memFiles.set(id,new Uint8Array(bytes));return id;},
  getFile:async id=>memFiles.get(id)||null,

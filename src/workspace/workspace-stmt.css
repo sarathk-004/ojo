@@ -23,3 +23,24 @@
 .stmt-row .tt.expense{background:#f3e0d6;color:#a4552f}.stmt-row .tt.income{background:#dcebdc;color:#3f7a46}
 .stmt-row .a{text-align:right;font-variant-numeric:tabular-nums}
 .stmt-row .a.income{color:#3f7a46}
+
+.stmt-acct{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}
+.stmt-acct label{display:inline-flex;align-items:center;gap:8px}
+.stmt-acct input{width:220px}
+
+/* Saved folders and reminders */
+.folder-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 8px;font-size:13px}
+.folder-bar .filter{display:inline-flex;align-items:center;gap:6px}
+.folder-new{display:inline-flex;align-items:center;gap:4px}
+.folder-new input{width:150px}
+.folder-hint{display:inline-flex;gap:10px;align-items:center;flex-wrap:wrap}
+.folder-sure{margin-left:6px;font-size:12px}
+.pick-menu{position:fixed;z-index:60;background:var(--paper,#fff);border:1px solid var(--line,#ddd);border-radius:12px;padding:6px;box-shadow:0 6px 18px rgba(30,40,30,.12);display:flex;flex-direction:column;gap:2px;max-height:300px;overflow:auto}
+.pick-menu button[role=menuitem]{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:13px;background:none;border:0;cursor:pointer}
+.pick-menu button[role=menuitem]:hover,.pick-menu button.on{background:var(--sage-soft,#e6eee6)}
+.pick-menu button span.muted{margin-left:auto;font-size:11px}
+.pm-title{margin:4px 10px 6px;font-size:12px;color:var(--muted,#667)}
+.pm-new{display:flex;gap:4px;padding:6px 6px 2px}
+.pm-new input{flex:1;min-width:0}
+.card .remind-note{font-size:12px;display:inline-flex;align-items:center;gap:5px;margin-right:auto}
+.card .remind-note{white-space:nowrap;font-size:11px}
