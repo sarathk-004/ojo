@@ -44,3 +44,16 @@
 .pm-new input{flex:1;min-width:0}
 .card .remind-note{font-size:12px;display:inline-flex;align-items:center;gap:5px;margin-right:auto}
 .card .remind-note{white-space:nowrap;font-size:11px}
+
+.folder-new{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 6px 0 12px;border:1px solid var(--line,#ccd);border-radius:999px;background:var(--paper,#fff)}
+.folder-new>svg{flex:none;color:var(--muted,#667)}
+.folder-new input{width:150px;border:0;background:transparent;outline:0;box-shadow:none;padding:0;height:auto;font-size:13px}
+.folder-new .fn-ok{height:26px;padding:0 12px;border-radius:999px;border:0;background:var(--sage,#567458);color:#fff;font-size:12px;cursor:pointer}
+.folder-new .fn-ok:disabled{opacity:.4;cursor:default}
+.folder-new .fn-x{width:26px;height:26px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;cursor:pointer;color:var(--muted,#667)}
+.folder-ask{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted,#667);white-space:nowrap}
+.folder-ask button{height:26px;padding:0 12px;border-radius:999px;font-size:12px;cursor:pointer;border:1px solid var(--line,#ccd);background:transparent}
+.folder-ask .ask-yes{background:#b4493d;border-color:#b4493d;color:#fff}
+.remind-form{display:flex;flex-direction:column;gap:14px;min-width:280px}
+.remind-form label{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.folder-bar .link-btn{display:inline-flex;align-items:center;gap:6px}

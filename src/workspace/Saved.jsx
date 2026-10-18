@@ -11,7 +11,7 @@ import {Star,BookOpenText,CheckCircle} from '@phosphor-icons/react';
 import {LangPicker} from './LangPicker.jsx';
 import {useBulk,SelectToggle,BulkBar,SelectMark} from './bulk.jsx';
 import {readMinutes} from './readText.js';
-import {FolderBar,PickMenu} from './SavedFolders.jsx';
+import {FolderBar,PickMenu,CustomRemind} from './SavedFolders.jsx';
 import {remindLabel} from './savedlib.mjs';
 import {FolderSimple,Bell} from '@phosphor-icons/react';
 import {ShelfTabs,FavButton,RestoreButton,modeCounts,inMode,expired,daysLeft,trashNote} from './shelf.jsx';
@@ -146,7 +146,7 @@ function Viewer({item,onClose}){
 
 export function Saved({go,focusId}){
  const [items,setItems]=useCollection('saved'),[folders,setFolders]=useCollection('folders');
- const [folder,setFolder]=useState('all'),[menu,setMenu]=useState(null);
+ const [folder,setFolder]=useState('all'),[menu,setMenu]=useState(null),[custom,setCustom]=useState(null);
  const [filter,setFilter]=useState('all'),[query,setQuery]=useState(''),[draft,setDraft]=useState(''),[view,setView]=useState(null),[over,setOver]=useState(false),[busy,setBusy]=useState(false);
  const [mode,setMode]=useState('all');
  const depth=useRef(0);
@@ -216,7 +216,7 @@ export function Saved({go,focusId}){
    </form>
    <ShelfTabs mode={mode} setMode={m=>{setMode(m);setFilter('all');}} counts={tabCounts} onEmpty={emptyTrash}/>
    {mode==='trash'&&<p className="muted trash-note">{trashNote(mode)}</p>}
-   <FolderBar folders={folders} setFolders={setFolders} items={inTab} current={folder} setCurrent={setFolder}/>
+   <FolderBar folders={folders} setFolders={setFolders} items={inTab} current={folder} setCurrent={setFolder} onDeleted={id=>setItems(l=>l.map(x=>x.folder===id?{...x,folder:undefined}:x))}/>
    <div className="chips-row">
     {FILTERS.filter(f=>f==='all'||counts[f]).map(f=>(
      <button key={f} className={'filter'+(filter===f?' on':'')} onClick={()=>setFilter(f)}>{LABEL[f]}<em>{f==='all'?inTab.length:counts[f]}</em></button>
@@ -233,7 +233,8 @@ export function Saved({go,focusId}){
     <h3>{mode==='trash'?'Trash is empty':mode==='fav'?'No favorites yet':items.some(i=>!i.deleted)?'Nothing matches':'Nothing saved yet'}</h3>
     <p className="muted">{mode==='trash'?'Deleted items wait here for 30 days so you can bring them back.':mode==='fav'?'Tap the star on anything you want to keep close.':'Videos, reels, PDFs, markdown, audio, images, code, web pages. Drop them on the notch and they land here, sorted.'}</p>
    </div>}
-   {menu&&<PickMenu menu={menu} folders={folders} onClose={()=>setMenu(null)} onFolder={id=>moveTo(menu.ids,id)} onRemind={at=>remindAt(menu.ids,at)} onNewFolder={n=>newFolder(menu.ids,n)}/>}
+   {menu&&<PickMenu menu={menu} folders={folders} onClose={()=>setMenu(null)} onFolder={id=>moveTo(menu.ids,id)} onRemind={at=>{if(at==='custom'){setCustom({ids:menu.ids,at:menu.remindAt});setMenu(null);}else remindAt(menu.ids,at);}} onNewFolder={n=>newFolder(menu.ids,n)}/>}
+   {custom&&<CustomRemind initial={custom.at} onClose={()=>setCustom(null)} onSet={at=>{remindAt(custom.ids,at);setCustom(null);}}/>}
    {over&&<div className="drop-veil"><span>Drop to save</span></div>}
    {view&&<Viewer item={items.find(x=>x.id===view.id)||view} onClose={()=>setView(null)}/>}
   </div>

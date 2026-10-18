@@ -13,10 +13,10 @@ const clock=n=>new Date(n).toLocaleTimeString([],{hour:'numeric',minute:'2-digit
 
 // The running timer, shared by this page and the sidebar badge.
 export function useFocus(){
- const [f,setF]=useState(null),[now,setNow]=useState(Date.now());
+ const [f,setF]=useState(null),[,setTick]=useState(0);
  useEffect(()=>{api.focusState().then(setF);return api.onFocus(setF);},[]);
- useEffect(()=>{if(!f||f.paused)return;const t=setInterval(()=>setNow(Date.now()),200);return()=>clearInterval(t);},[f]);
- const left=f?(f.paused?f.left:Math.max(0,(f.endsAt||0)-now)):0;
+ useEffect(()=>{if(!f||f.paused)return;const t=setInterval(()=>setTick(n=>n+1),200);return()=>clearInterval(t);},[f]);
+ const left=f?(f.paused?f.left:Math.max(0,(f.endsAt||0)-Date.now())):0;
  return {focus:f,left};
 }
 
@@ -72,10 +72,10 @@ export function Focus({focusId}){
 
  const start=()=>api.focusStart({taskId:kind==='focus'?taskId:'',title:kind==='focus'?(picked?.title||'Focus'):'Break',seconds:sessionSecs,kind});
  // After a focus session, offer the break; after a break, offer the next focus.
- const wasRunning=useRef(null);
+ const wasRunning=useRef(null),stopped=useRef(false);
  useEffect(()=>{
   if(focus)wasRunning.current=focus.kind;
-  else if(wasRunning.current){setKind(wasRunning.current==='focus'?'break':'focus');setMins(wasRunning.current==='focus'?5:25);setSecs(0);wasRunning.current=null;}
+  else if(wasRunning.current){const next=stopped.current?wasRunning.current:(wasRunning.current==='focus'?'break':'focus');setKind(next);setMins(next==='focus'?25:5);setSecs(0);wasRunning.current=null;stopped.current=false;}
  },[focus]);
  useEffect(()=>{if(focus&&done.current)gsap.fromTo(done.current,{scale:.96},{scale:1,duration:.3,ease:'back.out(2)'});},[focus?.startedAt]);
  const choices=kind==='focus'?FOCUS_MINS:BREAK_MINS;
@@ -102,7 +102,7 @@ export function Focus({focusId}){
      </>}
      {focus&&<div className="fx-controls">
       {focus.paused?<button className="primary" onClick={()=>api.focusResume()}><Play size={15} weight="fill"/>Resume</button>:<button className="ghost" onClick={()=>api.focusPause(Math.ceil(left/1000))}><Pause size={15} weight="fill"/>Pause</button>}
-      <button className="ghost danger" onClick={()=>api.focusStop()}><Stop size={15} weight="fill"/>{focus.kind==='focus'?'Stop and save':'Skip break'}</button>
+      <button className="ghost danger" onClick={()=>{stopped.current=true;api.focusStop();}}><Stop size={15} weight="fill"/>{focus.kind==='focus'?'Stop and save':'Skip break'}</button>
      </div>}
     </section>
 
