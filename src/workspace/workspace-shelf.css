@@ -28,7 +28,7 @@
 .pop.tpl button{flex-direction:column;align-items:flex-start;gap:1px}
 .pop.tpl button span{font-size:12px;color:var(--muted)}
 .pop-title{padding:6px 11px 4px;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8a9081}
-.ws .round.ghost{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#ece8dc;color:#2f3a2c}
+.ws .round.ghost{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#ece8dc;color:var(--accent-dark)}
 
 .icon-btn.queue.on{color:#4a6b4d}
 

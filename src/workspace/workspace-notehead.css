@@ -28,7 +28,7 @@
 .nh-swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .nh-swatches button{height:46px;border-radius:12px;border:2px solid transparent;transition:transform .15s}
 .nh-swatches button:hover{transform:scale(1.06)}
-.nh-swatches button.on{border-color:#2f3a2c}
+.nh-swatches button.on{border-color:var(--accent-dark)}
 .row-icon{font-size:15px;line-height:1;margin-right:2px}
 .nh-grid{grid-template-columns:repeat(8,1fr)}
 .nh-grid button{display:grid;place-items:center;color:#4a5244}
@@ -40,9 +40,9 @@
 .nh-photo.adjusting:active{cursor:grabbing}
 .nh-adjust{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:#fbfaf5f2;backdrop-filter:blur(6px);border-radius:12px;padding:7px 12px;box-shadow:0 6px 20px #2c3a2530;font-size:12.5px;font-weight:600;color:#3d4438;white-space:nowrap}
 .nh-adjust span{display:inline-flex;gap:5px;align-items:center;color:#6b7266}
-.nh-adjust input[type=range]{width:120px;accent-color:#567458}
+.nh-adjust input[type=range]{width:120px;accent-color:var(--sage)}
 .nh-adjust button{padding:5px 10px;border-radius:9px;font-size:12.5px;font-weight:600;display:inline-flex;gap:4px;align-items:center;background:#ece8dc;color:#3d4438}
-.nh-adjust button.ok{background:#2f3a2c;color:#fffef9}
+.nh-adjust button.ok{background:var(--accent-dark);color:#fffef9}
 /* The icon row overlaps the cover's lower edge; it must not steal the pointer from the cover's buttons. */
 .nh-row{pointer-events:none}
 .nh-row .nh-icon,.nh-row .nh-add,.nh-row .nh-anchor{pointer-events:auto}

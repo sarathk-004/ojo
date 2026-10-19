@@ -1,4 +1,5 @@
 import React,{useEffect,useMemo,useState} from 'react';
+import {dateLocale} from './prefs.js';
 import {TimeField} from './Pickers.jsx';
 import {Plus,Trash,PencilSimple,BellRinging,Minus,Pause,Play} from '@phosphor-icons/react';
 import {useCollection} from './hooks.js';
@@ -15,7 +16,7 @@ const nextText=(r,log)=>{
  if(!t)return 'Nothing scheduled';
  const d=new Date(t),today=new Date(),sameDay=d.toDateString()===today.toDateString();
  const clock=d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}).toLowerCase();
- return 'Next '+(sameDay?clock:d.toLocaleDateString('en-GB',{weekday:'short'})+' '+clock);
+ return 'Next '+(sameDay?clock:d.toLocaleDateString(dateLocale(),{weekday:'short'})+' '+clock);
 };
 
 function Form({initial,editing,onSave,onDelete}){

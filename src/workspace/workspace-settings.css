@@ -54,3 +54,33 @@
 .ws .nav-foot .only-icon{flex:none;width:36px}
 .onb-logo{display:block}
 .mascot{display:block;overflow:visible}
+
+/* Personalise */
+.pf-tabs{display:inline-flex;gap:2px;padding:3px;background:var(--paper);border-radius:11px;margin-bottom:14px}
+.pf-tabs button{padding:6px 14px;border-radius:8px;font-size:13px;font-weight:500;color:var(--muted)}
+.pf-tabs button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px #0001}
+.pf{display:flex;flex-direction:column;gap:22px}
+.pf h4{margin:0 0 6px;font-size:13.5px}
+.pf-row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:10px 0;border-top:1px solid var(--line)}
+.pf-row:first-of-type{border-top:0}
+.pf-lab{display:flex;flex-direction:column;gap:2px;min-width:0;flex:0 1 38%}
+.pf-lab b{font-weight:500;font-size:13.5px}
+.pf-lab span{font-size:12px;color:var(--muted)}
+.pf-ctl{display:flex;justify-content:flex-end;flex:1;min-width:0}
+.pf-seg{display:inline-flex;gap:2px;padding:3px;background:var(--paper);border-radius:10px;flex-wrap:wrap}
+.pf-seg button{padding:5px 12px;border-radius:7px;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.pf-seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px #0001;font-weight:500}
+.pf-swatches{display:flex;gap:10px}
+.pf-swatches button{width:26px;height:26px;border-radius:50%;background:var(--sw);display:inline-grid;place-items:center;color:#fff;outline:2px solid transparent;outline-offset:2px}
+.pf-swatches button.on{outline-color:var(--sw)}
+.pf-checks{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:flex-end}
+.pf-check{display:inline-flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.pf-cols{display:flex;flex-direction:column;gap:8px;align-items:stretch;width:100%;max-width:430px}
+.pf-col{display:flex;align-items:center;gap:8px}
+.pf-col input{flex:1;min-width:0;height:32px;border:1px solid var(--line);border-radius:9px;padding:0 10px;background:var(--card);font:inherit;font-size:13px}
+.pf-dots{display:inline-flex;gap:5px}
+.pf-dots button{width:16px;height:16px;border-radius:50%;outline:2px solid transparent;outline-offset:1px}
+.pf-dots button.on{outline-color:var(--ink)}
+.pf-col-acts{display:inline-flex}
+.pf-foot{display:flex;justify-content:flex-end;padding-top:6px;border-top:1px solid var(--line)}
+.ws .modal .pf-check{display:inline-flex;flex-direction:row;align-items:center;gap:8px;width:auto}.ws .modal .pf-check input{flex:none}

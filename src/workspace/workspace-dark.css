@@ -8,7 +8,7 @@ html[data-theme=dark] .ws .nh-photo{filter:invert(1) hue-rotate(180deg)}
 /* Overlays are dark in light mode, so they must be pale here to come out as a soft dim after inversion. */
 html[data-theme=dark] .ws :is(.modal-back,.sp-back,.sheet-back,.viewer){background:#f1eee6c4}
 /* Filled controls keep real colours instead of turning into pale chips with heavy black text. */
-html[data-theme=dark] .ws :is(.primary,.task-tabs button.on,.subnav button.on,.shelf-tabs .seg button.on,.filter.on,.week-pick button.on,.fx-chips button.on,.nh-adjust button.ok,.theme-pick button.on,.sp-types button.on,.pk-day.on,.pk-col button.on,.tick.on,.days-row button.on,.news-tabs>button.on,.outline .dash.on){filter:invert(1) hue-rotate(180deg);background:#3f5c42;color:#f4f6ef!important}
+html[data-theme=dark] .ws :is(.primary,.task-tabs button.on,.subnav button.on,.shelf-tabs .seg button.on,.filter.on,.week-pick button.on,.fx-chips button.on,.nh-adjust button.ok,.theme-pick button.on,.sp-types button.on,.pk-day.on,.pk-col button.on,.tick.on,.days-row button.on,.news-tabs>button.on,.outline .dash.on){filter:invert(1) hue-rotate(180deg);background:color-mix(in srgb,var(--sage) 76%,#16201a);color:#f4f6ef!important}
 html[data-theme=dark] .ws :is(.primary,.task-tabs button.on,.subnav button.on,.shelf-tabs .seg button.on,.filter.on,.week-pick button.on,.fx-chips button.on) svg{color:#f4f6ef}
 html[data-theme=dark] .ws button{font-weight:500}
 html[data-theme=dark] .ws :is(.primary,.subnav button,.task-tabs button,.shelf-tabs .seg button){font-weight:500}

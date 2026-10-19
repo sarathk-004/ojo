@@ -46,3 +46,18 @@
  .ws .tb-col{padding:8px}
  .ws .tb-card{padding:9px 10px}
 }
+
+/* Density (Settings > Look) */
+.ws[data-density=compact] .task-row{padding:7px 10px 7px 12px;gap:10px}
+.ws[data-density=compact] .note-row,.ws[data-density=compact] .bill-row{padding-top:6px;padding-bottom:6px}
+.ws[data-density=compact] .txn-row{padding:4px 6px}
+.ws[data-density=compact] .tb-card{padding:8px 10px;gap:4px}
+.ws[data-density=compact] .card-box,.ws[data-density=compact] .side-card{padding:10px 12px}
+.ws[data-density=compact] .nav-item{padding-top:7px;padding-bottom:7px}
+.ws[data-density=roomy] .task-row{padding:16px 12px 16px 16px;gap:14px}
+.ws[data-density=roomy] .note-row,.ws[data-density=roomy] .bill-row{padding-top:14px;padding-bottom:14px}
+.ws[data-density=roomy] .txn-row{padding:12px 6px}
+.ws[data-density=roomy] .tb-card{padding:14px 14px;gap:8px}
+.ws[data-density=roomy] .nav-item{padding-top:13px;padding-bottom:13px}
+.ws .tboard{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+@container tmain (max-width:640px){.ws .tboard{grid-template-columns:minmax(0,1fr)}}

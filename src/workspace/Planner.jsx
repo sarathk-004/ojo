@@ -1,4 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
+import {dateLocale} from './prefs.js';
 import {CaretLeft,CaretRight,Check,X,CalendarBlank,Receipt,Timer,Plus,Flame,ArrowUUpLeft,Repeat,Trash} from '@phosphor-icons/react';
 import {useUndo} from './Undo.jsx';
 import {Glyph} from './icons.jsx';
@@ -12,7 +13,7 @@ const bridge=typeof window!=='undefined'?window.taskit:null;
 const HOUR=56,SNAP=15;
 const labelOf=m=>{const h=Math.floor(m/60)%24,x=m%60;return (h%12||12)+(x?':'+String(x).padStart(2,'0'):'')+' '+(h<12?'am':'pm');};
 const shiftDay=(day,n)=>{const [y,m,d]=day.split('-').map(Number),x=new Date(y,m-1,d+n,12);return dayKey(x);};
-const longDay=day=>new Date(day+'T12:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+const longDay=day=>new Date(day+'T12:00').toLocaleDateString(dateLocale(),{weekday:'long',day:'numeric',month:'long'});
 
 // A day on a timeline: time-blocked tasks, events, bills due, focus sessions and the windows your repeaters run in.
 // Drag a task from the list onto the timeline to give it time; drag its block to move it, pull the bottom edge to resize.
@@ -183,7 +184,7 @@ export function Planner({go}){
     </div>
     <aside className="pl-side">
      <form className="pl-add" onSubmit={addTask}>
-      <input placeholder={'Add a task for '+(day===today?'today':new Date(day+'T12:00').toLocaleDateString('en-GB',{weekday:'long'}))+'…'} value={draft} onChange={e=>setDraft(e.target.value)}/>
+      <input placeholder={'Add a task for '+(day===today?'today':new Date(day+'T12:00').toLocaleDateString(dateLocale(),{weekday:'long'}))+'…'} value={draft} onChange={e=>setDraft(e.target.value)}/>
       <button className="primary round" aria-label="Add task" disabled={!draft.trim()}><Plus size={15} weight="bold"/></button>
      </form>
      <h5>To schedule<em>{waiting.length}</em></h5>
@@ -201,7 +202,7 @@ export function Planner({go}){
      {habits.length>0&&<>
       <h5>Daily habits<em>{habitsDoneToday}/{habits.length}</em></h5>
       <div className="pl-habits">
-       <div className="pl-hdots head">{weekDays.map(d=><i key={d} className={d===today?'now':''}>{new Date(d+'T12:00').toLocaleDateString('en-GB',{weekday:'narrow'})}</i>)}</div>
+       <div className="pl-hdots head">{weekDays.map(d=><i key={d} className={d===today?'now':''}>{new Date(d+'T12:00').toLocaleDateString(dateLocale(),{weekday:'narrow'})}</i>)}</div>
        {habits.map(h=>{
         const fin=(h.completions||[]).includes(day),streak=isDailyTask(h)?habitStats(h).current:0;
         return (

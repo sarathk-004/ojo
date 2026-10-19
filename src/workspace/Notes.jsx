@@ -1,4 +1,5 @@
 import React,{useLayoutEffect,useEffect,useMemo,useRef,useState} from 'react';
+import {dateLocale} from './prefs.js';
 import {ArrowBendDownRight,Plus,MagnifyingGlass,PushPin,Trash,TextB,TextItalic,TextUnderline,TextStrikethrough,ListBullets,ListNumbers,CheckSquare,Quotes,Code,LinkSimple,Minus,NotePencil,CaretRight,TextT,TextHOne,TextHTwo,TextHThree,FileText,Lightbulb,CalendarBlank,Table,Kanban,ImageSquare,CaretCircleRight} from '@phosphor-icons/react';
 import {gsap} from 'gsap';
 import {Glyph} from './icons.jsx';
@@ -42,7 +43,7 @@ const ago=ts=>{
  if(s<60)return 'just now';
  if(s<3600)return Math.floor(s/60)+'m ago';
  if(s<86400)return Math.floor(s/3600)+'h ago';
- return new Date(ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+ return new Date(ts).toLocaleDateString(dateLocale(),{day:'numeric',month:'short'});
 };
 const run=(cmd,val)=>document.execCommand(cmd,false,val);
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -540,7 +541,7 @@ export function Notes({focusId}){
    case 'code':insertCodeBlock();break;
    case 'divider':run('insertHorizontalRule');break;
    case 'callout':run('insertHTML','<div class="callout"><br></div>');break;
-   case 'date':run('insertText',new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}));break;
+   case 'date':run('insertText',new Date().toLocaleDateString(dateLocale(),{weekday:'long',day:'numeric',month:'long',year:'numeric'}));break;
    case 'table':run('insertHTML',TABLE_HTML());break;
    case 'board':run('insertHTML',KANBAN_HTML());break;
    case 'toggle':run('insertHTML',TOGGLE_HTML);break;

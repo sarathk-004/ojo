@@ -1,4 +1,5 @@
 import React,{useEffect,useMemo,useState} from 'react';
+import {dateLocale,weekStart,dowNames} from './prefs.js';
 import {DateField,TimeField} from './Pickers.jsx';
 import {CaretLeft,CaretRight,CaretDown,Plus,Trash,Check,CalendarBlank,CaretRight as Chev} from '@phosphor-icons/react';
 import {useCollection,useTasks,uid} from './hooks.js';
@@ -26,9 +27,9 @@ export function Calendar({focusId}){
  },[focusId,events.length]);
 
  const cells=useMemo(()=>{
-  const first=new Date(cursor.y,cursor.m,1),offset=(first.getDay()+6)%7;
+  const first=new Date(cursor.y,cursor.m,1),offset=(first.getDay()-weekStart()+7)%7;
   return Array.from({length:42},(_,i)=>{const d=new Date(cursor.y,cursor.m,1-offset+i);return {key:dayKey(d),day:d.getDate(),out:d.getMonth()!==cursor.m};});
- },[cursor]);
+ },[cursor,weekStart()]);
  const byDay=useMemo(()=>{
   const map={};
   const add=(k,item)=>{(map[k]??=[]).push(item);};
@@ -64,12 +65,12 @@ export function Calendar({focusId}){
  const edit=ev=>{setEditing(ev.id);setForm({title:ev.title,date:ev.date,time:ev.time||'',end:ev.end||'',color:ev.color||COLORS[0],note:ev.note||''});};
  const remove=id=>{setEvents(l=>l.filter(x=>x.id!==id));if(editing===id){setEditing(null);setForm(blank(selected));}};
  const set=k=>e=>setForm(f=>({...f,[k]:e.target.value}));
- const monthName=new Date(cursor.y,cursor.m,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+ const monthName=new Date(cursor.y,cursor.m,1).toLocaleDateString(dateLocale(),{month:'long',year:'numeric'});
  // Jump straight to any month of any year.
  const [picker,setPicker]=useState(false),[pickYear,setPickYear]=useState(cursor.y),[yearMode,setYearMode]=useState(false);
  const openPicker=()=>{setPickYear(cursor.y);setYearMode(false);setPicker(p=>!p);};
  const chooseMonth=m=>{setCursor({y:pickYear,m});setPicker(false);};
- const MONTHS=Array.from({length:12},(_,i)=>new Date(2000,i,1).toLocaleDateString('en-GB',{month:'short'}));
+ const MONTHS=Array.from({length:12},(_,i)=>new Date(2000,i,1).toLocaleDateString(dateLocale(),{month:'short'}));
  const decade=Math.floor(pickYear/12)*12;
  const allDay=byDay[selected]||[],dayTasks=allDay.filter(i=>i.type==='task'),dayItems=allDay.filter(i=>i.type!=='task');
 
@@ -99,7 +100,7 @@ export function Calendar({focusId}){
      <button className="icon-btn" aria-label="Previous month" onClick={()=>go(-1)}><CaretLeft size={16}/></button>
      <button className="icon-btn" aria-label="Next month" onClick={()=>go(1)}><CaretRight size={16}/></button>
     </div>
-    <div className="cal-grid dow">{DOW.map(d=><span key={d}>{d}</span>)}</div>
+    <div className="cal-grid dow">{dowNames(DOW).map(d=><span key={d}>{d}</span>)}</div>
     <div className="cal-grid days">
      {cells.map(c=>{
       const items=byDay[c.key]||[];
@@ -122,7 +123,7 @@ export function Calendar({focusId}){
    </section>
    <aside className="cal-side">
     <div className="side-card">
-     <h3>{new Date(selected+'T00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</h3>
+     <h3>{new Date(selected+'T00:00').toLocaleDateString(dateLocale(),{weekday:'long',day:'numeric',month:'long'})}</h3>
      <div className="agenda">
       {dayItems.map(it=>(
        <div key={it.type+it.id} className={'agenda-row '+it.type+(it.done?' done':'')} style={it.type!=='task'?{'--c':it.color||COLORS[0]}:undefined}>
@@ -169,7 +170,7 @@ export function Calendar({focusId}){
       <button key={ev.id} className="up-row" onClick={()=>{pick(ev.date);const [y,m]=ev.date.split('-');setCursor({y:+y,m:+m-1});}}>
        <span className="dot" style={{background:ev.color}}/>
        <b>{ev.title}</b>
-       <span className="muted">{new Date(ev.date+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'})}{ev.time?' · '+ev.time:''}</span>
+       <span className="muted">{new Date(ev.date+'T00:00').toLocaleDateString(dateLocale(),{day:'numeric',month:'short'})}{ev.time?' · '+ev.time:''}</span>
       </button>
      ))}
      {!upcoming.length&&<p className="muted"><CalendarBlank size={14}/> No upcoming events.</p>}

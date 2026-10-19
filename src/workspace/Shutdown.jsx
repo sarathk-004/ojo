@@ -1,4 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
+import {dateLocale} from './prefs.js';
 import {gsap} from 'gsap';
 import {MoonStars,X,Check,Trash,Trophy,Plus,ArrowBendDownRight,CalendarBlank,Receipt,Repeat,SkipForward,Sun} from '@phosphor-icons/react';
 import {useCollection,uid} from './hooks.js';
@@ -10,7 +11,7 @@ import {fmtMoney} from './finance.mjs';
 import {CountNum} from './Motion.jsx';
 
 const bridge=typeof window!=='undefined'?window.taskit:null;
-const longDay=d=>new Date(d+'T12:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+const longDay=d=>new Date(d+'T12:00').toLocaleDateString(dateLocale(),{weekday:'long',day:'numeric',month:'long'});
 const TIMES=['','17:00','18:00','19:00','20:00','21:00','22:00'];
 
 // A calm end-of-day routine: see what you did, deal with what is left, glance at tomorrow, and close the day.

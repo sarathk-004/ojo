@@ -109,7 +109,7 @@
 .pdf-page{position:relative;background:#fff;box-shadow:0 2px 14px #3c4c3330;flex:none;border-radius:2px}
 .pdf-page canvas{display:block}
 .pdf-page .textLayer{position:absolute;inset:0;overflow:hidden;line-height:1}
-.pdf-page .textLayer ::selection{background:#567458aa}
+.pdf-page .textLayer ::selection{background:color-mix(in srgb,var(--sage) 67%,transparent)}
 .page-no{position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);font-size:10px;color:#8a9081;pointer-events:none}
 .page-ribbon{position:absolute;right:26px;top:-1px;filter:drop-shadow(0 2px 2px #0003);z-index:3;pointer-events:none}
 .ribbon{position:absolute;top:-6px;right:34px;z-index:12;width:38px}
@@ -118,10 +118,10 @@
 .ribbon-swing svg{display:block;overflow:visible;pointer-events:none}
 .ribbon:not(.filled) .ribbon-swing{opacity:.85}
 .ribbon-tag{position:absolute;left:50%;top:92px;transform:translateX(-50%);white-space:nowrap;font-size:11px;font-weight:700;color:#fffef9;background:#b8453a;padding:3px 8px;border-radius:7px;display:inline-flex;gap:4px;align-items:center;pointer-events:none;box-shadow:0 2px 6px #0003}
-.ribbon:not(.filled) .ribbon-tag{background:#2f3a2c;opacity:0;transition:opacity .15s .05s}
+.ribbon:not(.filled) .ribbon-tag{background:var(--accent-dark);opacity:0;transition:opacity .15s .05s}
 .ribbon:not(.filled):hover .ribbon-tag{opacity:1}
 .ribbon.away .ribbon-tag{background:#8a3d33}
-.ws .ribbon-move{position:absolute;right:44px;top:30px;background:#2f3a2c;color:#fffef9;font-size:11.5px;font-weight:600;border-radius:8px;padding:5px 9px;opacity:0;pointer-events:none;transition:opacity .15s;white-space:nowrap}
+.ws .ribbon-move{position:absolute;right:44px;top:30px;background:var(--accent-dark);color:#fffef9;font-size:11.5px;font-weight:600;border-radius:8px;padding:5px 9px;opacity:0;pointer-events:none;transition:opacity .15s;white-space:nowrap}
 .ribbon.away:hover .ribbon-move{opacity:1;pointer-events:auto}
 .rail{position:absolute;right:6px;top:70px;bottom:20px;width:6px;border-radius:3px;background:#d7d3c5;z-index:5}
 .rail-dot{position:absolute;left:-2px;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--sage);transition:top .15s}
@@ -134,14 +134,14 @@
 .task-tabs{display:flex;gap:6px;margin-bottom:12px}
 .ws .task-tabs button{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;font-weight:500;color:#5b6256}
 .ws .task-tabs button:hover{background:#e8e4d8}
-.ws .task-tabs button.on{background:#2f3a2c;color:#fffef9}
+.ws .task-tabs button.on{background:var(--accent-dark);color:#fffef9}
 .task-tabs em{font-style:normal;font-size:11.5px;opacity:.7}
 .task-list-ws{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;min-height:0;padding-bottom:8px}
 .task-row{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 10px 12px 14px}
 .task-row .icon-btn{opacity:0;transition:opacity .15s}
 .task-row:hover .icon-btn{opacity:1}
 .ws .tick{width:22px;height:22px;border-radius:50%;border:2px solid #9aa291;flex:none;margin-top:1px;display:grid;place-items:center;color:#fff}
-.ws .tick.on{background:#2f3a2c;border-color:#2f3a2c}
+.ws .tick.on{background:var(--accent-dark);border-color:var(--accent-dark)}
 .task-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .task-row.done .task-text b{text-decoration:line-through;color:#a0a597;font-weight:500}
 .task-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
@@ -180,13 +180,13 @@
 .hl-colors{display:flex;align-items:center;gap:6px}
 .hl-colors>button:not(.hl-act){width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #0002;transition:transform .12s}
 .hl-colors>button:not(.hl-act):hover{transform:scale(1.15)}
-.hl-colors>button.on{box-shadow:0 0 0 2px #2f3a2c}
+.hl-colors>button.on{box-shadow:0 0 0 2px var(--accent-dark)}
 .hl-sep{width:1px;height:18px;background:#e4dfd0;margin:0 2px}
 .hl-act{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;color:#5b6256}
 .hl-act:hover{background:#ece8dc}
 .hl-edit{display:flex;flex-direction:column;gap:7px;width:230px}
 .hl-edit textarea{width:100%;resize:none;border:1px solid var(--line);border-radius:9px;padding:6px 8px;font:inherit;font-size:13px;background:#fff}
-.hl-toggle em{font-style:normal;font-size:11px;background:#2f3a2c;color:#fff;border-radius:999px;padding:0 6px;margin-left:4px}
+.hl-toggle em{font-style:normal;font-size:11px;background:var(--accent-dark);color:#fff;border-radius:999px;padding:0 6px;margin-left:4px}
 .hl-toggle.on{background:#ece8dc}
 .hl-panel{position:absolute;top:50px;right:0;bottom:0;width:320px;background:#fbfaf5;border-left:1px solid var(--line);box-shadow:-10px 0 30px #1c24191a;z-index:35;display:flex;flex-direction:column}
 .hl-panel header{display:flex;align-items:center;gap:6px;padding:10px 12px;border-bottom:1px solid #eeeadf}
@@ -202,15 +202,15 @@
 /* Repeat options, checklists and snoozing */
 .week-pick{display:flex;gap:6px}
 .week-pick button{width:34px;height:34px;border-radius:50%;background:#ece8dc;font-weight:700;font-size:13px;color:#6b7266}
-.week-pick button.on{background:#2f3a2c;color:#fffef9}
+.week-pick button.on{background:var(--accent-dark);color:#fffef9}
 .every-pick{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink)!important;flex-direction:row!important}
 .every-pick input{width:64px}
 .small-note{margin:0;font-size:12.5px}
 .sub-edit{display:flex;flex-direction:column;gap:6px}
 .sub-h{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--muted)}
 .sub-row{display:flex;gap:6px;align-items:center}.sub-row input{flex:1}
-.sub-chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#4a6b4d;background:#e4ece1;border-radius:999px;padding:1px 8px}
-.sub-chip.all{background:#2f3a2c;color:#fffef9}
+.sub-chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#4a6b4d;background:var(--sage-soft);border-radius:999px;padding:1px 8px}
+.sub-chip.all{background:var(--accent-dark);color:#fffef9}
 .sub-list{display:flex;flex-direction:column;gap:5px;margin:7px 0 2px;padding:8px 10px;background:#f6f3ea;border-radius:12px}
 .sub-item{display:flex;align-items:center;gap:8px;font-size:13.5px;cursor:pointer}
 .sub-item.done span{text-decoration:line-through;color:#a0a597}
@@ -229,7 +229,7 @@
 .layout-toggle button{display:inline-flex;align-items:center;gap:6px}
 .tboard{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start;margin-top:10px}
 .tb-col{background:var(--paper-2,#f1eee3);border-radius:14px;padding:10px;min-height:180px;transition:background .15s}
-.tb-col.over{background:var(--sage-soft,#e6eee6)}
+.tb-col.over{background:var(--sage-soft,var(--sage-soft))}
 .tb-col>header{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 8px}
 .tb-col h4{margin:0;font-size:13px;font-weight:600}
 .tb-col header span{font-size:12px;color:var(--muted,#667)}
@@ -255,9 +255,9 @@
 .tb-acts{position:static;background:none;min-height:0;flex:none}
 .tb-col>header h4{display:inline-flex;align-items:center;gap:8px}
 .tb-dot{width:8px;height:8px;border-radius:50%;background:#9aa291;flex:none}
-.tb-doing{background:#e6eef7}.tb-doing .tb-dot{background:#4f7ea8}.tb-doing header h4{color:#2f5a82}
-.tb-done{background:#e3eee1}.tb-done .tb-dot{background:#567458}.tb-done header h4{color:#3d5f40}
-.tb-todo .tb-dot{background:#9aa291}
-.tb-doing.over{background:#d8e6f3}.tb-done.over{background:#d3e6d0}
-.tb-doing .tb-card{border-color:#c9d9ea}.tb-done .tb-card{border-color:#c4dac1}
-.tb-done .tb-title{color:#6b7a68;text-decoration:line-through}
+.tb-col{background:color-mix(in srgb,var(--col,#8a9184) 12%,var(--paper-2,#f1eee3))}
+.tb-col .tb-dot{background:var(--col,#8a9184)}
+.tb-col header h4{color:color-mix(in srgb,var(--col,#8a9184) 55%,var(--ink,#252923))}
+.tb-col.over{background:color-mix(in srgb,var(--col,#8a9184) 24%,var(--paper-2,#f1eee3))}
+.tb-col .tb-card{border-color:color-mix(in srgb,var(--col,#8a9184) 28%,var(--line,#ddd))}
+.tb-col.last .tb-title{color:#6b7a68;text-decoration:line-through}

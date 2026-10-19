@@ -4,6 +4,7 @@ import {highlight,langName} from './highlight.js';
 // with line numbers. Typing happens in the textarea, so the caret never jumps when the colours are redrawn.
 // In the saved note it is stored as a plain <pre data-lang> so search, export and older versions keep working.
 
+import {codeOptions} from './prefs.js';
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 export function refreshCode(block){
@@ -37,16 +38,17 @@ function onKey(e,block,hooks){
  if(e.key==='Tab'){
   e.preventDefault();
   const sameLine=!v.slice(s,en).includes('\n');
-  if(!e.shiftKey&&sameLine){put(ta,'  ',s,en,s+2,s+2);return;}
+  const T=codeOptions().tab,IND=' '.repeat(T);
+  if(!e.shiftKey&&sameLine){put(ta,IND,s,en,s+T,s+T);return;}
   const [a,b]=lineBounds(v,s,en);
   const block_=v.slice(a,b);
   if(e.shiftKey){
-   const out=block_.split('\n').map(l=>l.replace(/^ {1,2}|^\t/,'')).join('\n');
+   const out=block_.split('\n').map(l=>l.replace(new RegExp('^ {1,'+T+'}|^\\t'),'')).join('\n');
    const removedFirst=block_.length>0?block_.split('\n')[0].length-out.split('\n')[0].length:0;
    put(ta,out,a,b,Math.max(a,s-removedFirst),Math.max(a,en-(block_.length-out.length)));
   }else{
-   const out=block_.split('\n').map(l=>'  '+l).join('\n');
-   put(ta,out,a,b,s+2,en+(out.length-block_.length));
+   const out=block_.split('\n').map(l=>IND+l).join('\n');
+   put(ta,out,a,b,s+T,en+(out.length-block_.length));
   }
   return;
  }
@@ -56,10 +58,10 @@ function onKey(e,block,hooks){
   const line=v.slice(a,s),indent=(line.match(/^[ \t]*/)||[''])[0];
   const prev=v[s-1],next=v[s];
   if(prev&&CLOSERS[prev]&&next===CLOSERS[prev]){
-   const ins='\n'+indent+'  \n'+indent;
-   put(ta,ins,s,en,s+1+indent.length+2,s+1+indent.length+2);
+   const ind2=' '.repeat(codeOptions().tab),ins='\n'+indent+ind2+'\n'+indent;
+   put(ta,ins,s,en,s+1+indent.length+ind2.length,s+1+indent.length+ind2.length);
   }else{
-   const extra=/[{(\[:]\s*$/.test(line)?'  ':'';
+   const extra=/[{(\[:]\s*$/.test(line)?' '.repeat(codeOptions().tab):'';
    const ins='\n'+indent+extra;
    put(ta,ins,s,en,s+ins.length,s+ins.length);
   }

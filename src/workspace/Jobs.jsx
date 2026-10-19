@@ -1,4 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
+import {dateLocale} from './prefs.js';
 import {DateField} from './Pickers.jsx';
 import {Plus,Briefcase,MapPin,CurrencyInr,CalendarBlank,ArrowUpRight,Trash,Rows,Kanban,Warning} from '@phosphor-icons/react';
 import {useCollection} from './hooks.js';
@@ -11,8 +12,8 @@ import {useUndo} from './Undo.jsx';
 import {useBulk,SelectToggle,BulkBar,SelectMark} from './bulk.jsx';
 
 const today=()=>dayKey();
-const fmtDate=d=>d?new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'';
-const ago=(ts)=>new Date(ts).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+const fmtDate=d=>d?new Date(d+'T00:00').toLocaleDateString(dateLocale(),{day:'numeric',month:'short'}):'';
+const ago=(ts)=>new Date(ts).toLocaleDateString(dateLocale(),{day:'numeric',month:'short',year:'numeric'});
 const EMPTY={company:'',role:'',status:'Applied',location:'',salary:'',source:'',link:'',contact:'',nextStep:'',nextDate:'',priority:'Medium',notes:'',appliedDate:today()};
 
 function JobForm({job,onSave,onDelete}){

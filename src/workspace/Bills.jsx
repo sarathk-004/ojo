@@ -1,4 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
+import {dateLocale} from './prefs.js';
 import {DateField} from './Pickers.jsx';
 import {MagnifyingGlass,Plus,Receipt,ArrowsClockwise,Check,SkipForward,PencilSimple,Trash,Lightbulb,X,House,MonitorPlay,Lightning,CreditCard,CalendarBlank,Wallet} from '@phosphor-icons/react';
 import {useCollection,uid} from './hooks.js';
@@ -168,7 +169,7 @@ export function Bills(){
     {suggestions.map(s=>(
      <div className="sg-row" key={s.key}>
       <ArrowsClockwise size={17}/>
-      <div className="bill-main"><b>{s.name}</b><span className="muted">{fmtMoney(s.amount,sym)} · {cycleLabel(s.cycle).toLowerCase()} · seen {s.count} times, next around {new Date(s.due+'T12:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span></div>
+      <div className="bill-main"><b>{s.name}</b><span className="muted">{fmtMoney(s.amount,sym)} · {cycleLabel(s.cycle).toLowerCase()} · seen {s.count} times, next around {new Date(s.due+'T12:00').toLocaleDateString(dateLocale(),{day:'numeric',month:'short'})}</span></div>
       <button className="ghost small" onClick={()=>adopt(s)}><Plus size={13} weight="bold"/>Track it</button>
       <button className="icon-btn" aria-label="Not a bill" onClick={()=>dismiss(s)}><X size={14}/></button>
      </div>

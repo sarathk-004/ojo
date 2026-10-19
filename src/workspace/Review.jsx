@@ -1,4 +1,5 @@
 import React,{useEffect,useMemo,useState} from 'react';
+import {dateLocale} from './prefs.js';
 import {CaretLeft,CaretRight,Trophy,CheckCircle,Flame,Timer,Wallet,PiggyBank,NotePencil,ArrowUp,ArrowDown,Receipt,Briefcase,BookmarkSimple,CalendarBlank} from '@phosphor-icons/react';
 import {useCollection} from './hooks.js';
 import {api} from './api.js';
@@ -9,7 +10,7 @@ import {CountNum} from './Motion.jsx';
 import {catOf,fmtMoney} from './finance.mjs';
 
 const bridge=typeof window!=='undefined'?window.taskit:null;
-const short=d=>new Date(d+'T12:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+const short=d=>new Date(d+'T12:00').toLocaleDateString(dateLocale(),{day:'numeric',month:'short'});
 const DAY_L=['M','T','W','T','F','S','S'];
 
 // The week at a glance, built only from what ojo actually recorded.
@@ -69,13 +70,13 @@ export function Review({go}){
      <label>What I will change<textarea rows={3} placeholder="What got in the way, what to do differently…" value={mine.change||''} onChange={e=>saveMine({change:e.target.value})}/></label>
      <label>Top three for next week<textarea rows={3} placeholder="1.&#10;2.&#10;3." value={mine.next||''} onChange={e=>saveMine({next:e.target.value})}/></label>
     </div>
-    {mine.updated&&<span className="muted rv-saved">Saved {new Date(mine.updated).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})}</span>}
+    {mine.updated&&<span className="muted rv-saved">Saved {new Date(mine.updated).toLocaleString(dateLocale(),{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})}</span>}
    </section>
 
    <div className="rv-grid">
     <section className="rv-card">
      <h4>Finished this week</h4>
-     {s.tasks.finished.map(t=><div className="rv-line" key={t.id}><CheckCircle size={15} weight="fill"/><span>{t.title}</span><em>{new Date(t.at).toLocaleDateString('en-GB',{weekday:'short'})}</em></div>)}
+     {s.tasks.finished.map(t=><div className="rv-line" key={t.id}><CheckCircle size={15} weight="fill"/><span>{t.title}</span><em>{new Date(t.at).toLocaleDateString(dateLocale(),{weekday:'short'})}</em></div>)}
      {!s.tasks.finished.length&&<p className="muted">Nothing recorded yet. From now on, every task you finish is logged with the day, so this fills in as you go.</p>}
     </section>
 
@@ -102,7 +103,7 @@ export function Review({go}){
 
     {s.wins.length>0&&<section className="rv-card">
      <h4>Wins</h4>
-     {s.wins.map(w=><div className="rv-line" key={w.id}><Trophy size={15} weight="fill"/><span>{w.text}</span><em>{new Date(w.day+'T12:00').toLocaleDateString('en-GB',{weekday:'short'})}</em></div>)}
+     {s.wins.map(w=><div className="rv-line" key={w.id}><Trophy size={15} weight="fill"/><span>{w.text}</span><em>{new Date(w.day+'T12:00').toLocaleDateString(dateLocale(),{weekday:'short'})}</em></div>)}
     </section>}
 
     <section className="rv-card">
@@ -117,7 +118,7 @@ export function Review({go}){
 
     <section className="rv-card">
      <h4>Coming up next week</h4>
-     {upcoming.map((u,i)=><div className="rv-line" key={i}>{u.kind==='bill'?<Receipt size={15}/>:<CalendarBlank size={15}/>}<span>{u.label}{u.amount?' · '+fmtMoney(Number(u.amount),sym):''}</span><em>{new Date(u.d+'T12:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric'})}</em></div>)}
+     {upcoming.map((u,i)=><div className="rv-line" key={i}>{u.kind==='bill'?<Receipt size={15}/>:<CalendarBlank size={15}/>}<span>{u.label}{u.amount?' · '+fmtMoney(Number(u.amount),sym):''}</span><em>{new Date(u.d+'T12:00').toLocaleDateString(dateLocale(),{weekday:'short',day:'numeric'})}</em></div>)}
      {!upcoming.length&&<p className="muted">Nothing due or scheduled yet.</p>}
     </section>
    </div>

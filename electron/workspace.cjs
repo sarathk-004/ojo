@@ -396,6 +396,7 @@ module.exports=function workspace({root,userData,getTasks,addTask,aumid,resetTas
   if(name==='reminders')resyncNudges(data.reminders,items);
   if(name==='focus')return true;           // the focus log is written only by the focus timer below
   data[name]=items;persist();
+  if(name==='settings'&&capRaw!==(userPrefs().captureKey||'')&&!quiet.isQuiet()){const want=userPrefs().captureKey;if(want!==undefined&&(capRaw!==want||!want)){try{if(capRaw)globalShortcut.unregister(capRaw);}catch{}capRaw='';registerShortcuts();}}
   if(name==='bills')setTimeout(()=>billsTick(),700);
   if(name==='finance'||name==='budgets')setTimeout(()=>budgetTick(),900);
   return true;
@@ -572,10 +573,12 @@ module.exports=function workspace({root,userData,getTasks,addTask,aumid,resetTas
  }
  const countToday=id=>(data.nudgelog.find(x=>x.id===id)?.days||{})[todayKey()]||0;
  function touchLog(){persist();broadcast('nudgelog');}
+ const userPrefs=()=>(data.settings[0]&&data.settings[0].prefs)||{};
+ const snoozeMinutes=()=>{const m=Number(userPrefs().snooze);return [5,10,15,30,60].includes(m)?m:10;};
  function nudgePayload(){
   return nudgeQueue.map(id=>{
    const r=data.reminders.find(x=>x.id===id);
-   return r?{id:r.id,name:r.name,emoji:r.emoji,goal:r.goal||0,unit:r.unit||'',count:countToday(r.id)}:null;
+   return r?{id:r.id,name:r.name,emoji:r.emoji,goal:r.goal||0,unit:r.unit||'',count:countToday(r.id),snooze:snoozeMinutes()}:null;
   }).filter(Boolean);
  }
  function publishNudges(){
@@ -604,7 +607,7 @@ module.exports=function workspace({root,userData,getTasks,addTask,aumid,resetTas
  function fireNudge(r){
   if(quiet.isQuiet())return;   // a repeater that comes due during quiet mode is simply skipped
   if(!nudgeQueue.includes(r.id))nudgeQueue.push(r.id);
-  if(r.sound!==false)shell.beep();
+  if(r.sound!==false&&userPrefs().sound!==false)shell.beep();
   showNudge().catch(e=>console.error('Reminder toast:',e));
   // An unanswered nudge quietly goes away after a while rather than piling up.
   setTimeout(()=>{if(nudgeQueue.includes(r.id)){nudgeQueue=nudgeQueue.filter(x=>x!==r.id);publishNudges();}},45000);
@@ -646,7 +649,7 @@ module.exports=function workspace({root,userData,getTasks,addTask,aumid,resetTas
   if(!nudgeQueue.includes(id))return false;
   const l=logFor(id);
   if(action==='done'){const k=todayKey();l.days[k]=(l.days[k]||0)+1;}
-  if(action==='snooze')l.nextAt=Date.now()+10*60000;
+  if(action==='snooze')l.nextAt=Date.now()+snoozeMinutes()*60000;
   nudgeQueue=nudgeQueue.filter(x=>x!==id);
   touchLog();publishNudges();
   return true;
@@ -802,7 +805,7 @@ module.exports=function workspace({root,userData,getTasks,addTask,aumid,resetTas
   logFocus(f,finished?f.minutes*60000:activeMs(f));
   tellFocus();
   if(finished){
-   shell.beep();
+   if(userPrefs().sound!==false)shell.beep();
    if(Notification.isSupported()){
     const n=new Notification({title:f.kind==='focus'?'Focus session done':'Break over',body:f.kind==='focus'?(f.title?f.title+' · ':'')+(f.minutes>=1&&Number.isInteger(f.minutes)?f.minutes+' minutes':Math.round(f.minutes*60)+' seconds')+'. Time for a break.':'Ready for the next one?',icon:iconPath,silent:false});
     n.on('click',()=>open('focus'));notify(n);
@@ -855,7 +858,9 @@ async function toggleCapture(){
  }
  let capRaw='';
  function registerShortcuts(){
-  if(!capRaw)for(const k of CAP_KEYS){
+  const want=userPrefs().captureKey;
+  const keys=want&&CAP_KEYS.concat(['CommandOrControl+Alt+K','CommandOrControl+Shift+J']).includes(want)?[want,...CAP_KEYS]:CAP_KEYS;
+  if(!capRaw)for(const k of keys){
    try{if(globalShortcut.register(k,()=>{toggleCapture().catch(e=>console.error('Quick capture:',e));})){capRaw=k;capKey=k.replace('CommandOrControl','Ctrl').replace(/\+/g,' + ');break;}}catch{}
   }else{try{globalShortcut.register(capRaw,()=>{toggleCapture().catch(e=>console.error('Quick capture:',e));});}catch{}}
   try{globalShortcut.register('CommandOrControl+Alt+N',revealNow);}catch{}

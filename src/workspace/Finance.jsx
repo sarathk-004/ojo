@@ -1,4 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
+import {dateLocale} from './prefs.js';
 import {DateField} from './Pickers.jsx';
 import {Plus,CaretLeft,CaretRight,Trash,PencilSimple,DownloadSimple,MagnifyingGlass,ArrowDownLeft,ArrowUpRight,PiggyBank,Wallet,X,UploadSimple} from '@phosphor-icons/react';
 import {gsap} from 'gsap';
@@ -197,7 +198,7 @@ export function Finance({focusId}){
       const net=items.reduce((n,t)=>n+(t.type==='income'?t.amount:-t.amount),0);
       return (
        <div className="day-group" key={date}>
-        <div className="day-head"><span>{new Date(date+'T00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</span><em>{fmtMoney(net,sym)}</em></div>
+        <div className="day-head"><span>{new Date(date+'T00:00').toLocaleDateString(dateLocale(),{weekday:'short',day:'numeric',month:'short'})}</span><em>{fmtMoney(net,sym)}</em></div>
         {items.map(t=>{const c=catOf(t.category);return (
          <div className={'txn-row'+(bulk.on?' sel-host pad-left':'')} key={t.id}>
           <SelectMark bulk={bulk} id={t.id}/>

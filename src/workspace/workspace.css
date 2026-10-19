@@ -1,4 +1,4 @@
-.ws{--paper:#f3f0e9;--side:#ebe7dc;--card:#fbfaf6;--ink:#252923;--muted:#7b8176;--line:#e0dccf;--sage:#567458;--sage-soft:#e1e8dc;--danger:#b4533f;
+.ws{--paper:#f3f0e9;--side:#ebe7dc;--card:#fbfaf6;--ink:#252923;--muted:#7b8176;--line:#e0dccf;--sage:#567458;--sage-soft:#e1e8dc;--accent-dark:#2f3a2c;--danger:#b4533f;
  position:fixed;inset:0;display:grid;grid-template-columns:216px 1fr;background:var(--paper);color:var(--ink);font-family:'Geist Variable',sans-serif;letter-spacing:-.04em;font-size:14px;-webkit-font-smoothing:antialiased}
 .ws *{box-sizing:border-box}
 .ws button{font:inherit;letter-spacing:inherit;border:0;background:none;color:inherit;cursor:pointer;transition:background .15s,color .15s,opacity .15s,transform .1s}
@@ -18,7 +18,7 @@
 .ws-nav{background:var(--side);padding:52px 12px 16px;display:flex;flex-direction:column;gap:6px;-webkit-app-region:drag;border-right:1px solid var(--line)}
 .ws-nav>*{-webkit-app-region:no-drag}
 .brand{position:absolute;left:14px;top:9px;display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;-webkit-app-region:drag}
-.brand img{background:#2f3a2c;padding:4px;border-radius:7px;width:24px;height:24px}
+.brand img{background:var(--accent-dark);padding:4px;border-radius:7px;width:24px;height:24px}
 .nav-group{display:flex;flex-direction:column;gap:2px}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;text-align:left;font-weight:500;color:#4a5046}
 button.nav-item:hover{background:#e2ddcf}
@@ -31,7 +31,7 @@ button.nav-item:hover{background:#e2ddcf}
 .drag-strip{height:40px;flex:none;-webkit-app-region:drag}
 .ws-main>:not(.drag-strip){flex:1;min-height:0}
 
-.ws .primary{display:inline-flex;align-items:center;gap:6px;background:#2f3a2c;color:#fffef9!important;padding:9px 14px;border-radius:11px;font-weight:600}
+.ws .primary{display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fffef9!important;padding:9px 14px;border-radius:11px;font-weight:600}
 .ws .primary:hover:not(:disabled){background:#3b4837}
 .ws .primary.round{width:32px;height:32px;padding:0;justify-content:center;border-radius:50%}
 .ws .primary.small{padding:6px 12px;font-size:13px}
@@ -106,7 +106,7 @@ button.nav-item:hover{background:#e2ddcf}
 .cell.out{background:transparent;color:#a9ac9f}
 .cell.picked{border-color:var(--sage);box-shadow:0 0 0 1px var(--sage) inset}
 .cell .num{font-weight:600;font-size:13px;width:24px;height:24px;display:grid;place-items:center;border-radius:50%}
-.cell.today .num{background:#2f3a2c;color:#fffef9}
+.cell.today .num{background:var(--accent-dark);color:#fffef9}
 .chips{display:flex;flex-direction:column;gap:2px;min-height:0}
 .chip{font-size:11px;font-weight:500;padding:2px 6px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.02em}
 .chip.event{background:color-mix(in srgb,var(--c) 17%,white);color:color-mix(in srgb,var(--c) 85%,black)}
@@ -123,7 +123,7 @@ button.nav-item:hover{background:#e2ddcf}
 .ws .row2 input{padding:7px 8px;font-size:12.5px}
 .swatches{display:flex;gap:8px}
 .swatches button{width:22px;height:22px;border-radius:50%;border:2px solid var(--card)!important;box-shadow:0 0 0 1px var(--line)}
-.swatches button.on{box-shadow:0 0 0 2px #2f3a2c}
+.swatches button.on{box-shadow:0 0 0 2px var(--accent-dark)}
 .form-actions{display:flex;gap:8px}
 .agenda{display:flex;flex-direction:column;gap:8px}
 .agenda-row{display:flex;align-items:flex-start;gap:10px}
@@ -147,7 +147,7 @@ button.nav-item:hover{background:#e2ddcf}
 .chips-row{display:flex;gap:6px;flex-wrap:wrap}
 .ws .filter{padding:6px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line)!important;font-weight:500;display:inline-flex;gap:6px;align-items:center}
 .filter em{font-style:normal;color:var(--muted);font-size:11.5px}
-.filter.on{background:#2f3a2c;color:#fffef9;border-color:#2f3a2c!important}
+.filter.on{background:var(--accent-dark);color:#fffef9;border-color:var(--accent-dark)!important}
 .filter.on em{color:#c9d4c3}
 .cards{columns:260px;column-gap:14px}
 .card{break-inside:avoid;margin-bottom:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;position:relative;transition:box-shadow .15s}

@@ -1,4 +1,4 @@
-const {contextBridge, ipcRenderer} = require('electron');
+const {contextBridge, ipcRenderer, webFrame} = require('electron');
 contextBridge.exposeInMainWorld('taskit', {
   load: () => ipcRenderer.invoke('load'),
   save: state => ipcRenderer.invoke('save', state),
@@ -27,6 +27,7 @@ contextBridge.exposeInMainWorld('workspace', {
   open: section => ipcRenderer.invoke('ws-open', section),
   focusState: () => ipcRenderer.invoke('ws-focus-state'),
   focusStart: opts => ipcRenderer.invoke('ws-focus-start', opts),
+  setZoom: f => { try { webFrame.setZoomFactor(Math.min(1.5, Math.max(.8, Number(f) || 1))); } catch {} return true; },
   focusPause: (shown) => ipcRenderer.invoke('ws-focus-pause', shown),
   focusResume: () => ipcRenderer.invoke('ws-focus-resume'),
   focusStop: () => ipcRenderer.invoke('ws-focus-stop'),

@@ -27,6 +27,7 @@ import './workspace-narrow.css';
 import './workspace-dark.css';
 import {Settings} from './Settings.jsx';
 import {Tooltip} from './Tooltip.jsx';
+import {useLivePrefs,applyPrefs,SCALES} from './prefs.js';
 import {Mascot} from './Mascot.jsx';
 import {Onboarding} from './Onboarding.jsx';
 import {applyTheme,getTheme,setTheme,watchSystemTheme} from './theme.js';
@@ -88,6 +89,9 @@ export function Workspace(){
  useEffect(()=>{applyTheme();return watchSystemTheme();},[]);
  useEffect(()=>{const t=setInterval(()=>setDark(document.documentElement.dataset.theme==='dark'),800);return()=>clearInterval(t);},[]);
  const flipTheme=()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';setTheme(next);setDark(next==='dark');};
+ const prefs=useLivePrefs(settings);
+ useLayoutEffect(()=>{applyPrefs(prefs);},[prefs]);
+ useEffect(()=>{api.setZoom((SCALES[prefs.scale]||SCALES.default).zoom);},[prefs.scale]);
  const [replay,setReplay]=useState(false);
  const accept=version=>{setReplay(false);setSettings(l=>[{...(l[0]||{}),id:'settings',legalAccepted:(l[0]&&l[0].legalAccepted&&l[0].legalAccepted.version===version)?l[0].legalAccepted:{version,at:Date.now()},tour:TOUR_VERSION},...l.slice(1)]);};
  const needsTour=settingsReady&&settings[0]?.tour!==TOUR_VERSION,needsLegal=settingsReady&&settings[0]?.legalAccepted?.version!==LEGAL_VERSION;
@@ -102,6 +106,14 @@ export function Workspace(){
  const go=(id,item)=>{if(SECTIONS.some(x=>x.id===id)){setSection(id);setFocusId(item||null);}};
  useEffect(()=>api.onSection(v=>{const o=typeof v==='string'?{section:v}:v;go(o.section,o.itemId);}),[]);
  useEffect(()=>{try{localStorage.setItem('tnkr-ws-section',section);}catch{}},[section]);
+ const startDone=useRef(false);
+ useEffect(()=>{
+  if(startDone.current||!settingsReady)return;
+  startDone.current=true;
+  const sp=prefs.startPage;
+  const g=GROUPS.find(x=>x.id===sp);
+  if(sp&&sp!=='last'&&g)setSection(g.items[0]);
+ },[settingsReady]);
  // Clicking empty space, or pressing Escape, always clears a text selection.
  useEffect(()=>{
   const down=e=>{if(e.button===0&&!e.target.closest('input,textarea,select,button,a,[contenteditable],.textLayer span'))window.getSelection()?.removeAllRanges();};
@@ -175,7 +187,7 @@ export function Workspace(){
     <button className="bar-btn nav-search" aria-label="Search everything (Ctrl K)" onClick={()=>setSearching(true)}><MagnifyingGlass size={18}/></button>
     <button className="bar-btn nav-toggle" aria-label="Hide sidebar" onClick={()=>setNavClosed(true)}><SidebarSimple size={18}/></button>
     <div className="nav-group" onDrop={e=>{e.preventDefault();endDrag();}}>
-     {order.map(id=>{const s=GROUPS.find(x=>x.id===id),Icon=s.icon;return (
+     {order.filter(id=>id==='tasks'||!prefs.hiddenPlaces.includes(id)).map(id=>{const s=GROUPS.find(x=>x.id===id),Icon=s.icon;return (
       <button key={id} ref={el=>{itemRefs.current[id]=el;}} draggable className={'nav-item'+(group.id===id?' on':'')+(dragging===id?' dragging':'')}
        onClick={()=>openGroup(s)} onDragStart={e=>onDragStart(e,id)} onDragOver={e=>onDragOver(e,id)} onDragEnd={endDrag} onKeyDown={e=>onNavKey(e,id)}>
        <Icon size={18} weight={group.id===id?'fill':'regular'}/>{s.name}{id==='tasks'&&running&&<em className="nav-timer">{running.paused?'paused':fmtClock(runLeft)}</em>}<DotsSixVertical className="grip" size={14} weight="bold"/>

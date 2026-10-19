@@ -24,7 +24,7 @@
 .news-tabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .ws .news-tabs>button:not(.ghost){display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:999px;font-weight:600;color:#5b6256}
 .ws .news-tabs>button:not(.ghost):hover{background:#e8e4d8}
-.ws .news-tabs>button.on{background:#2f3a2c;color:#fffef9}
+.ws .news-tabs>button.on{background:var(--accent-dark);color:#fffef9}
 .news-tabs em{font-style:normal;font-size:11.5px;opacity:.65}
 .ws .news-tabs select{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:6px 9px;font:inherit;outline:0;cursor:pointer;max-width:170px}
 .ws .ghost.on{background:var(--sage-soft);color:var(--sage)}
@@ -99,7 +99,7 @@
 .ws .emoji-row button.on{background:var(--sage-soft);box-shadow:0 0 0 2px var(--sage) inset}
 .days-row{display:flex;gap:5px}
 .ws .days-row button{flex:1;padding:7px 0;border-radius:9px;border:1px solid var(--line);font-size:12.5px;font-weight:600;color:#6b7266}
-.ws .days-row button.on{background:#2f3a2c;border-color:#2f3a2c;color:#fffef9}
+.ws .days-row button.on{background:var(--accent-dark);border-color:var(--accent-dark);color:#fffef9}
 .nudge-form .inline{display:flex;gap:6px}
 .ws .modal .nudge-form .inline select{width:auto;flex:none}
 .ws .modal label.check{flex-direction:row;align-items:center;gap:8px;font-size:13px;color:var(--ink)}

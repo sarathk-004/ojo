@@ -24,10 +24,10 @@
 .sources .src-group>.muted{font-size:12px;margin:2px 0 0}
 .brief-set label.wide{grid-column:1/-1}
 .brief-progress{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#6b7266;background:#ece8dc;border-radius:999px;padding:5px 12px;margin-left:6px}
-.brief-progress i{width:8px;height:8px;border-radius:50%;background:#567458;animation:bp 1s ease-in-out infinite}
+.brief-progress i{width:8px;height:8px;border-radius:50%;background:var(--sage);animation:bp 1s ease-in-out infinite}
 @keyframes bp{50%{opacity:.25;transform:scale(.7)}}
 /* Loading: a soft morphing blob, and a shimmer over text that is about to be replaced */
-.blob{display:inline-block;width:12px;height:12px;background:#567458;border-radius:60% 40% 55% 45%/50% 60% 40% 50%;animation:blobmorph 1.8s ease-in-out infinite}
-.brief-progress .blob{background:#2f3a2c}
+.blob{display:inline-block;width:12px;height:12px;background:var(--sage);border-radius:60% 40% 55% 45%/50% 60% 40% 50%;animation:blobmorph 1.8s ease-in-out infinite}
+.brief-progress .blob{background:var(--accent-dark)}
 @keyframes blobmorph{0%{border-radius:60% 40% 55% 45%/50% 60% 40% 50%;transform:rotate(0) scale(1)}33%{border-radius:40% 60% 45% 55%/60% 40% 60% 40%;transform:rotate(120deg) scale(.82)}66%{border-radius:55% 45% 60% 40%/45% 55% 45% 55%;transform:rotate(240deg) scale(1.08)}100%{border-radius:60% 40% 55% 45%/50% 60% 40% 50%;transform:rotate(360deg) scale(1)}}
 

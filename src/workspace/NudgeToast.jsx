@@ -50,7 +50,7 @@ export function NudgeToast(){
     {dots>0&&<div className="pips">{Array.from({length:dots},(_,i)=><i key={i} className={i<cur.count?'on':''}/>)}</div>}
     <div className="btns">
      <button className="done" data-action="done" onClick={()=>act('done')}>Done</button>
-     <button data-action="snooze" onClick={()=>act('snooze')}>Snooze 10 min</button>
+     <button data-action="snooze" onClick={()=>act('snooze')}>Snooze {cur.snooze||10} min</button>
      <button className="quiet" data-action="dismiss" onClick={()=>act('dismiss')}>Skip</button>
     </div>
    </div>

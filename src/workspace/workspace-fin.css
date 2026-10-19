@@ -42,7 +42,7 @@
 .legend i{width:9px;height:9px;border-radius:3px}.legend em{font-style:normal;color:var(--muted);font-size:11.5px}.legend b{font-weight:600}
 .legend span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .key{margin-left:auto;font-size:11.5px;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:6px}
-.key i{width:9px;height:9px;border-radius:3px;display:inline-block}.key .g{background:#567458}.key .o{background:#c9803f;margin-left:6px}
+.key i{width:9px;height:9px;border-radius:3px;display:inline-block}.key .g{background:var(--sage)}.key .o{background:#c9803f;margin-left:6px}
 .bar-chart{width:100%;height:auto;display:block}
 .txn-box{padding-bottom:6px}
 .txn-bar{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap}

@@ -1,6 +1,6 @@
 {
   "name": "tnkr",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,7 @@
     "test:sites": "node --test tests/sites-worker.test.mjs",
     "desktop": "npm run build && node scripts/build-native.mjs && electron .",
     "package": "npm run build && node scripts/build-native.mjs && node scripts/package-desktop.mjs",
-    "test": "node --test tests/tasks.test.mjs tests/geometry.test.mjs tests/visibility.test.mjs tests/master.test.mjs tests/mobile-lists.test.mjs tests/workspace.test.mjs tests/workspace-modules.test.mjs tests/nudges.test.mjs tests/statement.test.mjs tests/search.test.mjs tests/capture.test.mjs tests/note-export.test.mjs tests/bills.test.mjs tests/focus.test.mjs tests/planner-review.test.mjs tests/recurrence.test.mjs tests/coverfit.test.mjs tests/legal.test.mjs tests/richtext.test.mjs tests/templates.test.mjs tests/vendor.test.mjs",
+    "test": "node --test tests/tasks.test.mjs tests/geometry.test.mjs tests/visibility.test.mjs tests/master.test.mjs tests/mobile-lists.test.mjs tests/workspace.test.mjs tests/workspace-modules.test.mjs tests/nudges.test.mjs tests/statement.test.mjs tests/search.test.mjs tests/capture.test.mjs tests/note-export.test.mjs tests/bills.test.mjs tests/focus.test.mjs tests/planner-review.test.mjs tests/recurrence.test.mjs tests/coverfit.test.mjs tests/legal.test.mjs tests/richtext.test.mjs tests/templates.test.mjs tests/vendor.test.mjs tests/savedlib.test.mjs tests/prefs.test.mjs",
     "legal": "node scripts/build-legal-docs.mjs",
     "installer": "node scripts/build-legal-docs.mjs && npm run package && node scripts/build-installer.mjs"
   },

@@ -59,7 +59,7 @@
 .outline-dashes{display:flex;flex-direction:column;align-items:flex-end;gap:7px;transition:opacity .15s}
 .outline .dash{display:block;height:3px;border-radius:2px;background:#cfcabb;transition:background .15s,width .15s}
 .outline .dash.l1{width:20px}.outline .dash.l2{width:14px}.outline .dash.l3{width:9px}
-.outline .dash.on{background:#2f3a2c}
+.outline .dash.on{background:var(--accent-dark)}
 .outline-panel{position:absolute;right:0;top:0;width:230px;max-height:min(60vh,420px);overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 36px #2c3a2526;padding:8px;display:flex;flex-direction:column;gap:1px;opacity:0;transform:translateX(10px) scale(.97);transform-origin:top right;pointer-events:none;transition:opacity .16s,transform .2s cubic-bezier(.3,1.2,.5,1)}
 .outline:hover .outline-panel{opacity:1;transform:none;pointer-events:auto}
 .outline:hover .outline-dashes{opacity:0}
@@ -76,21 +76,23 @@
 .block-bar button:hover{background:#f6e6e3}
 
 /* Code editor block */
-.note-body .cblock{position:relative;margin:12px 0;border-radius:12px;background:#2a2f27;color:#e9efe0;overflow:hidden;font:13px/20px 'Cascadia Code',Consolas,'Geist Mono',monospace;letter-spacing:0;user-select:text}
+.note-body .cblock{position:relative;margin:12px 0;border-radius:12px;background:#2a2f27;color:#e9efe0;overflow:hidden;font:var(--code-size,13px)/var(--code-lh,20px) 'Cascadia Code',Consolas,'Geist Mono',monospace;letter-spacing:0;user-select:text}
 .note-body .cblock::before{content:attr(data-label);position:absolute;right:12px;top:8px;font:600 10.5px 'Geist Variable',sans-serif;color:#8fa386;pointer-events:none;z-index:2}
 .cb-body{display:flex;align-items:stretch;padding:12px 0}
-.cb-gutter{flex:none;min-width:2.6em;padding:0 10px 0 14px;text-align:right;color:#6f7d68;white-space:pre;user-select:none;border-right:1px solid #3b4237;line-height:20px}
+.cb-gutter{flex:none;min-width:2.6em;padding:0 10px 0 14px;text-align:right;color:#6f7d68;white-space:pre;user-select:none;border-right:1px solid #3b4237;line-height:var(--code-lh,20px)}
 .cb-scroll{flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
 .cb-scroll::-webkit-scrollbar{display:none}
 .cb-stack{position:relative;min-width:100%;width:max-content}
-.cb-hl,.cb-ta{margin:0;padding:0 16px;border:0;font:inherit;letter-spacing:0;line-height:20px;white-space:pre;tab-size:2;background:transparent}
+.cb-hl,.cb-ta{margin:0;padding:0 16px;border:0;font:inherit;letter-spacing:0;line-height:var(--code-lh,20px);white-space:pre;tab-size:2;background:transparent}
 .note-body .cb-hl{display:block;padding:0 16px;margin:0;background:transparent;color:#e9efe0;overflow:visible;border-radius:0;pointer-events:none}
 .cb-ta{position:absolute;inset:0;width:100%;height:100%;resize:none;outline:0;overflow:hidden;color:transparent;caret-color:#f3f1e4;box-shadow:none}
 .cb-ta::selection{background:#5d7a5d88;color:transparent}
 .cb-ta:focus{box-shadow:none}
-.cblock:focus-within{box-shadow:0 0 0 2px #56745855}
+.cblock:focus-within{box-shadow:0 0 0 2px color-mix(in srgb,var(--sage) 33%,transparent)}
 .cb-hl .hljs-comment,.cb-hl .hljs-quote{color:#7f8c78;font-style:italic}
-.ws .note-body .cblock .cb-ta{color:transparent!important;-webkit-text-fill-color:transparent;background:transparent!important;border:0!important;padding:0 16px!important;box-shadow:none!important;border-radius:0!important;font:inherit!important;letter-spacing:0!important;line-height:20px!important;min-height:0!important}
-.ws .note-body .cblock .cb-hl{font:inherit;line-height:20px}
+.ws .note-body .cblock .cb-ta{color:transparent!important;-webkit-text-fill-color:transparent;background:transparent!important;border:0!important;padding:0 16px!important;box-shadow:none!important;border-radius:0!important;font:inherit!important;letter-spacing:0!important;line-height:var(--code-lh,20px)!important;min-height:0!important}
+.ws .note-body .cblock .cb-hl{font:inherit;line-height:var(--code-lh,20px)}
 .ws .note-body .cblock .cb-ta::selection{background:rgba(112,160,214,.38);color:transparent;-webkit-text-fill-color:transparent}
 .ws .note-body .cblock .cb-ta:not(:focus)::selection{background:rgba(112,160,214,.22)}
+
+.ws[data-lines=off] .cb-gutter{display:none}

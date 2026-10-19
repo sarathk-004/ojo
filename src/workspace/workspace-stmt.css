@@ -1,6 +1,6 @@
 /* Statement import */
 .stmt{display:flex;flex-direction:column;gap:12px;min-width:0}
-.stmt-private{display:flex;align-items:center;gap:8px;margin:0;font-size:12.5px;color:#4a6b4d;background:#e4ece1;border-radius:10px;padding:8px 12px}
+.stmt-private{display:flex;align-items:center;gap:8px;margin:0;font-size:12.5px;color:#4a6b4d;background:var(--sage-soft);border-radius:10px;padding:8px 12px}
 .stmt-drop{display:grid;justify-items:center;gap:6px;text-align:center;border:2px dashed #cfcab8;border-radius:18px;padding:34px 20px;cursor:pointer;color:#6b7266;transition:background .15s,border-color .15s}
 .stmt-drop:hover,.stmt-drop.over{background:#ece8dc;border-color:#9bab94}
 .stmt-drop b{color:var(--ink);font-size:15px}
@@ -37,7 +37,7 @@
 .folder-sure{margin-left:6px;font-size:12px}
 .pick-menu{position:fixed;z-index:60;background:var(--paper,#fff);border:1px solid var(--line,#ddd);border-radius:12px;padding:6px;box-shadow:0 6px 18px rgba(30,40,30,.12);display:flex;flex-direction:column;gap:2px;max-height:300px;overflow:auto}
 .pick-menu button[role=menuitem]{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 10px;border-radius:8px;font-size:13px;background:none;border:0;cursor:pointer}
-.pick-menu button[role=menuitem]:hover,.pick-menu button.on{background:var(--sage-soft,#e6eee6)}
+.pick-menu button[role=menuitem]:hover,.pick-menu button.on{background:var(--sage-soft,var(--sage-soft))}
 .pick-menu button span.muted{margin-left:auto;font-size:11px}
 .pm-title{margin:4px 10px 6px;font-size:12px;color:var(--muted,#667)}
 .pm-new{display:flex;gap:4px;padding:6px 6px 2px}
@@ -48,7 +48,7 @@
 .folder-new{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 6px 0 12px;border:1px solid var(--line,#ccd);border-radius:999px;background:var(--paper,#fff)}
 .folder-new>svg{flex:none;color:var(--muted,#667)}
 .folder-new input{width:150px;border:0;background:transparent;outline:0;box-shadow:none;padding:0;height:auto;font-size:13px}
-.folder-new .fn-ok{height:26px;padding:0 12px;border-radius:999px;border:0;background:var(--sage,#567458);color:#fff;font-size:12px;cursor:pointer}
+.folder-new .fn-ok{height:26px;padding:0 12px;border-radius:999px;border:0;background:var(--sage,var(--sage));color:#fff;font-size:12px;cursor:pointer}
 .folder-new .fn-ok:disabled{opacity:.4;cursor:default}
 .folder-new .fn-x{width:26px;height:26px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;cursor:pointer;color:var(--muted,#667)}
 .folder-ask{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--muted,#667);white-space:nowrap}
@@ -61,6 +61,6 @@
 .folder-ask em{font-style:normal}
 .pm-new{align-items:center;gap:8px;padding:8px 4px 4px;margin-top:4px;border-top:1px solid var(--line,#ddd)}
 .pm-new input{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line,#ccd);background:transparent;font-size:13px;outline:0;box-shadow:none}
-.pm-new .pm-create{height:32px;padding:0 14px;border-radius:999px;border:0;background:var(--sage,#567458);color:#fff;font-size:12px;cursor:pointer}
+.pm-new .pm-create{height:32px;padding:0 14px;border-radius:999px;border:0;background:var(--sage,var(--sage));color:#fff;font-size:12px;cursor:pointer}
 .pm-new .pm-create:disabled{opacity:.4;cursor:default}
 .pick-menu{padding:8px;border-radius:14px}

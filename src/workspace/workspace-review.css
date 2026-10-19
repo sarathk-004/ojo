@@ -17,16 +17,16 @@
 .rv-card h4{margin:0 0 3px;font-size:14px;letter-spacing:-.04em}
 .rv-card p{margin:0;font-size:13px}
 .rv-line{display:flex;align-items:center;gap:9px;font-size:13.5px}
-.rv-line svg{flex:none;color:#567458}.rv-line span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rv-line svg{flex:none;color:var(--sage)}.rv-line span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rv-line em{font-style:normal;color:#8a9081;font-size:12px}
 .rv-habit{display:grid;grid-template-columns:minmax(0,1fr) repeat(7,22px);gap:5px;align-items:center;font-size:13px}
 .rv-habit span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rv-habit i{width:22px;height:22px;border-radius:7px;background:#ece8dc;display:grid;place-items:center;font-style:normal;font-size:10.5px;color:#8a9081}
-.rv-habit i.on{background:#567458}
-.rv-habit.head i{background:transparent;height:14px}.rv-habit.head i.now{color:#2f3a2c;font-weight:700}
+.rv-habit i.on{background:var(--sage)}
+.rv-habit.head i{background:transparent;height:14px}.rv-habit.head i.now{color:var(--accent-dark);font-weight:700}
 .rv-cat{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) auto;gap:10px;align-items:center;font-size:13px}
 .rv-cat span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rv-bar{height:8px;background:#ece8dc;border-radius:99px;overflow:hidden}.rv-bar i{display:block;height:100%;background:#567458;border-radius:99px}
+.rv-bar{height:8px;background:#ece8dc;border-radius:99px;overflow:hidden}.rv-bar i{display:block;height:100%;background:var(--sage);border-radius:99px}
 .rv-note{display:flex;gap:6px;align-items:center;color:#4a5044;margin-top:3px}
 .rv-other{display:grid;gap:8px;font-size:13.5px}
 .rv-other span{display:flex;align-items:center;gap:8px}.rv-other em{font-style:normal;color:#8a9081;font-size:12px;margin-left:auto}
@@ -38,5 +38,5 @@
 @media (max-width:1100px){.rv-prompts{grid-template-columns:1fr}}
 .rv-prompts label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--muted);font-weight:600}
 .rv-prompts textarea{border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:10px 12px;font:inherit;font-weight:400;color:var(--ink);resize:vertical;min-height:84px;outline:0;line-height:1.45}
-.rv-prompts textarea:focus{border-color:var(--sage);box-shadow:0 0 0 3px #56745822}
+.rv-prompts textarea:focus{border-color:var(--sage);box-shadow:0 0 0 3px color-mix(in srgb,var(--sage) 13%,transparent)}
 .rv-saved{font-size:11.5px;align-self:flex-end}

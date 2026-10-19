@@ -1,4 +1,5 @@
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react';
+import {dateLocale,weekStart,dowNames} from './prefs.js';
 import {createPortal} from 'react-dom';
 import {CalendarBlank,Clock,CaretLeft,CaretRight,X} from '@phosphor-icons/react';
 
@@ -36,7 +37,7 @@ export function DateField({value,onChange,placeholder='Pick a date',disabled,cle
  useEffect(()=>{if(open){const b=parse(value)||new Date();setView({y:b.getFullYear(),m:b.getMonth()});setTimeout(()=>box.current?.focus(),0);}},[open]);
  const pick=k=>{onChange({target:{value:k}});setOpen(false);btn.current?.focus();};
  const today=keyOf(new Date());
- const first=new Date(view.y,view.m,1,12),offset=(first.getDay()+6)%7;
+ const first=new Date(view.y,view.m,1,12),offset=(first.getDay()-weekStart()+7)%7;
  const cells=Array.from({length:42},(_,i)=>{const d=new Date(view.y,view.m,1-offset+i,12);return {key:keyOf(d),day:d.getDate(),out:d.getMonth()!==view.m};});
  const shift=n=>setView(v=>{const d=new Date(v.y,v.m+n,1,12);return {y:d.getFullYear(),m:d.getMonth()};});
  const move=n=>{const d=parse(value)||new Date();d.setDate(d.getDate()+n);onChange({target:{value:keyOf(d)}});setView({y:d.getFullYear(),m:d.getMonth()});};
@@ -53,7 +54,7 @@ export function DateField({value,onChange,placeholder='Pick a date',disabled,cle
  return (
   <>
    <button type="button" ref={btn} disabled={disabled} aria-haspopup="dialog" aria-expanded={open} className={'field-btn '+className+(open?' open':'')+(sel?'':' empty')} onClick={e=>{e.stopPropagation();setOpen(o=>!o);}} onKeyDown={e=>{if(!open&&['ArrowDown','Enter',' '].includes(e.key)){e.preventDefault();setOpen(true);}}}>
-    <span className="field-label">{sel?sel.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):placeholder}</span>
+    <span className="field-label">{sel?sel.toLocaleDateString(dateLocale(),{weekday:'short',day:'numeric',month:'short',year:'numeric'}):placeholder}</span>
     <CalendarBlank size={15}/>
    </button>
    {open&&pos&&createPortal(
@@ -63,7 +64,7 @@ export function DateField({value,onChange,placeholder='Pick a date',disabled,cle
       <b>{MONTHS[view.m]} {view.y}</b>
       <button type="button" className="icon-btn" aria-label="Next month" onClick={()=>shift(1)}><CaretRight size={15}/></button>
      </div>
-     <div className="pk-dow">{DOW.map(d=><span key={d}>{d}</span>)}</div>
+     <div className="pk-dow">{dowNames(DOW).map(d=><span key={d}>{d}</span>)}</div>
      <div className="pk-days">{cells.map(c=><button type="button" key={c.key} className={'pk-day'+(c.out?' out':'')+(c.key===today?' now':'')+(c.key===value?' on':'')} onClick={()=>pick(c.key)}>{c.day}</button>)}</div>
      <div className="pk-foot"><button type="button" className="link-btn" onClick={()=>pick(today)}>Today</button>{clearable&&value&&<button type="button" className="link-btn muted-btn" onClick={()=>pick('')}><X size={12}/>Clear</button>}</div>
     </div>,host())}

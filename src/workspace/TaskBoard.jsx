@@ -1,21 +1,22 @@
 import React,{useState} from 'react';
+import {dateLocale} from './prefs.js';
 import {PencilSimple,Trash,CheckSquare,CalendarBlank,Repeat} from '@phosphor-icons/react';
 import {completedToday,subtaskProgress} from '../tasks.mjs';
 
-export const COLUMNS=[{id:'todo',name:'To do'},{id:'doing',name:'In progress'},{id:'done',name:'Done'}];
-export const columnOf=t=>completedToday(t)?'done':t.status==='doing'?'doing':'todo';
-const fmt=d=>d?new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'';
+// The first column holds open tasks, the last one finished tasks; any column between them is a status the task keeps.
+export const columnOf=(t,cols)=>completedToday(t)?cols[cols.length-1].id:(cols.slice(1,-1).find(c=>c.id===t.status)?t.status:cols[0].id);
+const fmt=d=>d?new Date(d+'T00:00').toLocaleDateString(dateLocale(),{day:'numeric',month:'short'}):'';
 
 // A three-column board for the tasks of the open list. Drag a card to change its column.
-export function TaskBoard({tasks,onMove,onEdit,onDelete}){
+export function TaskBoard({tasks,columns,onMove,onEdit,onDelete}){
  const [drag,setDrag]=useState(null),[over,setOver]=useState('');
- const drop=col=>{const t=tasks.find(x=>x.id===drag);setDrag(null);setOver('');if(t&&columnOf(t)!==col)onMove(t,col);};
+ const drop=col=>{const t=tasks.find(x=>x.id===drag);setDrag(null);setOver('');if(t&&columnOf(t,columns)!==col)onMove(t,col);};
  return (
   <div className="tboard">
-   {COLUMNS.map(c=>{
-    const cards=tasks.filter(t=>columnOf(t)===c.id);
+   {columns.map((c,ci)=>{
+    const cards=tasks.filter(t=>columnOf(t,columns)===c.id);
     return (
-     <section key={c.id} className={'tb-col tb-'+c.id+(over===c.id?' over':'')} onDragOver={e=>{e.preventDefault();setOver(c.id);}} onDragLeave={e=>{if(!e.currentTarget.contains(e.relatedTarget))setOver('');}} onDrop={e=>{e.preventDefault();drop(c.id);}}>
+     <section key={c.id} data-col={c.id} className={'tb-col'+(ci===columns.length-1?' last':'')+(over===c.id?' over':'')} onDragOver={e=>{e.preventDefault();setOver(c.id);}} onDragLeave={e=>{if(!e.currentTarget.contains(e.relatedTarget))setOver('');}} onDrop={e=>{e.preventDefault();drop(c.id);}}>
       <header><h4><i className="tb-dot"/>{c.name}</h4><span>{cards.length}</span></header>
       <div className="tb-cards">
        {cards.map(t=>{const p=t.subtasks?.length?subtaskProgress(t):null;return (
@@ -34,7 +35,7 @@ export function TaskBoard({tasks,onMove,onEdit,onDelete}){
          </div>
         </article>
        );})}
-       {!cards.length&&<p className="tb-empty">{c.id==='done'?'Finished tasks land here.':'Drop a task here.'}</p>}
+       {!cards.length&&<p className="tb-empty">{ci===columns.length-1?'Finished tasks land here.':'Drop a task here.'}</p>}
       </div>
      </section>
     );

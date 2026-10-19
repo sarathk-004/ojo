@@ -7,6 +7,7 @@ import {getTheme,setTheme} from './theme.js';
 import {useCollection} from './hooks.js';
 import {PRIVACY,TERMS,NOTICES} from '../legal/documents.mjs';
 import {LEGAL_VERSION} from '../legal/info.mjs';
+import {PrefsPanel} from './PrefsPanel.jsx';
 
 export const THEMES=[{id:'light',name:'Light',icon:Sun},{id:'dark',name:'Dark',icon:Moon},{id:'system',name:'Match Windows',icon:Desktop}];
 
@@ -43,7 +44,7 @@ function QuietSection(){
 }
 
 export function Settings({onClose,onTour}){
- const [confirmErase,setConfirmErase]=useState(false),[typed,setTyped]=useState('');
+ const [confirmErase,setConfirmErase]=useState(false),[typed,setTyped]=useState(''),[tab,setTab]=useState('personal');
  const [theme,setT]=useState(getTheme),[doc,setDoc]=useState(null),[note,setNote]=useState('');
  const [settings,setSettings]=useCollection('settings');
  const accepted=settings[0]?.legalAccepted;
@@ -82,8 +83,10 @@ export function Settings({onClose,onTour}){
   </Modal>
  );
  return (
-  <Modal title="Settings" onClose={onClose}>
-   <div className="settings">
+  <Modal title="Settings" onClose={onClose} wide>
+   <div className="pf-tabs" role="tablist"><button role="tab" aria-selected={tab==='personal'} className={tab==='personal'?'on':''} onClick={()=>setTab('personal')}>Personalise</button><button role="tab" aria-selected={tab==='general'} className={tab==='general'?'on':''} onClick={()=>setTab('general')}>General</button></div>
+   {tab==='personal'&&<PrefsPanel/>}
+   {tab==='general'&&<div className="settings">
     <section>
      <h4>Appearance</h4>
      <ThemePicker value={theme} onChange={pick}/>
@@ -118,7 +121,7 @@ export function Settings({onClose,onTour}){
       <button onClick={()=>setDoc('notices')}><FileText size={17}/>Open-source notices</button>
      </div>
     </section>
-   </div>
+   </div>}
   </Modal>
  );
 }
