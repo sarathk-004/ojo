@@ -1,5 +1,5 @@
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react';
-import {CheckCircle,NotePencil,CalendarBlank,BookmarkSimple,FilePdf,Wallet,Briefcase,Repeat,CalendarCheck,Timer,Receipt,ChartLineUp,SidebarSimple,MagnifyingGlass,Columns,DotsSixVertical,GearSix,Sun,Moon} from '@phosphor-icons/react';
+import {CheckCircle,NotePencil,CalendarBlank,BookmarkSimple,FilePdf,Wallet,Briefcase,Repeat,CalendarCheck,Timer,Receipt,ChartLineUp,SidebarSimple,MagnifyingGlass,Columns,DotsSixVertical,GearSix,Sun,Moon,TreeStructure} from '@phosphor-icons/react';
 import {gsap} from 'gsap';
 import '@fontsource-variable/geist';
 import './workspace.css';
@@ -45,6 +45,8 @@ import {Bills} from './Bills.jsx';
 import {Focus,useFocus} from './Focus.jsx';
 import {Planner} from './Planner.jsx';
 import {Review} from './Review.jsx';
+import {Canvas} from './Canvas.jsx';
+import './workspace-canvas.css';
 import {fmtClock} from './focus.mjs';
 import {api} from './api.js';
 import {SearchPalette} from './SearchPalette.jsx';
@@ -61,7 +63,8 @@ const SECTIONS=[
  {id:'focus',name:'Focus',icon:Timer,view:Focus},
  {id:'bills',name:'Bills',icon:Receipt,view:Bills},
  {id:'review',name:'Weekly review',icon:ChartLineUp,view:Review},
- {id:'reminders',name:'Repeaters',icon:Repeat,view:Reminders}
+ {id:'reminders',name:'Repeaters',icon:Repeat,view:Reminders},
+ {id:'canvas',name:'Canvas',icon:TreeStructure,view:Canvas}
 ];
 // The sidebar shows a few places; each opens a row of related pages at the top, so nobody scrolls a long menu.
 const GROUPS=[
@@ -71,6 +74,7 @@ const GROUPS=[
  {id:'saved',name:'Saved',icon:BookmarkSimple,items:['saved']},
  {id:'pdfs',name:'PDFs',icon:FilePdf,items:['pdfs']},
  {id:'finance',name:'Finance',icon:Wallet,items:['finance','bills']},
+ {id:'canvas',name:'Canvas',icon:TreeStructure,items:['canvas']},
  {id:'jobs',name:'Job tracker',icon:Briefcase,items:['jobs']}
 ];
 const groupOf=id=>GROUPS.find(g=>g.items.includes(id))||GROUPS[0];

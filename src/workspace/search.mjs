@@ -8,7 +8,8 @@ export const TYPES=[
  {id:'jobs',label:'Jobs',section:'jobs'},
  {id:'finance',label:'Finance',section:'finance'},
  {id:'events',label:'Calendar',section:'calendar'},
- {id:'bills',label:'Bills',section:'bills'}
+ {id:'bills',label:'Bills',section:'bills'},
+ {id:'canvas',label:'Canvas',section:'canvas'}
 ];
 const norm=s=>String(s||'').toLowerCase();
 const words=q=>norm(q).split(/[\s,]+/).filter(Boolean);
@@ -17,6 +18,7 @@ const words=q=>norm(q).split(/[\s,]+/).filter(Boolean);
 export function entries(data){
  const out=[],push=(type,id,title,body,extra,extraFields={})=>out.push({type,id,title:String(title||'').trim(),body:String(body||''),extra:String(extra||''),...extraFields});
  for(const n of data.notes||[])if(!n.deleted)push('notes',n.id,n.title||'Untitled',n.text,'',{date:n.updated||n.created||0,boost:(n.favorite?1:0)+(n.pinned?.5:0)});
+ for(const b of data.boards||[])push('canvas',b.id,b.title||'Untitled board',(b.nodes||[]).map(n=>n.text).filter(Boolean).join(' '),'',{date:b.updated||b.created||0});
  for(const t of data.tasks||[])push('tasks',t.id,t.title,[t.notes,...(t.subtasks||[]).map(x=>x.title)].filter(Boolean).join(' '),(t.date||'')+(t.repeat?' daily':''),{date:0,done:!!t.done});
  for(const s of data.saved||[]){
   if(s.deleted)continue;

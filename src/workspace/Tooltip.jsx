@@ -38,6 +38,7 @@ const HELP={
  'add as a win':'Keep this as something you got done.',
  'delete session':'Remove this focus session from your log.',
  'delete event':'Remove this event.','not a bill':'Stop suggesting this as a bill.',
+ 'undo':'Take back the last change.','redo':'Bring back what you just undid.','fit to screen':'Zoom so every idea is in view.','delete board':'Remove this board. You can undo straight after.','delete project':'Remove the project. Its boards are kept.','new project':'A folder that keeps related boards together.','new board':'An open canvas for ideas.','choose icon':'Put a small icon on this idea.','add a connected idea':'Add a new idea linked to this one.','delete idea':'Remove this idea and its links.',
  'recently saved':'Your latest saves.','open a pdf':'Choose a PDF from your computer.',
 };
 const labelOf=el=>(el.getAttribute('data-tip-title')||el.getAttribute('aria-label')||'').trim();

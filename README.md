@@ -51,7 +51,7 @@ ojo is a desktop app with a small widget that sits on your desktop like a clock 
 
 ## Download
 
-**[Download ojo for Windows (.exe)](../../releases/latest/download/ojo-Setup-1.0.32-x64.exe)**
+**[Download ojo for Windows (.exe)](../../releases/latest/download/ojo-Setup-1.0.33-x64.exe)**
 
 1. Click the link above and open the file when it finishes downloading.
 2. If Windows shows a blue "Windows protected your PC" box, click **More info**, then **Run anyway**. This appears because the installer is not code-signed yet; the app is the same one you can read in this repository.

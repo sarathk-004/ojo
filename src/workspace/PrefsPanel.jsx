@@ -4,7 +4,7 @@ import {useCollection,uid} from './hooks.js';
 import {Select} from './Select.jsx';
 import {ACCENTS,SCALES,COLUMN_COLORS,CAPTURE_KEYS,DEFAULTS,DEFAULT_COLUMNS,columnsOf,useLivePrefs,publishPrefs} from './prefs.js';
 
-const PLACES=[['notes','Notes'],['calendar','Calendar'],['saved','Saved'],['pdfs','PDFs'],['finance','Finance'],['jobs','Job tracker']];
+const PLACES=[['notes','Notes'],['calendar','Calendar'],['saved','Saved'],['pdfs','PDFs'],['finance','Finance'],['canvas','Canvas'],['jobs','Job tracker']];
 const LISTS=['Today','Daily','Upcoming','Anytime'];
 
 function Seg({value,onChange,options,label}){

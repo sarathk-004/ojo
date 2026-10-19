@@ -2,7 +2,7 @@ const {BrowserWindow,ipcMain,screen,shell,dialog,nativeImage,net,Notification,gl
 const {fileURLToPath}=require('node:url');
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const quiet=require('./quiet.cjs');
-const COLLECTIONS=['notes','events','saved','pdfs','finance','budgets','jobs','settings','reminders','nudgelog','bills','focus','wins','reviews','folders'];
+const COLLECTIONS=['notes','events','saved','pdfs','finance','budgets','jobs','settings','reminders','nudgelog','bills','focus','wins','reviews','folders','projects','boards'];
 const MAX_FILE=200*1024*1024;
 const ENT={amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",nbsp:' ',mdash:'—',ndash:'–',hellip:'…',rsquo:'’',lsquo:'‘',rdquo:'”',ldquo:'“'};
 const decode=s=>s.replace(/&(#x?[0-9a-f]+|\w+);/gi,(m,e)=>{
@@ -26,7 +26,7 @@ function readable(html){
 module.exports=function workspace({root,userData,getTasks,addTask,aumid,resetTasks}){
  const dir=path.join(userData,'Workspace'),files=path.join(dir,'files'),db=path.join(dir,'workspace.json');
  fs.mkdirSync(files,{recursive:true});
- let data={notes:[],events:[],saved:[],pdfs:[],finance:[],budgets:[],jobs:[],settings:[],reminders:[],nudgelog:[],bills:[],focus:[],wins:[],reviews:[],folders:[]},win,notch,timer,classify;
+ let data={notes:[],events:[],saved:[],pdfs:[],finance:[],budgets:[],jobs:[],settings:[],reminders:[],nudgelog:[],bills:[],focus:[],wins:[],reviews:[],folders:[],projects:[],boards:[]},win,notch,timer,classify;
  const classifyReady=import('../src/workspace/classify.mjs').then(m=>{classify=m;});
  try{data={...data,...JSON.parse(fs.readFileSync(db,'utf8'))};}catch{}
  // PDFs now live in Save later; fold in any from the earlier PDFs-only library.
