@@ -92,3 +92,5 @@
 .cb-hl .hljs-comment,.cb-hl .hljs-quote{color:#7f8c78;font-style:italic}
 .ws .note-body .cblock .cb-ta{color:transparent!important;-webkit-text-fill-color:transparent;background:transparent!important;border:0!important;padding:0 16px!important;box-shadow:none!important;border-radius:0!important;font:inherit!important;letter-spacing:0!important;line-height:20px!important;min-height:0!important}
 .ws .note-body .cblock .cb-hl{font:inherit;line-height:20px}
+.ws .note-body .cblock .cb-ta::selection{background:rgba(112,160,214,.38);color:transparent;-webkit-text-fill-color:transparent}
+.ws .note-body .cblock .cb-ta:not(:focus)::selection{background:rgba(112,160,214,.22)}

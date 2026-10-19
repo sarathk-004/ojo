@@ -21,10 +21,14 @@ function lineBounds(v,start,end){
  let b=v.indexOf('\n',end);if(b<0)b=v.length;
  return [a,b];
 }
+// Typed edits go through execCommand so Ctrl+Z and Ctrl+Y keep working inside the block.
 function put(ta,text,from,to,selFrom,selTo){
- ta.setRangeText(text,from,to,'preserve');
+ ta.focus();
+ ta.setSelectionRange(from,to);
+ let ok=false;
+ try{ok=text===''?document.execCommand('delete'):document.execCommand('insertText',false,text);}catch{}
+ if(!ok){ta.setRangeText(text,from,to,'preserve');ta.dispatchEvent(new Event('input',{bubbles:true}));}
  ta.setSelectionRange(selFrom,selTo);
- ta.dispatchEvent(new Event('input',{bubbles:true}));
 }
 const CLOSERS={'{':'}','(':')','[':']'};
 

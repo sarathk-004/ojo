@@ -14,6 +14,7 @@ import {TEMPLATES,getTemplate} from './templates.mjs';
 import {htmlToMarkdown,fileNameFor} from './noteExport.mjs';
 import {LANGS,guessLang} from './classify.mjs';
 import {langName} from './highlight.js';
+import {useUndo} from './Undo.jsx';
 import {buildCodeBlock,hydrateCode,serializeCode,refreshCode} from './codeblock.js';
 import {LangPicker} from './LangPicker.jsx';
 
@@ -79,7 +80,16 @@ export function Notes({focusId}){
   window.addEventListener('mousedown',off);return()=>window.removeEventListener('mousedown',off);
  },[menu]);
  const [outline,setOutline]=useState([]),[activeHead,setActiveHead]=useState(0),[tableBar,setTableBar]=useState(null),[codeBar,setCodeBar]=useState(null),[blockBar,setBlockBar]=useState(null),blockEl=useRef(null);
- const codePre=useRef(null),saveRef=useRef(null);
+ const codePre=useRef(null),saveRef=useRef(null),undoNote=useUndo(),lastRemoved=useRef(null);
+ // Before a block is removed, keep the page as it was so Undo (or Ctrl+Z) can bring it back.
+ const rememberPage=label=>{
+  const html=serialize();lastRemoved.current={html,at:Date.now()};
+  undoNote.show(label,restorePageHtml);
+ };
+ const restorePageHtml=()=>{
+  const r=lastRemoved.current;if(!r||!editor.current)return;
+  editor.current.innerHTML=r.html;hydrateCode(editor.current,codeHooks);hydrateImages();lastRemoved.current=null;saveRef.current&&saveRef.current();
+ };
  const fileInput=useRef(null),dragCard=useRef(null);
  const editor=useRef(null),loadedId=useRef(null),range=useRef(null),slashRef=useRef(null);
  slashRef.current=slash;
@@ -363,6 +373,7 @@ export function Notes({focusId}){
  const codeHooks=useRef({
   change:()=>saveRef.current&&saveRef.current(),
   remove:blk=>{
+   rememberPage('Code block deleted');
    const prev=blk.previousElementSibling,next=blk.nextElementSibling;blk.remove();
    if(!editor.current.querySelector('p,h1,h2,h3,ul,ol,.cblock,table,details,.kanban,.callout'))editor.current.innerHTML='<p><br></p>';
    const t=prev||next;if(t&&t.nodeType===1)caretTo(t);
@@ -419,8 +430,10 @@ export function Notes({focusId}){
   blockEl.current=b;const r=b.getBoundingClientRect();
   setBlockBar({x:Math.round(Math.min(window.innerWidth-132,r.right-124)),y:Math.round(Math.max(8,r.top-30)),name:b.matches('details')?'toggle':b.matches('.cblock')?'code':b.matches('img')?'image':b.matches('hr')?'divider':'callout'});
  };
+ const blockLabel=b=>b.matches('details')?'Toggle':b.matches('.cblock')?'Code block':b.matches('img')?'Image':b.matches('hr')?'Divider':'Callout';
  const deleteBlock=()=>{
   const b=blockEl.current;if(!b)return;
+  rememberPage(blockLabel(b)+' deleted');
   const next=b.nextElementSibling;b.remove();blockEl.current=null;setBlockBar(null);
   if(!editor.current.querySelector('p,h1,h2,h3,ul,ol,.cblock,table,details,.kanban,.callout')){editor.current.innerHTML='<p><br></p>';}
   if(next&&next.nodeType===1)caretTo(next);save();
@@ -434,6 +447,7 @@ export function Notes({focusId}){
   const inside=b=>{const nr=document.createRange();nr.selectNode(b);return r.compareBoundaryPoints(Range.START_TO_START,nr)<=0&&r.compareBoundaryPoints(Range.END_TO_END,nr)>=0;};
   const whole=special.filter(inside);
   if(!whole.length)return false;
+  rememberPage('Deleted');
   const blk=n=>{const el=n.nodeType===3?n.parentElement:n;return el?.closest?.('p,h1,h2,h3,li');};
   const endBlk=blk(r.endContainer),startBlk=blk(r.startContainer);
   whole.forEach(b=>b.remove());
@@ -541,6 +555,7 @@ export function Notes({focusId}){
  };
  const onKeyDown=e=>{
   if(e.target.closest?.('.cblock'))return;
+  if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.key.toLowerCase()==='z'&&lastRemoved.current&&Date.now()-lastRemoved.current.at<60000){e.preventDefault();restorePageHtml();return;}
   if((e.key==='Delete'||e.key==='Backspace')&&!e.ctrlKey&&!e.metaKey&&deleteSelection()){e.preventDefault();return;}
   // Backspace in an empty toggle title removes the toggle.
   if(e.key==='Backspace'){const sum=e.target.closest?.('summary');if(sum&&!sum.textContent.trim()&&window.getSelection().isCollapsed){e.preventDefault();const d=sum.closest('details');const next=d.nextElementSibling;d.remove();if(next)caretTo(next);save();return;}}
@@ -659,13 +674,14 @@ export function Notes({focusId}){
        <span className="row-top">
         {depth>0&&!query?<ArrowBendDownRight size={13} className="child-mark"/>:null}
         {kids>0&&!query?<button className={'twisty'+(collapsed.has(n.id)?'':' open')} aria-label="Toggle sub-pages" onClick={e=>{e.stopPropagation();toggle(n.id);}}><CaretRight size={11} weight="bold"/></button>:(!query&&depth===0&&rows.some(r=>r.kids>0)?<span className="twisty-gap"/>:null)}
-        {n.icon&&<span className="row-icon"><Glyph name={n.icon} size={16}/></span>}<b>{n.title||'Untitled'}</b>{n.pinned&&<PushPin size={12} weight="fill"/>}{n.favorite&&!n.deleted&&<Star size={12} weight="fill" className="row-star"/>}
+        {n.icon&&<span className="row-icon"><Glyph name={n.icon} size={16}/></span>}<b>{n.title||'Untitled'}</b>{n.pinned&&<PushPin size={12} weight="fill"/>}
         {mode==='trash'
          ?<span className="row-actions-inline always">
            <button className="row-add" aria-label="Restore page" onClick={e=>{e.stopPropagation();restorePage(n.id);}}><ArrowCounterClockwise size={12}/></button>
            <button className="row-del" aria-label="Delete forever" onClick={e=>{e.stopPropagation();purgePage(n.id);}}><Trash size={12}/></button>
           </span>
          :<span className="row-actions-inline">
+           <button className={'row-add'+(n.favorite?' fav-on':'')} aria-label={n.favorite?'Remove from favorites':'Add to favorites'} onClick={e=>{e.stopPropagation();patch(n.id,{favorite:!n.favorite});}}><Star size={12} weight={n.favorite?'fill':'regular'}/></button>
            <button className="row-add" aria-label="Add sub-page" onClick={e=>{e.stopPropagation();create(n.id);}}><Plus size={12} weight="bold"/></button>
            <button className="row-del" aria-label="Move to trash" onClick={e=>{e.stopPropagation();deletePage(n.id);}}><Trash size={12}/></button>
           </span>}
@@ -737,6 +753,7 @@ export function Notes({focusId}){
       <Code size={14}/>
       <LangPicker value={codeBar.value} noAuto onChange={changeLang}/>
      </div>}
+     {undoNote.node}
      {blockBar&&<div className="block-bar" style={{left:blockBar.x,top:blockBar.y}} onMouseDown={e=>e.preventDefault()} onMouseLeave={()=>{blockEl.current=null;setBlockBar(null);}}><button className="danger" onClick={deleteBlock}><Trash size={13}/>Delete {blockBar.name}</button></div>}
      {tableBar&&<div className="table-bar" style={{left:tableBar.x,top:tableBar.y}} onMouseDown={e=>e.preventDefault()}>
       <button onClick={()=>tableOp('row+')}>+ Row</button><button onClick={()=>tableOp('col+')}>+ Column</button>
