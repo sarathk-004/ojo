@@ -20,7 +20,7 @@ function CoverThumb({cover}){
 }
 
 // One idea on the canvas. Module level so it never remounts while you type.
-function NodeBox({n,selected,editing,size,tidying,onDown,onEditDone,onSize,onHandle,onDouble}){
+function NodeBox({n,selected,editing,target,tidying,onDown,onEditDone,onSize,onHandle,onDouble}){
  const el=useRef(null);
  useLayoutEffect(()=>{
   const e=el.current;if(!e)return;
@@ -32,7 +32,7 @@ function NodeBox({n,selected,editing,size,tidying,onDown,onEditDone,onSize,onHan
  useEffect(()=>{if(!editing)setText(n.text);},[n.text,editing]);
  const done=(how)=>onEditDone(n.id,text.replace(/\s+$/,''),how);
  return (
-  <div ref={el} data-id={n.id} className={'cv-node'+(selected?' sel':'')+(editing?' editing':'')+(tidying?' tidying':'')} style={{left:n.x,top:n.y,'--nc':NODE_COLORS[n.color]||NODE_COLORS.sage}}
+  <div ref={el} data-id={n.id} className={'cv-node'+(selected?' picked':'')+(editing?' editing':'')+(target?' target':'')+(tidying?' tidying':'')} style={{left:n.x,top:n.y,'--nc':NODE_COLORS[n.color]||NODE_COLORS.sage}}
    onPointerDown={e=>onDown(e,n)} onDoubleClick={e=>{e.stopPropagation();onDouble(n.id);}}>
    {n.icon&&<span className="cv-ico"><Glyph name={n.icon} size={18}/></span>}
    {editing
@@ -55,7 +55,7 @@ function BoardView({board,projects,onChange,onDelete}){
  const nodes=board.nodes||[],edges=board.edges||[];
  const [vp,setVp]=useState({vx:board.vx||0,vy:board.vy||0,vz:board.vz||1});
  const [sel,setSel]=useState(()=>new Set()),[selEdge,setSelEdge]=useState(null),[editing,setEditing]=useState(null),[editEdge,setEditEdge]=useState(null);
- const [link,setLink]=useState(null),[sizes,setSizes]=useState({}),[iconOpen,setIconOpen]=useState(false),[tidying,setTidying]=useState(false);
+ const [dropOn,setDropOn]=useState(null),[link,setLink]=useState(null),[sizes,setSizes]=useState({}),[iconOpen,setIconOpen]=useState(false),[tidying,setTidying]=useState(false);
  const surf=useRef(null),hist=useRef(makeHistory()),graph=useRef({nodes,edges}),vpRef=useRef(vp),fresh=useRef(null);
  graph.current={nodes,edges};vpRef.current=vp;
 
@@ -132,13 +132,25 @@ function BoardView({board,projects,onChange,onDelete}){
   if(!sel.has(n.id))setSel(new Set([n.id]));
   setSelEdge(null);
   const start={x:e.clientX,y:e.clientY},orig=new Map(graph.current.nodes.filter(x=>ids.includes(x.id)).map(x=>[x.id,{x:x.x,y:x.y}]));
-  let moved=false;
+  let moved=false,over=null;
+  // The idea under the pointer that is not being dragged: letting go there joins the two.
+  const under=ev=>{const el=document.elementsFromPoint(ev.clientX,ev.clientY).find(x=>x.classList&&x.classList.contains('cv-node')&&!ids.includes(x.dataset.id));return el?el.dataset.id:null;};
   const mv=ev=>{
    const dx=(ev.clientX-start.x)/vpRef.current.vz,dy=(ev.clientY-start.y)/vpRef.current.vz;
    if(!moved){if(Math.hypot(ev.clientX-start.x,ev.clientY-start.y)<4)return;moved=true;pushHistory(hist.current,snapNow());}
    onChange({nodes:graph.current.nodes.map(x=>orig.has(x.id)?{...x,x:Math.round(orig.get(x.id).x+dx),y:Math.round(orig.get(x.id).y+dy)}:x),updated:Date.now()});
+   const t=under(ev);if(t!==over){over=t;setDropOn(t);}
   };
-  const up=()=>{window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);};
+  const up=()=>{
+   window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);
+   setDropOn(null);
+   if(moved&&over){
+    const g=graph.current,add=!hasEdge(g.edges,n.id,over);
+    setTidying(true);
+    onChange({nodes:g.nodes.map(x=>orig.has(x.id)?{...x,...orig.get(x.id)}:x),edges:add?[...g.edges,newEdge(n.id,over)]:g.edges,updated:Date.now()});
+    setTimeout(()=>setTidying(false),420);
+   }
+  };
   window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);
  };
  const onHandle=(e,n)=>{
@@ -199,21 +211,20 @@ function BoardView({board,projects,onChange,onDelete}){
   <div className="cv-board">
    <div className="cv-bar-top">
     <input className="cv-title" placeholder="Untitled board" value={board.title||''} onChange={e=>onChange({title:e.target.value,updated:Date.now()})}/>
-    <span className="spacer"/>
     <Select compact label="Project" value={board.project||''} onChange={v=>onChange({project:v||null})} options={[{value:'',label:'No project'},...projects.map(p=>({value:p.id,label:p.name||'Untitled project'}))]}/>
     <div className="cv-tools" role="toolbar" aria-label="Canvas tools">
      <button className="icon-btn" aria-label="Undo" disabled={!hist.current.past.length} onClick={undo}><ArrowUUpLeft size={16}/></button>
      <button className="icon-btn" aria-label="Redo" disabled={!hist.current.future.length} onClick={redo}><ArrowUUpRight size={16}/></button>
-     <i className="sep"/>
+    </div>
+    <div className="cv-tools" role="group" aria-label="View">
      <button className="icon-btn" aria-label="Zoom out" onClick={()=>zoomBy(.8)}><MagnifyingGlassMinus size={16}/></button>
      <span className="cv-zoom">{Math.round(vp.vz*100)}%</span>
      <button className="icon-btn" aria-label="Zoom in" onClick={()=>zoomBy(1.25)}><MagnifyingGlassPlus size={16}/></button>
      <button className="icon-btn" aria-label="Fit to screen" onClick={fit}><ArrowsIn size={16}/></button>
-     <i className="sep"/>
-     <button className="ghost cv-tidy" data-tip="Lines the ideas up as a tree, left to right." data-tip-title="Tidy up" onClick={doTidy} disabled={!edges.length}><Sparkle size={15}/>Tidy up</button>
-     <button className="primary cv-add" onClick={()=>{const r=surf.current.getBoundingClientRect(),p=toWorld(r.left+r.width/2-60,r.top+r.height/2-20);addNode(p.x,p.y);}}><Plus size={15} weight="bold"/>Idea</button>
-     <button className="icon-btn danger" aria-label="Delete board" onClick={onDelete}><Trash size={16}/></button>
     </div>
+    <button className="icon-btn cv-quiet" data-tip="Lines the ideas up as a tree, left to right." data-tip-title="Tidy up" aria-label="Tidy up" disabled={!edges.length} onClick={doTidy}><Sparkle size={17}/></button>
+    <button className="primary cv-add" onClick={()=>{const r=surf.current.getBoundingClientRect(),p=toWorld(r.left+r.width/2-60,r.top+r.height/2-20);addNode(p.x,p.y);}}><Plus size={15} weight="bold"/>Idea</button>
+    <button className="icon-btn cv-quiet danger" aria-label="Delete board" onClick={onDelete}><Trash size={16}/></button>
    </div>
    <div ref={surf} className="cv-surface" tabIndex={0} onPointerDown={onSurfaceDown} onKeyDown={onKey}
     onDoubleClick={e=>{if(e.target.closest('.cv-node,.cv-bar,.cv-edge-hit,.cv-edge-input'))return;const p=toWorld(e.clientX,e.clientY);addNode(p.x-60,p.y-20);}}
@@ -222,7 +233,7 @@ function BoardView({board,projects,onChange,onDelete}){
      <svg className="cv-edges" width="1" height="1" overflow="visible">
       <defs><marker id="cv-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker></defs>
       {edgeGeo.map(({e,g})=>(
-       <g key={e.id} className={'cv-edge'+(selEdge===e.id?' sel':'')}>
+       <g key={e.id} className={'cv-edge'+(selEdge===e.id?' picked':'')}>
         <path className="cv-edge-line" d={g.d} markerEnd="url(#cv-arrow)"/>
         <path className="cv-edge-hit" d={g.d} onPointerDown={ev=>{ev.stopPropagation();surf.current.focus({preventScroll:true});setSelEdge(e.id);setSel(new Set());}} onDoubleClick={ev=>{ev.stopPropagation();setEditEdge(e.id);}}/>
        </g>
@@ -234,7 +245,7 @@ function BoardView({board,projects,onChange,onDelete}){
          onPointerDown={ev=>ev.stopPropagation()} onKeyDown={ev=>{ev.stopPropagation();if(ev.key==='Enter'||ev.key==='Escape')ev.target.blur();}}
          onBlur={ev=>{setEditEdge(null);const v=ev.target.value.trim().slice(0,40);if(v!==(e.label||''))setGraph(nodes,edges.map(x=>x.id===e.id?{...x,label:v}:x));}}/>
       :e.label?<span key={e.id} className="cv-edge-label" style={{left:g.mid.x,top:g.mid.y}} onDoubleClick={()=>setEditEdge(e.id)}>{e.label}</span>:null))}
-     {nodes.map(n=><NodeBox key={n.id} n={n} selected={sel.has(n.id)} editing={editing===n.id} tidying={tidying} onDown={onNodeDown} onEditDone={onEditDone} onSize={onSize} onHandle={onHandle} onDouble={setEditing}/>)}
+     {nodes.map(n=><NodeBox key={n.id} n={n} selected={sel.has(n.id)} editing={editing===n.id} target={dropOn===n.id} tidying={tidying} onDown={onNodeDown} onEditDone={onEditDone} onSize={onSize} onHandle={onHandle} onDouble={setEditing}/>)}
     </div>
     {one&&!editing&&<div className="cv-bar" style={barPos} onPointerDown={e=>e.stopPropagation()}>
      {Object.entries(NODE_COLORS).map(([k,c])=><button key={k} aria-label={'Colour '+k} className={'cv-dot'+(one.color===k?' on':'')} style={{background:c}} onClick={()=>patchNode(one.id,{color:k})}/>)}
@@ -247,7 +258,8 @@ function BoardView({board,projects,onChange,onDelete}){
       {one.icon&&<button className="cv-noicon" onClick={()=>{patchNode(one.id,{icon:undefined});setIconOpen(false);}}><TextT size={13}/>Text only</button>}
      </div>}
     </div>}
-    {!nodes.length&&<div className="cv-hint"><TreeStructure size={30} weight="light"/><b>Start with one idea</b><span>Double-click anywhere, or press Idea. Drag from the dots on an idea to connect it to another, or let go on empty space to branch out.</span></div>}
+    <div className="cv-keys"><span>Double-click to add</span><span>Drag one idea onto another to connect</span><span>Tab adds a branch</span></div>
+    {!nodes.length&&<div className="cv-hint"><TreeStructure size={30} weight="light"/><b>Start with one idea</b><span>Double-click anywhere, or press Idea.</span></div>}
    </div>
   </div>
  );
