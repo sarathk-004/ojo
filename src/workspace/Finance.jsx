@@ -159,9 +159,9 @@ export function Finance({focusId}){
      </div>
      <span className="spacer"/>
      <Select compact label="Currency" value={sym} onChange={v=>setSettings([{...settings[0],id:'settings',currency:v}])} options={CURRENCIES.map(c=>({value:c.sym,label:c.sym}))}/>
-     <button className="ghost" onClick={()=>setImporting(true)}><DownloadSimple size={15}/>Import statement</button>
-     <button className="ghost" onClick={exportCsv} disabled={!txns.length}><UploadSimple size={15}/>Export</button>
-     <button className="primary" onClick={()=>setModal(blank('expense'))}><Plus size={15} weight="bold"/>Add</button>
+     <button className="ghost" data-tip="Bring in a bank, PhonePe or Google Pay statement." data-tip-title="Import statement" onClick={()=>setImporting(true)}><DownloadSimple size={15}/>Import statement</button>
+     <button className="ghost" data-tip="Save this month as a CSV file." data-tip-title="Export" onClick={exportCsv} disabled={!txns.length}><UploadSimple size={15}/>Export</button>
+     <button className="primary" data-tip="Record money spent or received." data-tip-title="Add transaction" onClick={()=>setModal(blank('expense'))}><Plus size={15} weight="bold"/>Add</button>
     </header>
 
     <div className="stat-cards">

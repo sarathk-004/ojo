@@ -1,0 +1,39 @@
+/* Narrow windows: panels answer to their own width, so nothing wraps into a stray row. */
+.note-pane{container:notepane/inline-size}
+.fin-main{container:finmain/inline-size}
+.ws .note-bar .muted,.ws .crumbs{white-space:nowrap}
+.ws .toolbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.ws .toolbar::-webkit-scrollbar{display:none}
+.ws .toolbar>*{flex:none}
+.ws .stat b,.ws .stat span{white-space:nowrap}
+.ws .card-box h3{flex-wrap:wrap;row-gap:4px}
+
+@container notepane (max-width:640px){
+ .ws .note-bar{padding-left:18px;padding-right:18px}
+ .ws .note-bar .ghost{font-size:0;gap:0;padding:0;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center}
+ .ws .note-bar .ghost svg{flex:none}
+ .ws .toolbar{margin-left:18px;margin-right:18px}
+}
+@container finmain (max-width:600px){
+ .ws .fin-head{flex-wrap:nowrap}
+ .ws .fin-head>.ghost,.ws .fin-head>.primary{font-size:0;gap:0;padding:0;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+ .ws .month-nav b{min-width:0;padding:0 4px}
+ .ws .stat-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ws .chart-row{grid-template-columns:minmax(0,1fr)}
+ .ws .txn-bar .search{flex:1 1 140px;margin-left:0;width:auto}
+}
+@container finmain (max-width:420px){
+ .ws .donut-wrap{flex-direction:column;align-items:flex-start}
+}
+
+.tasks-main{container:tmain/inline-size}
+@container tmain (max-width:560px){
+ .ws .tasks-head{flex-wrap:nowrap;gap:8px}
+ .ws .tasks-head h2{font-size:18px;white-space:nowrap;min-width:0;flex:0 1 auto}
+ .ws .tasks-head .layout-toggle button{font-size:0;gap:0;padding:0;width:36px;height:30px;display:inline-flex;align-items:center;justify-content:center}
+ .ws .tasks-head .close-day-btn{font-size:0;gap:0;padding:0;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center}
+}
+.ws .jobs-head{flex-wrap:nowrap;gap:10px}
+.ws .jobs-head h2{white-space:nowrap;font-size:clamp(18px,2.2vw,22px)}
+.ws .jobs-head .search,.ws .jobs-head input{min-width:0;flex:1 1 110px;width:auto}
+.ws .jobs-head>.primary{flex:none;white-space:nowrap}

@@ -21,3 +21,4 @@ html[data-theme=dark] .ws :is(.task-row,.card,.job-card,.news-card,.brief-item,.
 html[data-theme=dark] .ws .nh-icon,html[data-theme=dark] .ws .pl-block.task.live{box-shadow:0 6px 18px #ffffff2a}
 html[data-theme=dark] .ws :is(.nav-item.on,.note-row.on,.pdf-row.on,.kb-card,.job-card,.pdf-page){box-shadow:0 1px 3px #ffffff30}
 html[data-theme=dark] .ws .primary:hover:not(:disabled){box-shadow:none}
+html[data-theme=dark] .ws .note-body .cblock{filter:invert(1) hue-rotate(180deg)}

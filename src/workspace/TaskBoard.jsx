@@ -15,20 +15,22 @@ export function TaskBoard({tasks,onMove,onEdit,onDelete}){
    {COLUMNS.map(c=>{
     const cards=tasks.filter(t=>columnOf(t)===c.id);
     return (
-     <section key={c.id} className={'tb-col'+(over===c.id?' over':'')} onDragOver={e=>{e.preventDefault();setOver(c.id);}} onDragLeave={e=>{if(!e.currentTarget.contains(e.relatedTarget))setOver('');}} onDrop={e=>{e.preventDefault();drop(c.id);}}>
-      <header><h4>{c.name}</h4><span>{cards.length}</span></header>
+     <section key={c.id} className={'tb-col tb-'+c.id+(over===c.id?' over':'')} onDragOver={e=>{e.preventDefault();setOver(c.id);}} onDragLeave={e=>{if(!e.currentTarget.contains(e.relatedTarget))setOver('');}} onDrop={e=>{e.preventDefault();drop(c.id);}}>
+      <header><h4><i className="tb-dot"/>{c.name}</h4><span>{cards.length}</span></header>
       <div className="tb-cards">
        {cards.map(t=>{const p=t.subtasks?.length?subtaskProgress(t):null;return (
         <article key={t.id} draggable className={'tb-card'+(drag===t.id?' dragging':'')} onDragStart={e=>{setDrag(t.id);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',t.id);}} onDragEnd={()=>{setDrag(null);setOver('');}}>
-         <b>{t.title}</b>
-         {(t.date||t.repeat||p)&&<div className="tb-meta">
+         <b className="tb-title">{t.title}</b>
+         <div className="tb-foot">
+         <div className="tb-meta">
           {t.date&&<span><CalendarBlank size={12}/>{fmt(t.date)}</span>}
           {t.repeat&&<span><Repeat size={12}/>Repeats</span>}
           {p&&<span><CheckSquare size={12}/>{p.done}/{p.total}</span>}
-         </div>}
+         </div>
          <div className="tb-acts">
           <button className="icon-btn" aria-label="Edit" onClick={()=>onEdit(t.id)}><PencilSimple size={14}/></button>
           <button className="icon-btn danger" aria-label="Delete" onClick={()=>onDelete(t)}><Trash size={14}/></button>
+         </div>
          </div>
         </article>
        );})}

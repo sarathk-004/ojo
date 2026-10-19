@@ -13,7 +13,8 @@ import {Star,ArrowCounterClockwise,SquaresFour,UploadSimple,FileMd,FilePdf,Copy,
 import {TEMPLATES,getTemplate} from './templates.mjs';
 import {htmlToMarkdown,fileNameFor} from './noteExport.mjs';
 import {LANGS,guessLang} from './classify.mjs';
-import {highlight,detectLanguage,langName} from './highlight.js';
+import {langName} from './highlight.js';
+import {buildCodeBlock,hydrateCode,serializeCode,refreshCode} from './codeblock.js';
 import {LangPicker} from './LangPicker.jsx';
 
 gsap.registerPlugin(ScrollToPlugin);
@@ -78,7 +79,7 @@ export function Notes({focusId}){
   window.addEventListener('mousedown',off);return()=>window.removeEventListener('mousedown',off);
  },[menu]);
  const [outline,setOutline]=useState([]),[activeHead,setActiveHead]=useState(0),[tableBar,setTableBar]=useState(null),[codeBar,setCodeBar]=useState(null),[blockBar,setBlockBar]=useState(null),blockEl=useRef(null);
- const codePre=useRef(null),swapping=useRef(false);
+ const codePre=useRef(null),saveRef=useRef(null);
  const fileInput=useRef(null),dragCard=useRef(null);
  const editor=useRef(null),loadedId=useRef(null),range=useRef(null),slashRef=useRef(null);
  slashRef.current=slash;
@@ -126,7 +127,7 @@ export function Notes({focusId}){
   // Load the note body into the editor only when the note changes, so typing never resets the caret.
   if(!editor.current)return;
   if(!active){loadedId.current=null;return;}
-  if(loadedId.current!==active.id){editor.current.innerHTML=active.html||'';loadedId.current=active.id;setConfirm(false);setLink(null);setSlash(null);setTableBar(null);hydrateImages();readOutline();if(editor.current)editor.current.scrollTop=0;}
+  if(loadedId.current!==active.id){editor.current.innerHTML=active.html||'';loadedId.current=active.id;hydrateCode(editor.current,codeHooks);setConfirm(false);setLink(null);setSlash(null);setTableBar(null);hydrateImages();readOutline();if(editor.current)editor.current.scrollTop=0;}
   refreshLinks();
  },[active,byId]);
 
@@ -151,6 +152,7 @@ export function Notes({focusId}){
  const serialize=()=>{
   const c=editor.current.cloneNode(true);
   c.querySelectorAll('img[data-file]').forEach(i=>i.removeAttribute('src'));
+  serializeCode(editor.current,c);
   return c.innerHTML;
  };
  const hydrateImages=()=>{
@@ -167,10 +169,12 @@ export function Notes({focusId}){
  };
  const save=()=>{
   if(!active||!editor.current)return;
+  if(editor.current.querySelector('pre'))hydrateCode(editor.current,codeHooks);
   const html=serialize(),text=plain(html);
   patch(active.id,{html,text,updated:Date.now()});
   readOutline();
  };
+ saveRef.current=save;
  // Deleting a page also removes the pages inside it.
  const subtree=(id,pick=n=>!n.deleted)=>{
   const set=new Set([id]);
@@ -342,97 +346,90 @@ export function Notes({focusId}){
  };
 
 
- // Code blocks: a language picker, and colouring that applies while you are not typing in the block.
- const codeText=pre=>{const c=pre.cloneNode(true);c.querySelectorAll('br').forEach(b=>b.replaceWith('\n'));return c.textContent;};
- const caretOffset=pre=>{const sel=window.getSelection();if(!sel.rangeCount||!pre.contains(sel.anchorNode))return null;const r=document.createRange();r.selectNodeContents(pre);r.setEnd(sel.anchorNode,sel.anchorOffset);return r.toString().length;};
- const placeCaret=(pre,offset)=>{
-  const w=document.createTreeWalker(pre,NodeFilter.SHOW_TEXT);let left=offset,n;
-  while((n=w.nextNode())){if(left<=n.data.length){const r=document.createRange();r.setStart(n,left);r.collapse(true);const s=window.getSelection();s.removeAllRanges();s.addRange(r);return;}left-=n.data.length;}
-  caretTo(pre);
- };
- // Auto-detect: quick rules first, then highlight.js picks from its whole set.
- // The language picker rides the top-left corner of its block, and is re-seated after every render because the block can move.
+ // Code blocks are small editors (codeblock.js). The language picker rides the block's top-left corner.
  const barEl=useRef(null);
  useLayoutEffect(()=>{
-  const bar=barEl.current,pre=codePre.current;if(!bar||!pre||!pre.isConnected)return;
-  const r=pre.getBoundingClientRect();
+  const bar=barEl.current,blk=codePre.current;if(!bar||!blk||!blk.isConnected)return;
+  const r=blk.getBoundingClientRect();
   bar.style.left=Math.round(Math.min(Math.max(8,r.left),window.innerWidth-214))+'px';
   bar.style.top=Math.round(Math.max(8,r.top-38))+'px';
  });
- const autoLang=text=>{const g=guessLang(text);return g&&g!=='plaintext'?g:detectLanguage(text);};
- const setLangAttrs=(pre,id,auto)=>{pre.dataset.lang=id;pre.dataset.label=langName(id);if(auto)pre.dataset.auto='1';else delete pre.dataset.auto;};
- const highlightPre=pre=>{
-  if(!pre||!pre.isConnected)return;
-  const text=codeText(pre);
-  if(!text.trim())return;
-  if(!pre.dataset.lang)setLangAttrs(pre,autoLang(text),true);
-  else if(pre.dataset.auto==='1'&&text.length<4000)setLangAttrs(pre,autoLang(text),true);
-  swapping.current=true;
-  pre.innerHTML=highlight(text.replace(/\n$/,''),pre.dataset.lang);
-  pre.classList.add('hljs');pre.dataset.hl='1';
-  swapping.current=false;
+ const placeBar=blk=>{
+  const r=blk.getBoundingClientRect();
+  const x=Math.round(Math.min(Math.max(8,r.left),window.innerWidth-214)),y=Math.round(Math.max(8,r.top-38));
+  const value=blk.dataset.lang||'plaintext';
+  setCodeBar(p=>p&&p.x===x&&p.y===y&&p.value===value?p:{x,y,value});
  };
- const plainPre=pre=>{
-  if(!pre||pre.dataset.hl!=='1')return;
-  const off=caretOffset(pre);
-  swapping.current=true;
-  pre.textContent=codeText(pre);
-  delete pre.dataset.hl;pre.classList.remove('hljs');
-  if(off!=null)placeCaret(pre,off);
-  swapping.current=false;
+ const codeHooks=useRef({
+  change:()=>saveRef.current&&saveRef.current(),
+  remove:blk=>{
+   const prev=blk.previousElementSibling,next=blk.nextElementSibling;blk.remove();
+   if(!editor.current.querySelector('p,h1,h2,h3,ul,ol,.cblock,table,details,.kanban,.callout'))editor.current.innerHTML='<p><br></p>';
+   const t=prev||next;if(t&&t.nodeType===1)caretTo(t);
+   codePre.current=null;setCodeBar(null);saveRef.current&&saveRef.current();
+  },
+  exit:(blk,dir)=>{
+   let t=dir==='after'?blk.nextElementSibling:blk.previousElementSibling;
+   if(!t||t.classList.contains('cblock')||!/^(P|H1|H2|H3|DIV|UL|OL|BLOCKQUOTE)$/.test(t.tagName)){
+    const p=document.createElement('p');p.innerHTML='<br>';
+    if(dir==='after')blk.after(p);else blk.before(p);t=p;
+   }
+   caretTo(t);if(dir==='before'){const r=document.createRange();r.selectNodeContents(t);r.collapse(false);const sl=window.getSelection();sl.removeAllRanges();sl.addRange(r);}
+   saveRef.current&&saveRef.current();
+  }
+ }).current;
+ const insertCodeBlock=()=>{
+  const ed=editor.current;ed.focus();
+  const sel=window.getSelection();let blk=null;
+  if(sel.rangeCount){let n=sel.anchorNode;while(n&&n.parentNode!==ed)n=n.parentNode;if(n&&n.nodeType===1)blk=n;}
+  const cb=buildCodeBlock('','plaintext',codeHooks);
+  if(blk&&blk.tagName==='P'&&!blk.textContent.trim())blk.replaceWith(cb);
+  else if(blk)blk.after(cb);
+  else ed.appendChild(cb);
+  if(!cb.nextElementSibling){const p=document.createElement('p');p.innerHTML='<br>';cb.after(p);}
+  cb.querySelector('.cb-ta').focus();
+  codePre.current=cb;placeBar(cb);saveRef.current&&saveRef.current();
  };
  const trackCode=()=>{
-  if(swapping.current)return;
-  const sel=window.getSelection(),n=sel.rangeCount?sel.anchorNode:null;
-  const el=n&&(n.nodeType===3?n.parentElement:n);
-  const pre=el?.closest?.('pre');
-  const inside=pre&&editor.current?.contains(pre)?pre:null;
-  if(codePre.current&&codePre.current!==inside){
-   // Left the block: colour it, unless focus moved to its own language picker.
-   if(!document.activeElement?.closest?.('.code-bar,.lang-menu')){highlightPre(codePre.current);}
-  }
-  if(inside){
-   codePre.current=inside;
-   const r=inside.getBoundingClientRect();
-   const x=Math.round(Math.min(Math.max(8,r.left),window.innerWidth-214)),y=Math.round(Math.max(8,r.top-38));
-   const value=inside.dataset.auto==='1'||!inside.dataset.lang?'':inside.dataset.lang,found=inside.dataset.auto==='1'?inside.dataset.label||'':'';
-   setCodeBar(p=>p&&p.x===x&&p.y===y&&p.value===value&&p.found===found?p:{x,y,value,found});
-  }else if(!document.activeElement?.closest?.('.code-bar,.lang-menu')){
-   codePre.current=null;setCodeBar(null);
-  }
+  const blk=document.activeElement?.closest?.('.cblock');
+  const inside=blk&&editor.current?.contains(blk)?blk:null;
+  if(inside){codePre.current=inside;placeBar(inside);}
+  else if(!document.activeElement?.closest?.('.code-bar,.lang-menu')&&!hoverCode.current){codePre.current=null;setCodeBar(null);}
  };
+ const hoverCode=useRef(false);
  const changeLang=v=>{
-  const pre=codePre.current;
-  if(!pre)return;
-  if(v==='')setLangAttrs(pre,autoLang(codeText(pre)),true);
-  else setLangAttrs(pre,v,false);
-  if(pre.dataset.hl==='1')highlightPre(pre);
-  setCodeBar(b=>b&&{...b,value:v});
-  save();
+  const blk=codePre.current;
+  if(!blk)return;
+  blk.dataset.lang=v||'plaintext';refreshCode(blk);
+  setCodeBar(x=>x&&{...x,value:v||'plaintext'});
+  saveRef.current&&saveRef.current();
  };
- const settleCode=()=>{if(codePre.current&&!document.activeElement?.closest?.('.code-bar,.lang-menu')){highlightPre(codePre.current);}};
+ const settleCode=()=>{};
  const onSelection=()=>{updateTableBar();trackCode();};
 
  // Blocks that are awkward to remove with the keyboard get a Delete control, and a drag selection that covers them deletes them.
- const BLOCKS='details.toggle,.callout,hr,pre,img[data-file]';
+ const BLOCKS='details.toggle,.callout,hr,.cblock,img[data-file]';
  const showBlockBar=e=>{
+  const cb=e.target.closest?.('.cblock');
+  if(cb&&editor.current?.contains(cb)){hoverCode.current=true;if(codePre.current!==cb){codePre.current=cb;placeBar(cb);}}
+  else if(hoverCode.current){hoverCode.current=false;if(!document.activeElement?.closest?.('.cblock,.code-bar,.lang-menu')&&!e.target.closest?.('.code-bar')){codePre.current=null;setCodeBar(null);}}
   const b=e.target.closest?.(BLOCKS);
   if(!b||!editor.current?.contains(b)||active?.deleted){if(!e.target.closest?.('.block-bar')&&blockEl.current){blockEl.current=null;setBlockBar(null);}return;}
   if(blockEl.current===b)return;
   blockEl.current=b;const r=b.getBoundingClientRect();
-  setBlockBar({x:Math.round(Math.min(window.innerWidth-132,r.right-124)),y:Math.round(Math.max(8,r.top-30)),name:b.matches('details')?'toggle':b.matches('pre')?'code':b.matches('img')?'image':b.matches('hr')?'divider':'callout'});
+  setBlockBar({x:Math.round(Math.min(window.innerWidth-132,r.right-124)),y:Math.round(Math.max(8,r.top-30)),name:b.matches('details')?'toggle':b.matches('.cblock')?'code':b.matches('img')?'image':b.matches('hr')?'divider':'callout'});
  };
  const deleteBlock=()=>{
   const b=blockEl.current;if(!b)return;
   const next=b.nextElementSibling;b.remove();blockEl.current=null;setBlockBar(null);
-  if(!editor.current.querySelector('p,h1,h2,h3,ul,ol,pre,table,details,.kanban,.callout')){editor.current.innerHTML='<p><br></p>';}
+  if(!editor.current.querySelector('p,h1,h2,h3,ul,ol,.cblock,table,details,.kanban,.callout')){editor.current.innerHTML='<p><br></p>';}
   if(next&&next.nodeType===1)caretTo(next);save();
  };
  // Selecting across blocks and pressing Delete removes what is fully selected, including toggles, boards and tables.
  const deleteSelection=()=>{
   const sel=window.getSelection();if(!sel.rangeCount||sel.isCollapsed)return false;
   const r=sel.getRangeAt(0);if(!editor.current.contains(r.commonAncestorContainer))return false;
-  const special=[...editor.current.querySelectorAll('details.toggle,.kanban,table,.callout,hr,pre,img[data-file]')].filter(b=>r.intersectsNode(b));
+  const special=[...editor.current.querySelectorAll('details.toggle,.kanban,table,.callout,hr,.cblock,img[data-file]')].filter(b=>r.intersectsNode(b));
   if(!special.length)return false;
   const inside=b=>{const nr=document.createRange();nr.selectNode(b);return r.compareBoundaryPoints(Range.START_TO_START,nr)<=0&&r.compareBoundaryPoints(Range.END_TO_END,nr)>=0;};
   const whole=special.filter(inside);
@@ -447,7 +444,7 @@ export function Notes({focusId}){
    while(endBlk.firstChild)startBlk.appendChild(endBlk.firstChild);endBlk.remove();
    sel.removeAllRanges();sel.addRange(pos);
   }
-  if(!editor.current.querySelector('p,h1,h2,h3,ul,ol,pre,table,details,.kanban,.callout'))editor.current.innerHTML='<p><br></p>';
+  if(!editor.current.querySelector('p,h1,h2,h3,ul,ol,.cblock,table,details,.kanban,.callout'))editor.current.innerHTML='<p><br></p>';
   blockEl.current=null;setBlockBar(null);save();return true;
  };
  // Tables.
@@ -526,7 +523,7 @@ export function Notes({focusId}){
    case 'number':run('insertOrderedList');break;
    case 'todo':checklist();break;
    case 'quote':run('formatBlock','blockquote');break;
-   case 'code':run('formatBlock','pre');break;
+   case 'code':insertCodeBlock();break;
    case 'divider':run('insertHorizontalRule');break;
    case 'callout':run('insertHTML','<div class="callout"><br></div>');break;
    case 'date':run('insertText',new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}));break;
@@ -543,6 +540,7 @@ export function Notes({focusId}){
   save();
  };
  const onKeyDown=e=>{
+  if(e.target.closest?.('.cblock'))return;
   if((e.key==='Delete'||e.key==='Backspace')&&!e.ctrlKey&&!e.metaKey&&deleteSelection()){e.preventDefault();return;}
   // Backspace in an empty toggle title removes the toggle.
   if(e.key==='Backspace'){const sum=e.target.closest?.('summary');if(sum&&!sum.textContent.trim()&&window.getSelection().isCollapsed){e.preventDefault();const d=sum.closest('details');const next=d.nextElementSibling;d.remove();if(next)caretTo(next);save();return;}}
@@ -579,21 +577,6 @@ export function Notes({focusId}){
     }
    }
   }
-  // A code block ends when you press Enter on an empty last line.
-  if(e.key==='Enter'&&!e.shiftKey&&!slashRef.current){
-   const sel=window.getSelection(),n=sel.anchorNode,el=n&&(n.nodeType===3?n.parentElement:n),pre=el?.closest?.('pre');
-   if(pre&&sel.isCollapsed){
-    const r=document.createRange();r.selectNodeContents(pre);r.setStart(sel.anchorNode,sel.anchorOffset);
-    const last=pre.lastChild;
-    const emptyEnd=/\n$/.test(pre.textContent)||(last&&last.nodeName==='BR');
-    if(r.toString()===''&&emptyEnd){
-     e.preventDefault();
-     if(last&&last.nodeName==='BR')last.remove();
-     else if(last&&last.nodeType===3)last.textContent=last.textContent.replace(/\n+$/,'');
-     const p=document.createElement('p');p.innerHTML='<br>';pre.after(p);caretTo(p);save();return;
-    }
-   }
-  }
   const s=slashRef.current;
   if(s&&filtered.length){
    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const d=e.key==='ArrowDown'?1:-1;setSlash(x=>({...x,index:(x.index+d+filtered.length)%filtered.length}));return;}
@@ -625,20 +608,7 @@ export function Notes({focusId}){
    }
   }
  };
- const liveTimer=useRef(null);
- // Colour code as it is typed: a short pause after the last key, with the caret put back where it was.
- const liveCode=()=>{
-  const sel=window.getSelection(),n=sel.rangeCount?sel.anchorNode:null,el=n&&(n.nodeType===3?n.parentElement:n),pre=el?.closest?.('pre');
-  if(!pre||!editor.current?.contains(pre))return;
-  clearTimeout(liveTimer.current);
-  liveTimer.current=setTimeout(()=>{
-   if(!pre.isConnected)return;
-   const off=caretOffset(pre);
-   highlightPre(pre);
-   if(off!=null)placeCaret(pre,off);
-  },220);
- };
- const onInput=e=>{save();detectSlash();if(!(e&&e.nativeEvent&&e.nativeEvent.isComposing))liveCode();};
+ const onInput=e=>{if(e.target.closest?.('.cblock'))return;save();detectSlash();};
  const openLink=()=>{
   const sel=window.getSelection();
   range.current=sel.rangeCount?sel.getRangeAt(0).cloneRange():null;
@@ -714,12 +684,12 @@ export function Notes({focusId}){
       {active.deleted
        ?<><span className="muted">In Trash · {daysLeft(active)} days left</span><button className="ghost" onClick={()=>restorePage(active.id)}><ArrowCounterClockwise size={15}/>Restore</button><button className="ghost danger" onClick={()=>purgePage(active.id)}><Trash size={15}/>Delete forever</button></>
        :<>
-        <span className="pop-anchor"><button className="ghost" onClick={()=>setMenu(m=>m==='export'?null:'export')}>{exported?<CheckIcon size={15}/>:<UploadSimple size={15}/>}{exported==='copy'?'Copied':exported?'Exported':'Export'}</button>
+        <span className="pop-anchor"><button className="ghost" data-tip="Save this page as Markdown or PDF." data-tip-title="Export" onClick={()=>setMenu(m=>m==='export'?null:'export')}>{exported?<CheckIcon size={15}/>:<UploadSimple size={15}/>}{exported==='copy'?'Copied':exported?'Exported':'Export'}</button>
          {menu==='export'&&<div className="pop right"><button onClick={exportMd}><FileMd size={16}/><b>Markdown file</b></button><button onClick={copyMd}><Copy size={16}/><b>Copy as Markdown</b></button><button onClick={exportPdf}><FilePdf size={16}/><b>PDF</b></button></div>}
         </span>
-        <button className={'ghost'+(active.favorite?' on':'')} onClick={()=>patch(active.id,{favorite:!active.favorite})}><Star size={15} weight={active.favorite?'fill':'regular'}/>Favorite</button>
-        <button className={'ghost'+(active.pinned?' on':'')} onClick={()=>patch(active.id,{pinned:!active.pinned})}><PushPin size={15} weight={active.pinned?'fill':'regular'}/>{active.pinned?'Pinned':'Pin'}</button>
-        <button className="ghost danger" onClick={()=>deletePage(active.id)}><Trash size={15}/>Trash</button>
+        <button className={'ghost'+(active.favorite?' on':'')} data-tip="Keep this page in Favorites." data-tip-title="Favorite" onClick={()=>patch(active.id,{favorite:!active.favorite})}><Star size={15} weight={active.favorite?'fill':'regular'}/>Favorite</button>
+        <button className={'ghost'+(active.pinned?' on':'')} data-tip="Keep this page at the top of the list." data-tip-title="Pin" onClick={()=>patch(active.id,{pinned:!active.pinned})}><PushPin size={15} weight={active.pinned?'fill':'regular'}/>{active.pinned?'Pinned':'Pin'}</button>
+        <button className="ghost danger" data-tip="Moves to Trash for 30 days." data-tip-title="Trash" onClick={()=>deletePage(active.id)}><Trash size={15}/>Trash</button>
        </>}
      </div>
      <div className="toolbar">
@@ -735,7 +705,7 @@ export function Notes({focusId}){
       {Tool({icon:CheckSquare,label:"Checklist",onClick:()=>{checklist();save();}})}
       <i className="sep"/>
       {Tool({icon:Quotes,label:"Quote",onClick:()=>fmt('formatBlock','blockquote')})}
-      {Tool({icon:Code,label:"Code block",onClick:()=>fmt('formatBlock','pre')})}
+      {Tool({icon:Code,label:"Code block",onClick:()=>insertCodeBlock()})}
       {Tool({icon:Minus,label:"Divider",onClick:()=>fmt('insertHorizontalRule')})}
       {Tool({icon:LinkSimple,label:"Link",onClick:openLink})}
       {link!==null&&<span className="link-bar">
@@ -747,7 +717,7 @@ export function Notes({focusId}){
      <NoteHead note={active} readOnly={!!active.deleted} onChange={change=>patch(active.id,{...change,updated:Date.now()})}/>
      <input className="note-title" placeholder="Untitled" readOnly={!!active.deleted} value={active.title} onChange={e=>patch(active.id,{title:e.target.value,updated:Date.now()})} onKeyDown={onTitleKey}/>
      <div ref={editor} className="note-body" contentEditable={!active.deleted} suppressContentEditableWarning spellCheck data-placeholder="Write, or press / for commands"
-      onInput={onInput} onPaste={onPaste} onKeyDown={onKeyDown} onMouseMove={showBlockBar} onMouseLeave={e=>{if(!e.relatedTarget?.closest?.('.block-bar')){blockEl.current=null;setBlockBar(null);}}} onKeyUp={e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key))detectSlash();}} onClick={onEditorClick} onBlur={()=>{setTimeout(()=>setSlash(null),120);setTimeout(settleCode,0);}}
+      onInput={onInput} onPaste={onPaste} onKeyDown={onKeyDown} onMouseMove={showBlockBar} onMouseLeave={e=>{if(!e.relatedTarget?.closest?.('.block-bar')){blockEl.current=null;setBlockBar(null);}}} onKeyUp={e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key))detectSlash();}} onClick={onEditorClick} onBlur={()=>{setTimeout(()=>setSlash(null),120);}} onFocus={()=>setTimeout(trackCode,0)}
       onScroll={onBodyScroll} onDragStart={onDragStart} onDragOver={onDragOver} onDrop={onDrop} onDragEnd={endDrag}/>
      <input ref={fileInput} type="file" accept="image/*" multiple hidden onChange={e=>{insertImages(e.target.files);e.target.value='';}}/>
      {outline.length>0&&<nav className="outline" aria-label="On this page">
@@ -765,7 +735,7 @@ export function Notes({focusId}){
      </div>}
      {codeBar&&<div ref={barEl} className="code-bar" style={{left:codeBar.x,top:codeBar.y}} onMouseDown={e=>e.preventDefault()}>
       <Code size={14}/>
-      <LangPicker value={codeBar.value} autoLabel={codeBar.found} onChange={changeLang}/>
+      <LangPicker value={codeBar.value} noAuto onChange={changeLang}/>
      </div>}
      {blockBar&&<div className="block-bar" style={{left:blockBar.x,top:blockBar.y}} onMouseDown={e=>e.preventDefault()} onMouseLeave={()=>{blockEl.current=null;setBlockBar(null);}}><button className="danger" onClick={deleteBlock}><Trash size={13}/>Delete {blockBar.name}</button></div>}
      {tableBar&&<div className="table-bar" style={{left:tableBar.x,top:tableBar.y}} onMouseDown={e=>e.preventDefault()}>

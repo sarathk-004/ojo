@@ -246,3 +246,18 @@
 .tb-acts{position:absolute;top:6px;right:6px;min-height:0;background:var(--card,#fff);border-radius:8px}
 .tb-card{padding:11px 12px}
 .tb-card b{padding-right:48px}
+
+/* Board: long words wrap inside the card; the actions sit in the card's foot, never over the text */
+.tb-card .tb-title{display:block;padding:0;white-space:normal;overflow:visible;overflow-wrap:anywhere;word-break:break-word;min-width:0}
+.tb-card{min-width:0}
+.tb-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:28px}
+.tb-foot .tb-meta{min-width:0}
+.tb-acts{position:static;background:none;min-height:0;flex:none}
+.tb-col>header h4{display:inline-flex;align-items:center;gap:8px}
+.tb-dot{width:8px;height:8px;border-radius:50%;background:#9aa291;flex:none}
+.tb-doing{background:#e6eef7}.tb-doing .tb-dot{background:#4f7ea8}.tb-doing header h4{color:#2f5a82}
+.tb-done{background:#e3eee1}.tb-done .tb-dot{background:#567458}.tb-done header h4{color:#3d5f40}
+.tb-todo .tb-dot{background:#9aa291}
+.tb-doing.over{background:#d8e6f3}.tb-done.over{background:#d3e6d0}
+.tb-doing .tb-card{border-color:#c9d9ea}.tb-done .tb-card{border-color:#c4dac1}
+.tb-done .tb-title{color:#6b7a68;text-decoration:line-through}

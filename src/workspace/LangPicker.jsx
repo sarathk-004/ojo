@@ -5,7 +5,7 @@ import {ALL_LANGS,langName} from './highlight.js';
 
 // A language dropdown for code: Auto-detect and Plain text first, then every language A to Z. Type to search.
 // value: a language id, or '' for Auto-detect. autoLabel names what Auto-detect found.
-export function LangPicker({value,autoLabel,onChange,label='Code language'}){
+export function LangPicker({value,autoLabel,onChange,label='Code language',noAuto=false}){
  const btn=useRef(null),menu=useRef(null),list=useRef(null),input=useRef(null);
  const [open,setOpen]=useState(false),[q,setQ]=useState(''),[pos,setPos]=useState(null),[active,setActive]=useState(0);
 
@@ -13,7 +13,7 @@ export function LangPicker({value,autoLabel,onChange,label='Code language'}){
   const s=q.trim().toLowerCase();
   const match=l=>!s||l.name.toLowerCase().includes(s)||l.id.includes(s)||l.aliases.some(a=>a.includes(s));
   const out=[];
-  if(!s||'auto detect'.includes(s))out.push({kind:'opt',value:'',name:'Auto-detect'});
+  if(!noAuto&&(!s||'auto detect'.includes(s)))out.push({kind:'opt',value:'',name:'Auto-detect'});
   if(!s||'plain text'.includes(s))out.push({kind:'opt',value:'plaintext',name:'Plain text'});
   let letter='';
   for(const l of ALL_LANGS){
@@ -23,7 +23,7 @@ export function LangPicker({value,autoLabel,onChange,label='Code language'}){
    out.push({kind:'opt',value:l.id,name:l.name});
   }
   return out;
- },[q]);
+ },[q,noAuto]);
  const opts=rows.filter(r=>r.kind==='opt');
  const current=value===''?'':value;
  const shown=value===''?(autoLabel?'Auto · '+autoLabel:'Auto-detect'):langName(value);

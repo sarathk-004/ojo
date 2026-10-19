@@ -23,6 +23,7 @@ import './workspace-controls.css';
 import './workspace-motion.css';
 import './workspace-settings.css';
 import './workspace-polish.css';
+import './workspace-narrow.css';
 import './workspace-dark.css';
 import {Settings} from './Settings.jsx';
 import {Tooltip} from './Tooltip.jsx';
