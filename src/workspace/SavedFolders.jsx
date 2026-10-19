@@ -16,7 +16,7 @@ export function FolderBar({folders,setFolders,items,current,setCurrent,onDeleted
  const cur=folders.find(f=>f.id===current);
  const remove=()=>{onDeleted(current);setFolders(l=>l.filter(f=>f.id!==current));setCurrent('all');setConfirm(false);};
  return (
-  <div className="folder-bar">
+  <div className="folder-bar"><span className="fb-label">Folders</span>
    <button className={'filter'+(current==='all'?' on':'')} onClick={()=>setCurrent('all')}>Everything</button>
    {folders.map(f=><button key={f.id} className={'filter'+(current===f.id?' on':'')} onClick={()=>setCurrent(f.id)}><FolderSimple size={13}/>{f.name}<em>{folderCount(items,f.id)}</em></button>)}
    {folders.length>0&&unfiled(items)>0&&<button className={'filter'+(current==='none'?' on':'')} onClick={()=>setCurrent('none')}>No folder<em>{unfiled(items)}</em></button>}

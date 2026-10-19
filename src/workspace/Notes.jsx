@@ -77,7 +77,7 @@ export function Notes({focusId}){
   const off=e=>{if(!e.target.closest?.('.pop,.pop-anchor'))setMenu(null);};
   window.addEventListener('mousedown',off);return()=>window.removeEventListener('mousedown',off);
  },[menu]);
- const [outline,setOutline]=useState([]),[activeHead,setActiveHead]=useState(0),[tableBar,setTableBar]=useState(null),[codeBar,setCodeBar]=useState(null);
+ const [outline,setOutline]=useState([]),[activeHead,setActiveHead]=useState(0),[tableBar,setTableBar]=useState(null),[codeBar,setCodeBar]=useState(null),[blockBar,setBlockBar]=useState(null),blockEl=useRef(null);
  const codePre=useRef(null),swapping=useRef(false);
  const fileInput=useRef(null),dragCard=useRef(null);
  const editor=useRef(null),loadedId=useRef(null),range=useRef(null),slashRef=useRef(null);
@@ -413,6 +413,43 @@ export function Notes({focusId}){
  const settleCode=()=>{if(codePre.current&&!document.activeElement?.closest?.('.code-bar,.lang-menu')){highlightPre(codePre.current);}};
  const onSelection=()=>{updateTableBar();trackCode();};
 
+ // Blocks that are awkward to remove with the keyboard get a Delete control, and a drag selection that covers them deletes them.
+ const BLOCKS='details.toggle,.callout,hr,pre,img[data-file]';
+ const showBlockBar=e=>{
+  const b=e.target.closest?.(BLOCKS);
+  if(!b||!editor.current?.contains(b)||active?.deleted){if(!e.target.closest?.('.block-bar')&&blockEl.current){blockEl.current=null;setBlockBar(null);}return;}
+  if(blockEl.current===b)return;
+  blockEl.current=b;const r=b.getBoundingClientRect();
+  setBlockBar({x:Math.round(Math.min(window.innerWidth-132,r.right-124)),y:Math.round(Math.max(8,r.top-30)),name:b.matches('details')?'toggle':b.matches('pre')?'code':b.matches('img')?'image':b.matches('hr')?'divider':'callout'});
+ };
+ const deleteBlock=()=>{
+  const b=blockEl.current;if(!b)return;
+  const next=b.nextElementSibling;b.remove();blockEl.current=null;setBlockBar(null);
+  if(!editor.current.querySelector('p,h1,h2,h3,ul,ol,pre,table,details,.kanban,.callout')){editor.current.innerHTML='<p><br></p>';}
+  if(next&&next.nodeType===1)caretTo(next);save();
+ };
+ // Selecting across blocks and pressing Delete removes what is fully selected, including toggles, boards and tables.
+ const deleteSelection=()=>{
+  const sel=window.getSelection();if(!sel.rangeCount||sel.isCollapsed)return false;
+  const r=sel.getRangeAt(0);if(!editor.current.contains(r.commonAncestorContainer))return false;
+  const special=[...editor.current.querySelectorAll('details.toggle,.kanban,table,.callout,hr,pre,img[data-file]')].filter(b=>r.intersectsNode(b));
+  if(!special.length)return false;
+  const inside=b=>{const nr=document.createRange();nr.selectNode(b);return r.compareBoundaryPoints(Range.START_TO_START,nr)<=0&&r.compareBoundaryPoints(Range.END_TO_END,nr)>=0;};
+  const whole=special.filter(inside);
+  if(!whole.length)return false;
+  const blk=n=>{const el=n.nodeType===3?n.parentElement:n;return el?.closest?.('p,h1,h2,h3,li');};
+  const endBlk=blk(r.endContainer),startBlk=blk(r.startContainer);
+  whole.forEach(b=>b.remove());
+  try{if(!r.collapsed)r.deleteContents();}catch{}
+  // Join what is left of the first and last paragraphs, as an ordinary deletion would.
+  if(startBlk&&endBlk&&startBlk!==endBlk&&startBlk.isConnected&&endBlk.isConnected&&startBlk.tagName===endBlk.tagName){
+   const pos=document.createRange();pos.selectNodeContents(startBlk);pos.collapse(false);
+   while(endBlk.firstChild)startBlk.appendChild(endBlk.firstChild);endBlk.remove();
+   sel.removeAllRanges();sel.addRange(pos);
+  }
+  if(!editor.current.querySelector('p,h1,h2,h3,ul,ol,pre,table,details,.kanban,.callout'))editor.current.innerHTML='<p><br></p>';
+  blockEl.current=null;setBlockBar(null);save();return true;
+ };
  // Tables.
  const cellOf=()=>{
   const n=window.getSelection().anchorNode;
@@ -506,6 +543,9 @@ export function Notes({focusId}){
   save();
  };
  const onKeyDown=e=>{
+  if((e.key==='Delete'||e.key==='Backspace')&&!e.ctrlKey&&!e.metaKey&&deleteSelection()){e.preventDefault();return;}
+  // Backspace in an empty toggle title removes the toggle.
+  if(e.key==='Backspace'){const sum=e.target.closest?.('summary');if(sum&&!sum.textContent.trim()&&window.getSelection().isCollapsed){e.preventDefault();const d=sum.closest('details');const next=d.nextElementSibling;d.remove();if(next)caretTo(next);save();return;}}
   // Inside a kanban board: Enter makes the next card, Backspace on an empty card removes it.
   const inBoard=e.target.closest?.('.kanban');
   if(inBoard){
@@ -707,7 +747,7 @@ export function Notes({focusId}){
      <NoteHead note={active} readOnly={!!active.deleted} onChange={change=>patch(active.id,{...change,updated:Date.now()})}/>
      <input className="note-title" placeholder="Untitled" readOnly={!!active.deleted} value={active.title} onChange={e=>patch(active.id,{title:e.target.value,updated:Date.now()})} onKeyDown={onTitleKey}/>
      <div ref={editor} className="note-body" contentEditable={!active.deleted} suppressContentEditableWarning spellCheck data-placeholder="Write, or press / for commands"
-      onInput={onInput} onPaste={onPaste} onKeyDown={onKeyDown} onKeyUp={e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key))detectSlash();}} onClick={onEditorClick} onBlur={()=>{setTimeout(()=>setSlash(null),120);setTimeout(settleCode,0);}}
+      onInput={onInput} onPaste={onPaste} onKeyDown={onKeyDown} onMouseMove={showBlockBar} onMouseLeave={e=>{if(!e.relatedTarget?.closest?.('.block-bar')){blockEl.current=null;setBlockBar(null);}}} onKeyUp={e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key))detectSlash();}} onClick={onEditorClick} onBlur={()=>{setTimeout(()=>setSlash(null),120);setTimeout(settleCode,0);}}
       onScroll={onBodyScroll} onDragStart={onDragStart} onDragOver={onDragOver} onDrop={onDrop} onDragEnd={endDrag}/>
      <input ref={fileInput} type="file" accept="image/*" multiple hidden onChange={e=>{insertImages(e.target.files);e.target.value='';}}/>
      {outline.length>0&&<nav className="outline" aria-label="On this page">
@@ -727,6 +767,7 @@ export function Notes({focusId}){
       <Code size={14}/>
       <LangPicker value={codeBar.value} autoLabel={codeBar.found} onChange={changeLang}/>
      </div>}
+     {blockBar&&<div className="block-bar" style={{left:blockBar.x,top:blockBar.y}} onMouseDown={e=>e.preventDefault()} onMouseLeave={()=>{blockEl.current=null;setBlockBar(null);}}><button className="danger" onClick={deleteBlock}><Trash size={13}/>Delete {blockBar.name}</button></div>}
      {tableBar&&<div className="table-bar" style={{left:tableBar.x,top:tableBar.y}} onMouseDown={e=>e.preventDefault()}>
       <button onClick={()=>tableOp('row+')}>+ Row</button><button onClick={()=>tableOp('col+')}>+ Column</button>
       <i className="sep"/><button onClick={()=>tableOp('row-')}>− Row</button><button onClick={()=>tableOp('col-')}>− Column</button>

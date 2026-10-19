@@ -25,6 +25,7 @@ import './workspace-settings.css';
 import './workspace-polish.css';
 import './workspace-dark.css';
 import {Settings} from './Settings.jsx';
+import {Tooltip} from './Tooltip.jsx';
 import {Mascot} from './Mascot.jsx';
 import {Onboarding} from './Onboarding.jsx';
 import {applyTheme,getTheme,setTheme,watchSystemTheme} from './theme.js';
@@ -188,6 +189,7 @@ export function Workspace(){
      {navClosed&&<button className="bar-btn" aria-label="Show sidebar" onClick={()=>setNavClosed(false)}><SidebarSimple size={18} weight="fill"/></button>}
      {meta.panel&&<button className={'bar-btn'+(panelClosed?'':' on')} aria-label={panelClosed?'Show side panel':'Hide side panel'} onClick={()=>setPanelClosed(v=>!v)}><Columns size={18}/></button>}
     </div><Current key={section} focusId={focusId} go={go}/></main>
+   <Tooltip/>
    {showSettings&&<Settings onClose={()=>setShowSettings(false)} onTour={()=>{setShowSettings(false);setReplay(true);}}/>}
    {(needsOnboarding||replay)&&<Onboarding replay={replay&&!needsOnboarding} legalOnly={needsLegal&&!needsTour} onAccept={accept}/>}
    {searching&&<SearchPalette onClose={()=>setSearching(false)} go={go}/>}

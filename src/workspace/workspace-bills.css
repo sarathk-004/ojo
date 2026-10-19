@@ -3,12 +3,12 @@
 .bills::-webkit-scrollbar{display:none}
 .bills-head{display:flex;align-items:flex-end;gap:12px}
 .bills-head h2{margin:0}.bills-head p{margin:2px 0 0}
-.bill-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:900px}
+.bill-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
 .bill-stats>div{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 16px;display:flex;flex-direction:column;gap:2px}
 .bill-stats span{font-size:12.5px;color:var(--muted)}
 .bill-stats b{font-size:24px;letter-spacing:-.05em}
 .bill-stats em{font-style:normal;font-size:12px;color:#8a9081}
-.bill-group{max-width:900px;display:flex;flex-direction:column;gap:6px}
+.bill-group{;display:flex;flex-direction:column;gap:6px}
 .bill-group h5{margin:6px 2px 2px;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:#8a9081;display:flex;align-items:center;gap:8px}
 .bill-group h5 em{font-style:normal;background:#ece8dc;border-radius:999px;padding:0 7px;font-size:11px}
 .bill-group.overdue h5{color:var(--danger)}
@@ -23,12 +23,12 @@
 .bill-amt{min-width:84px;text-align:right;font-variant-numeric:tabular-nums}
 .bill-acts{display:flex;gap:2px;opacity:.5;transition:opacity .15s}
 .bill-row:hover .bill-acts{opacity:1}
-.bill-suggest{max-width:900px;background:#fff8e6;border:1px solid #efdca3;border-radius:18px;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+.bill-suggest{;background:#fff8e6;border:1px solid #efdca3;border-radius:18px;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
 .bill-suggest h5{margin:0 0 2px;font-size:13px;display:flex;align-items:center;gap:6px;color:#8a6d2f}
 .sg-row{display:flex;align-items:center;gap:12px}
-.bill-empty{max-width:900px;display:grid;justify-items:center;gap:8px;text-align:center;padding:30px 20px;background:var(--card);border:1px dashed #d6d1c1;border-radius:22px;color:var(--muted)}
+.bill-empty{;display:grid;justify-items:center;gap:8px;text-align:center;padding:30px 20px;background:var(--card);border:1px dashed #d6d1c1;border-radius:22px;color:var(--muted)}
 .bill-empty h3{margin:4px 0 0;color:var(--ink);font-size:17px}.bill-empty p{max-width:420px;margin:0}
-.bill-ended{max-width:900px;font-size:13px}.bill-ended summary{cursor:pointer;color:var(--muted);font-weight:600;margin-bottom:6px}
+.bill-ended{;font-size:13px}.bill-ended summary{cursor:pointer;color:var(--muted);font-weight:600;margin-bottom:6px}
 .bill-toast{position:sticky;bottom:6px;align-self:center;background:#2f3a2c;color:#fffef9;border-radius:999px;padding:8px 16px;display:inline-flex;gap:8px;align-items:center;font-size:13px;box-shadow:0 10px 30px #1c241955}
 .bill-form{display:flex;flex-direction:column;gap:12px;min-width:0}
 .bill-form .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}

@@ -49,3 +49,13 @@
 @media (prefers-reduced-motion:reduce){
  .ws *,.ws *::before,.ws *::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
 }
+
+/* Hover hints and small board motions */
+.ojo-tip{position:fixed;z-index:400;transform:translateX(-50%);max-width:230px;display:flex;flex-direction:column;gap:2px;padding:7px 10px;border-radius:9px;background:#2c332b;color:#f4f1e6;font-size:12px;line-height:1.35;pointer-events:none;animation:tipin .14s ease-out backwards;box-shadow:0 6px 16px #0003}
+.ojo-tip b{font-weight:600;font-size:12px}
+.ojo-tip span{opacity:.78;font-size:11.5px}
+@keyframes tipin{from{opacity:0;transform:translateX(-50%) translateY(3px)}}
+.tb-card{animation:tbin .22s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes tbin{from{opacity:0;transform:translateY(5px)}}
+.tb-card:active{cursor:grabbing}
+@media (prefers-reduced-motion:reduce){.ojo-tip,.tb-card{animation:none}}

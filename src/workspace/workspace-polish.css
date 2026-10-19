@@ -240,3 +240,19 @@
 .ws .quiet-state.on{color:var(--sage)}
 .ws .quiet-auto{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:13px;line-height:1.45}
 .ws .quiet-note{font-size:12.5px;margin-top:10px}
+
+/* Task rows: tick, text and actions share one centre line; an opened row keeps them level with the title */
+.ws .task-row{align-items:center}
+.ws .task-row.tall{align-items:flex-start}
+.ws .task-row .tick{margin-top:0}
+.ws .task-row.tall .tick{margin-top:9px}
+.ws .task-row.tall>.icon-btn{margin-top:3px}
+.ws .task-row.sel-tasks .sel-cover .sel-box{left:14.5px;top:50%;margin-top:-9.5px}
+.ws .task-row.tall.sel-tasks .sel-cover .sel-box{top:21px;margin-top:0}
+/* Controls that sit side by side share one height */
+.ws .quick-add>input,.ws .quick-add>button{height:36px;box-sizing:border-box}
+.ws .quick-add>button{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding-top:0;padding-bottom:0}
+.ws .tasks-head>.ghost,.ws .tasks-head .seg-toggle button{display:inline-flex;align-items:center;justify-content:center}
+/* Day totals line up with the amounts below them (the edit button's room is reserved at the row's end) */
+.ws .day-head{padding-right:48px}
+.ws .folder-bar .fb-label{font-size:12px;color:var(--muted);margin-right:2px}

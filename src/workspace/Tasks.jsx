@@ -3,6 +3,9 @@ import {DateField,TimeField} from './Pickers.jsx';
 import {Plus,Trash,PencilSimple,Check,Repeat,Bell,CalendarBlank,Flame,Star,Timer,Cube,CheckSquare,X,Warning,MoonStars} from '@phosphor-icons/react';
 import {belongs,dayKey,newTask,toggleTask,completedToday,habitStats,syncMasterDaily,masterDailyTask,normalizeListOrder,recurLabel,isDailyTask,firstDate,newSubtask,subtaskProgress,toggleSubtask,moveTask,snoozeDate} from '../tasks.mjs';
 import {Select} from './Select.jsx';
+import {Modal} from './Modal.jsx';
+import {TaskBoard} from './TaskBoard.jsx';
+import {Rows,Kanban} from '@phosphor-icons/react';
 import {Shutdown} from './Shutdown.jsx';
 import {TaskNote} from './TaskNote.jsx';
 import {useBulk,SelectToggle,BulkBar,SelectMark} from './bulk.jsx';
@@ -61,7 +64,8 @@ export function Tasks({go,focusId}){
  const undo=useUndo();
  const [closing,setClosing]=useState(focusId==='shutdown');
  useEffect(()=>{if(focusId==='shutdown')setClosing(true);},[focusId]);
- const [noting,setNoting]=useState(null),[dragTab,setDragTab]=useState(null),[overTab,setOverTab]=useState(null),[data,setData]=useState(null),[view,setView]=useState('Today'),[quick,setQuick]=useState(''),[editing,setEditing]=useState(null),[open,setOpen]=useState(()=>new Set()),[subDraft,setSubDraft]=useState({});
+ const [noting,setNoting]=useState(null),[dragTab,setDragTab]=useState(null),[overTab,setOverTab]=useState(null),[data,setData]=useState(null),[view,setView]=useState('Today'),[quick,setQuick]=useState(''),[editing,setEditing]=useState(null),[open,setOpen]=useState(()=>new Set()),[subDraft,setSubDraft]=useState({}),[layout,setLayout]=useState(()=>{try{return localStorage.getItem('tnkr-ws-tasks-layout')==='board'?'board':'list';}catch{return 'list';}});
+ const pickLayout=l=>{setLayout(l);try{localStorage.setItem('tnkr-ws-tasks-layout',l);}catch{}};
  const dataRef=useRef(null);
  const [focusLog]=useCollection('focus');
  const spent=useMemo(()=>Object.fromEntries(totalsByTask(focusLog).map(t=>[t.taskId,t.seconds])),[focusLog]);
@@ -93,6 +97,8 @@ export function Tasks({go,focusId}){
   const d={...dataRef.current,listOrder:next};dataRef.current=d;setData(d);
   bridge.save({tasks:d.tasks,listOrder:next,theme:d.theme,covers:d.covers});
  };
+ // The board shows every task of the open list, including what was finished today.
+ const boardTasks=useMemo(()=>(data?.tasks||[]).filter(t=>belongs(t,view)||(view==='Today'&&!t.repeat&&t.done&&t.doneAt&&dayKey(new Date(t.doneAt))===today)),[data,view,today]);
  const bulk=useBulk();
  useEffect(()=>{bulk.clear();},[view]);
  // Delete or finish many at once; deleting puts everything back with one Undo.
@@ -119,6 +125,15 @@ export function Tasks({go,focusId}){
  const moveTo=(t,date)=>patchTask(t.id,moveTask(t,date));
  const overdue=(data?.tasks||[]).filter(t=>!t.repeat&&!t.done&&t.date&&t.date<today);
  const moveAll=date=>commit(data.tasks.map(t=>overdue.some(o=>o.id===t.id)?moveTask(t,date):t));
+ // Board: dropping a card in a column changes its state.
+ const moveCard=(t,col)=>{
+  const was=completedToday(t);
+  let next=was&&col!=='done'?toggleTask(t):t;
+  if(!was&&col==='done')next=toggleTask(t);
+  next={...next,status:col==='doing'?'doing':undefined};
+  patchTask(t.id,next);
+  if(col==='done'&&!was)undo.show('“'+t.title+'” done',()=>commit(dataRef.current.tasks.map(x=>x.id===t.id?t:x)));
+ };
  const add=e=>{
   e.preventDefault();
   if(!quick.trim())return;
@@ -133,18 +148,22 @@ export function Tasks({go,focusId}){
  return (
   <div className="tasks">
    <section className="tasks-main">
-    <div className="tasks-head"><h2>{new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</h2><span className="spacer"/><SelectToggle bulk={bulk} disabled={!list.length}/><button className="ghost close-day-btn" onClick={()=>setClosing(true)}><MoonStars size={15} weight="fill"/>Close the day</button></div>
+    <div className="tasks-head"><h2>{new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</h2><span className="spacer"/><div className="seg-toggle layout-toggle" role="group" aria-label="Layout"><button className={layout==='list'?'on':''} aria-label="List view" onClick={()=>pickLayout('list')}><Rows size={15}/>List</button><button className={layout==='board'?'on':''} aria-label="Board view" onClick={()=>pickLayout('board')}><Kanban size={15}/>Board</button></div>{layout==='list'&&<SelectToggle bulk={bulk} disabled={!list.length}/>}<button className="ghost close-day-btn" onClick={()=>setClosing(true)}><MoonStars size={15} weight="fill"/>Close the day</button></div>
     <div className="task-tabs">
      {order.map(v=>{const I=ICON[v];return <button key={v} draggable className={(view===v?'on':'')+(dragTab===v?' dragging':'')+(overTab===v&&dragTab&&dragTab!==v?' over-tab':'')} onClick={()=>{setView(v);setEditing(null);}} onDragStart={e=>{setDragTab(v);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/tnkr-tab',v);}} onDragOver={e=>{if(dragTab){e.preventDefault();setOverTab(v);}}} onDrop={e=>{e.preventDefault();reorderTabs(dragTab,v);setDragTab(null);setOverTab(null);}} onDragEnd={()=>{setDragTab(null);setOverTab(null);}} onKeyDown={e=>{if(e.altKey&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){e.preventDefault();const i=order.indexOf(v),j=i+(e.key==='ArrowLeft'?-1:1);if(order[j])reorderTabs(v,order[j]);}}}><I size={15} weight={view===v?'fill':'regular'}/>{v}<em>{counts[v]}</em></button>;})}
     </div>
     {overdue.length>0&&view==='Today'&&<div className="overdue-bar"><Warning size={16} weight="fill"/><b>{overdue.length} overdue</b><span className="spacer"/><button onClick={()=>moveAll(today)}>All to today</button><button onClick={()=>moveAll(snoozeDate('tomorrow'))}>All to tomorrow</button></div>}
     {bulk.on&&<BulkBar bulk={bulk} ids={list.map(t=>t.id)} noun="task" onDelete={bulkDelete}><button className="bulk-act" disabled={!bulk.count} onClick={()=>bulkDone([...bulk.sel])}><Check size={14} weight="bold"/>Mark done</button></BulkBar>}
-    <div className="task-list-ws">
+    {layout==='board'&&<>
+     <TaskBoard tasks={boardTasks} onMove={moveCard} onEdit={setEditing} onDelete={removeTask}/>
+     {editing&&<Modal title="Edit task" onClose={()=>setEditing(null)}><Editor task={dataRef.current.tasks.find(x=>x.id===editing)||{title:''}} onCancel={()=>setEditing(null)} onSave={c=>{patchTask(editing,c);setEditing(null);}}/></Modal>}
+    </>}
+    {layout==='list'&&<div className="task-list-ws">
      {list.map(t=>{
       const done=completedToday(t),streak=t.repeat?habitStats(t).current:0;
       return editing===t.id
        ?<Editor key={t.id} task={t} onCancel={()=>setEditing(null)} onSave={c=>{patchTask(t.id,c);setEditing(null);}}/>
-       :<div key={t.id} className={'task-row'+(done?' done':'')+(bulk.on?' sel-host sel-tasks':'')} onClick={e=>{if(bulk.on)return;if(e.target.closest('button,input,a,textarea,[contenteditable],.sub-list,.snooze-row,.task-note-rich'))return;setNoting(n=>n===t.id?null:t.id);}}>
+       :<div key={t.id} className={'task-row'+(done?' done':'')+((open.has(t.id)||noting===t.id||(!t.repeat&&!done&&t.date&&t.date<today))?' tall':'')+(bulk.on?' sel-host sel-tasks':'')} onClick={e=>{if(bulk.on)return;if(e.target.closest('button,input,a,textarea,[contenteditable],.sub-list,.snooze-row,.task-note-rich'))return;setNoting(n=>n===t.id?null:t.id);}}>
          <SelectMark bulk={bulk} id={t.id}/>
          <button className={'tick'+(done?' on':'')} aria-label={done?'Mark not done':'Mark done'} onClick={()=>{patchTask(t.id,toggleTask(t));if(!done)undo.show('“'+t.title+'” done',()=>commit(dataRef.current.tasks.map(x=>x.id===t.id?toggleTask(x):x)));}}>{done&&<Check size={13} weight="bold"/>}</button>
          <div className="task-text">
@@ -172,7 +191,7 @@ export function Tasks({go,focusId}){
         </div>;
      })}
      {!list.length&&<p className="muted pad">{view==='Today'?'A little space to begin.':'Nothing here yet.'}</p>}
-    </div>
+    </div>}
     <form className="task-add" onSubmit={add}>
      <input placeholder={`Add a task${view==='Today'?' for today':view==='Daily'?' that repeats daily':''}…`} value={quick} onChange={e=>setQuick(e.target.value)}/>
      <button className="primary round" aria-label="Add task" disabled={!quick.trim()}><Plus size={16} weight="bold"/></button>
