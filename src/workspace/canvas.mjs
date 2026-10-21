@@ -109,3 +109,76 @@ export function redo(h,current){
  if(!h.future.length)return null;
  h.past.push(current);return h.future.pop();
 }
+
+// ---- Kinds, shapes and fonts ------------------------------------------------------------
+export const SHAPES=['round','pill','ellipse','diamond','hexagon'];
+export const FONTS={
+ sans:{name:'Sans',css:'inherit'},
+ serif:{name:'Serif',css:"Georgia,'Times New Roman',serif"},
+ mono:{name:'Mono',css:"'Cascadia Code',Consolas,monospace"},
+ round:{name:'Rounded',css:"'Segoe UI','Trebuchet MS',sans-serif"},
+ hand:{name:'Handwritten',css:"'Segoe Print','Segoe Script','Comic Sans MS',cursive"}
+};
+export const SIZES={s:12,m:14,l:19,xl:26};
+export const EDGE_COLORS={slate:'',sage:'#567458',blue:'#4a7ba6',amber:'#c9923f',rose:'#b4533f'};
+export const newGroup=(x,y,w=320,h=220,over={})=>({...newNode(x,y,{kind:'group',text:'Group',color:'slate',w,h}),...over});
+export const kindOf=n=>n.kind||'idea';
+export const isGroup=n=>kindOf(n)==='group';
+
+// ---- Snapping and alignment -------------------------------------------------------------
+// Moving boxes snap their left, middle and right (and top, middle and bottom) to those of the other boxes when close.
+// Returns the correction to apply and the guide lines to draw.
+export function snapMove(moving,others,threshold){
+ const xs=[moving.x,moving.x+moving.w/2,moving.x+moving.w],ys=[moving.y,moving.y+moving.h/2,moving.y+moving.h];
+ let bx=null,by=null;
+ for(const o of others){
+  const ox=[o.x,o.x+o.w/2,o.x+o.w],oy=[o.y,o.y+o.h/2,o.y+o.h];
+  for(const a of xs)for(const b of ox){const d=b-a;if(Math.abs(d)<=threshold&&(!bx||Math.abs(d)<Math.abs(bx.d)))bx={d,at:b,o};}
+  for(const a of ys)for(const b of oy){const d=b-a;if(Math.abs(d)<=threshold&&(!by||Math.abs(d)<Math.abs(by.d)))by={d,at:b,o};}
+ }
+ const dx=bx?bx.d:0,dy=by?by.d:0,guides=[];
+ const mx={x:moving.x+dx,y:moving.y+dy,w:moving.w,h:moving.h};
+ if(bx)guides.push({axis:'x',at:bx.at,from:Math.min(mx.y,bx.o.y),to:Math.max(mx.y+mx.h,bx.o.y+bx.o.h)});
+ if(by)guides.push({axis:'y',at:by.at,from:Math.min(mx.x,by.o.x),to:Math.max(mx.x+mx.w,by.o.x+by.o.w)});
+ return {dx,dy,guides};
+}
+export const snapGrid=(v,grid)=>Math.round(v/grid)*grid;
+
+// The idea nearest a point, if the point is within `margin` of its box. Letting go there connects to it.
+export function nearestBox(p,boxes,margin){
+ let best=null;
+ for(const b of boxes){
+  const dx=Math.max(b.x-p.x,0,p.x-(b.x+b.w)),dy=Math.max(b.y-p.y,0,p.y-(b.y+b.h)),d=Math.hypot(dx,dy);
+  if(d<=margin&&(!best||d<best.d))best={id:b.id,d};
+ }
+ return best?best.id:null;
+}
+
+// Which ideas sit inside a group's frame (by their centre).
+export const insideGroup=(group,boxes)=>boxes.filter(b=>!b.group&&b.id!==group.id&&b.x+b.w/2>=group.x&&b.x+b.w/2<=group.x+group.w&&b.y+b.h/2>=group.y&&b.y+b.h/2<=group.y+group.h).map(b=>b.id);
+export function frameAround(boxes,pad=28,head=34){
+ const x0=Math.min(...boxes.map(b=>b.x)),y0=Math.min(...boxes.map(b=>b.y)),x1=Math.max(...boxes.map(b=>b.x+b.w)),y1=Math.max(...boxes.map(b=>b.y+b.h));
+ return {x:Math.round(x0-pad),y:Math.round(y0-pad-head),w:Math.round(x1-x0+pad*2),h:Math.round(y1-y0+pad*2+head)};
+}
+
+// Line ideas up. mode: left | right | top | bottom | centerX | centerY | spreadX | spreadY
+export function alignBoxes(boxes,mode){
+ const out={};if(boxes.length<2)return out;
+ const x0=Math.min(...boxes.map(b=>b.x)),x1=Math.max(...boxes.map(b=>b.x+b.w)),y0=Math.min(...boxes.map(b=>b.y)),y1=Math.max(...boxes.map(b=>b.y+b.h));
+ if(mode==='left')boxes.forEach(b=>out[b.id]={x:x0,y:b.y});
+ else if(mode==='right')boxes.forEach(b=>out[b.id]={x:x1-b.w,y:b.y});
+ else if(mode==='top')boxes.forEach(b=>out[b.id]={x:b.x,y:y0});
+ else if(mode==='bottom')boxes.forEach(b=>out[b.id]={x:b.x,y:y1-b.h});
+ else if(mode==='centerX'){const c=(x0+x1)/2;boxes.forEach(b=>out[b.id]={x:Math.round(c-b.w/2),y:b.y});}
+ else if(mode==='centerY'){const c=(y0+y1)/2;boxes.forEach(b=>out[b.id]={x:b.x,y:Math.round(c-b.h/2)});}
+ else if(mode==='spreadX'&&boxes.length>2){
+  const s=[...boxes].sort((a,b)=>a.x-b.x),total=s.reduce((n,b)=>n+b.w,0),gap=(x1-x0-total)/(s.length-1);let x=x0;
+  s.forEach(b=>{out[b.id]={x:Math.round(x),y:b.y};x+=b.w+gap;});
+ }else if(mode==='spreadY'&&boxes.length>2){
+  const s=[...boxes].sort((a,b)=>a.y-b.y),total=s.reduce((n,b)=>n+b.h,0),gap=(y1-y0-total)/(s.length-1);let y=y0;
+  s.forEach(b=>{out[b.id]={x:b.x,y:Math.round(y)};y+=b.h+gap;});
+ }
+ return out;
+}
+export const allTags=nodes=>[...new Set(nodes.flatMap(n=>n.tags||[]))].sort((a,b)=>a.localeCompare(b));
+export const cleanTag=t=>String(t||'').trim().replace(/^#/,'').replace(/\s+/g,'-').slice(0,24).toLowerCase();

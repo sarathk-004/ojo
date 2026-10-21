@@ -49,3 +49,33 @@ test('undo and redo walk back and forth',()=>{
  assert.equal(redo(h,'two'),'three');
  assert.equal(boardText({nodes:[{text:'a'},{text:''},{text:'b'}]}),'a · b');
 });
+
+import {snapMove,nearestBox,insideGroup,frameAround,alignBoxes,allTags,cleanTag,newGroup} from '../src/workspace/canvas.mjs';
+test('moving boxes snap to the edges and centres of others and report guides',()=>{
+ const others=[{id:'a',x:200,y:0,w:100,h:40}];
+ const r=snapMove({x:197,y:101,w:100,h:40},others,6);
+ assert.equal(r.dx,3);assert.equal(r.dy,0);assert.ok(r.guides.some(g=>g.axis==='x'&&g.at===200));
+ const far=snapMove({x:50,y:300,w:100,h:40},others,6);
+ assert.equal(far.dx,0);assert.equal(far.dy,0);assert.equal(far.guides.length,0);
+});
+test('a link lets go on the nearest idea within reach',()=>{
+ const boxes=[{id:'a',x:0,y:0,w:100,h:40},{id:'b',x:300,y:0,w:100,h:40}];
+ assert.equal(nearestBox({x:130,y:20},boxes,36),'a');
+ assert.equal(nearestBox({x:200,y:20},boxes,36),null);
+});
+test('groups hold the ideas inside them and frames wrap a selection',()=>{
+ const g=newGroup(0,0,300,200);
+ const boxes=[{id:'in',x:20,y:40,w:80,h:30},{id:'out',x:400,y:40,w:80,h:30}];
+ assert.deepEqual(insideGroup(g,boxes),['in']);
+ const f=frameAround(boxes);
+ assert.ok(f.x<20&&f.w>460);
+});
+test('alignment lines ideas up and spreads them evenly',()=>{
+ const boxes=[{id:'a',x:0,y:10,w:50,h:20},{id:'b',x:100,y:50,w:50,h:20},{id:'c',x:400,y:30,w:50,h:20}];
+ assert.equal(alignBoxes(boxes,'left').b.x,0);
+ assert.equal(alignBoxes(boxes,'top').c.y,10);
+ const s=alignBoxes(boxes,'spreadX');
+ assert.equal(s.b.x,200);
+ assert.deepEqual(allTags([{tags:['b','a']},{tags:['a']}]),['a','b']);
+ assert.equal(cleanTag(' #My Tag '),'my-tag');
+});

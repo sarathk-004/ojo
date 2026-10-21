@@ -72,6 +72,7 @@ export const NOTICES={
    'Electron, by the OpenJS Foundation and contributors, MIT licence. Electron includes Chromium and Node.js, which have their own licences (BSD-3-Clause, MIT and others); the full list ships with the app in LICENSES.chromium.html.',
    'pdf.js (pdfjs-dist), by Mozilla and contributors, Apache License 2.0.',
    'highlight.js, by Ivan Sagalaev and contributors, BSD-3-Clause licence.',
+   'mammoth, by Michael Williamson, BSD-2-Clause licence (reads Word documents when you import them).',
    'GSAP, by GreenSock, used under the GreenSock Standard "no charge" licence (gsap.com/standard-license).',
    'Phosphor Icons (@phosphor-icons/react), by Helena Zhang and Tobias Fried, MIT licence.',
    'ojo itself, by the ojo contributors, MIT licence.',
