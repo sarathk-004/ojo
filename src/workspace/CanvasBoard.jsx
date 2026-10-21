@@ -48,18 +48,20 @@ function NodeBox({n,picked,editing,target,dim,tidying,onDown,onEditDone,onSize,o
 }
 
 // A named frame that holds other ideas. Move it and what sits inside moves along.
-function GroupBox({g,picked,editing,dim,onDown,onTitleDone,onResize,onDouble}){
+function GroupBox({g,picked,editing,dim,dropIn,count,onDown,onTitleDone,onResize,onDouble}){
  const [title,setTitle]=useState(g.text);
  useEffect(()=>{if(!editing)setTitle(g.text);},[g.text,editing]);
  return (
-  <div data-id={g.id} className={'cv-group'+(picked?' picked':'')+(dim?' dim':'')} style={{left:g.x,top:g.y,width:g.w,height:g.h,'--nc':NODE_COLORS[g.color]||NODE_COLORS.slate}} onPointerDown={e=>onDown(e,g)} onDoubleClick={e=>{e.stopPropagation();onDouble(g.id);}}>
+  <div data-id={g.id} className={'cv-group'+(picked?' picked':'')+(dim?' dim':'')+(dropIn?' drop-in':'')} style={{left:g.x,top:g.y,width:g.w,height:g.h,'--nc':NODE_COLORS[g.color]||NODE_COLORS.slate}} onPointerDown={e=>onDown(e,g)} onDoubleClick={e=>{e.stopPropagation();onDouble(g.id);}}>
    <div className="cv-group-head">
     {editing
      ?<input autoFocus className="cv-group-input" value={title} maxLength={60} onChange={e=>setTitle(e.target.value)} onFocus={e=>e.target.select()} onPointerDown={e=>e.stopPropagation()} onBlur={()=>onTitleDone(g.id,title.trim()||'Group')} onKeyDown={e=>{e.stopPropagation();if(e.key==='Enter'||e.key==='Escape')e.target.blur();}}/>
      :<b>{g.text||'Group'}</b>}
+    <em className="cv-count-chip">{count} {count===1?'idea':'ideas'}</em>
     {(g.tags||[]).map(t=><span key={t} className="cv-tag">#{t}</span>)}
    </div>
-   <span className="cv-resize" onPointerDown={e=>onResize(e,g)}/>
+   {['n','e','s','w','ne','nw','se','sw'].map(d=><span key={d} className={'cv-rz '+d} onPointerDown={e=>onResize(e,g,d)}/>)}
+   {dropIn&&<span className="cv-dropnote">Release to add to {g.text||'this group'}</span>}
   </div>
  );
 }
@@ -71,8 +73,8 @@ export function BoardView({board,projects,onChange,onDelete}){
  const [vp,setVp]=useState({vx:board.vx||0,vy:board.vy||0,vz:board.vz||1});
  const [sel,setSel]=useState(()=>new Set()),[selEdge,setSelEdge]=useState(null),[editing,setEditing]=useState(null),[editEdge,setEditEdge]=useState(null);
  const [dropOn,setDropOn]=useState(null),[link,setLink]=useState(null),[sizes,setSizes]=useState({}),[pop,setPop]=useState(null),[tidying,setTidying]=useState(false);
- const [guides,setGuides]=useState([]),[marquee,setMarquee]=useState(null),[grid,setGrid]=useState(()=>{try{return localStorage.getItem('tnkr-ws-canvas-grid')==='1';}catch{return false;}}),[filter,setFilter]=useState(''),[tagDraft,setTagDraft]=useState('');
- const surf=useRef(null),hist=useRef(makeHistory()),graph=useRef({nodes,edges}),vpRef=useRef(vp),fresh=useRef(null),sizesRef=useRef(sizes),gridRef=useRef(grid);
+ const [dropGroup,setDropGroup]=useState(null),[guides,setGuides]=useState([]),[marquee,setMarquee]=useState(null),[grid,setGrid]=useState(()=>{try{return localStorage.getItem('tnkr-ws-canvas-grid')==='1';}catch{return false;}}),[filter,setFilter]=useState(''),[tagDraft,setTagDraft]=useState('');
+ const dragGroupRef=useRef(null),surf=useRef(null),hist=useRef(makeHistory()),graph=useRef({nodes,edges}),vpRef=useRef(vp),fresh=useRef(null),sizesRef=useRef(sizes),gridRef=useRef(grid);
  graph.current={nodes,edges};vpRef.current=vp;sizesRef.current=sizes;gridRef.current=grid;
 
  useEffect(()=>{setVp({vx:board.vx||0,vy:board.vy||0,vz:board.vz||1});setSel(new Set());setSelEdge(null);setEditing(null);setPop(null);hist.current=makeHistory();},[board.id]);
@@ -87,7 +89,11 @@ export function BoardView({board,projects,onChange,onDelete}){
  const plain=()=>graph.current.nodes.filter(n=>!isGroup(n));
 
  // ---- adding
- const centre=()=>{const r=surf.current.getBoundingClientRect();return toWorld(r.left+r.width/2,r.top+r.height/2);};
+ const centre=()=>{
+  const gSel=sel.size===1?graph.current.nodes.find(n=>n.id===[...sel][0]&&isGroup(n)):null;
+  if(gSel){const kids=insideGroup(boxOf(gSel),plain().map(boxOf)).length;return {x:gSel.x+30+60,y:gSel.y+54+kids%5*58+20};}
+  const r=surf.current.getBoundingClientRect();return toWorld(r.left+r.width/2,r.top+r.height/2);
+ };
  const addNode=(x,y,over={},edit=true)=>{
   const n=newNode(x,y,over);
   setGraph([...graph.current.nodes,n],graph.current.edges);
@@ -191,10 +197,15 @@ export function BoardView({board,projects,onChange,onDelete}){
    }else setGuides([]);
    onChange({nodes:graph.current.nodes.map(x=>orig.has(x.id)?{...x,x:Math.round(orig.get(x.id).x+dx),y:Math.round(orig.get(x.id).y+dy)}:x),updated:Date.now()});
    if(single){const t=under(ev);if(t!==over){over=t;setDropOn(t);}}
+   if(!isGroup(n)){
+    const cx=bb.x+dx+bb.w/2,cy=bb.y+dy+bb.h/2;
+    const gr=graph.current.nodes.find(q=>isGroup(q)&&!ids.includes(q.id)&&cx>=q.x&&cx<=q.x+(q.w||320)&&cy>=q.y&&cy<=q.y+(q.h||220));
+    const gid=gr?gr.id:null;if(gid!==dragGroupRef.current){dragGroupRef.current=gid;setDropGroup(gid);}
+   }
   };
   const up=()=>{
    window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);
-   setDropOn(null);setGuides([]);
+   setDropOn(null);setGuides([]);dragGroupRef.current=null;setDropGroup(null);
    if(moved&&over&&single){
     const g=graph.current,add=!hasEdge(g.edges,n.id,over);
     setTidying(true);
@@ -204,10 +215,18 @@ export function BoardView({board,projects,onChange,onDelete}){
   };
   window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);
  };
- const onResize=(e,g)=>{
-  e.stopPropagation();e.preventDefault();
-  const s={x:e.clientX,y:e.clientY,w:g.w||320,h:g.h||220};pushHistory(hist.current,snapNow());
-  const mv=ev=>{const z=vpRef.current.vz;onChange({nodes:graph.current.nodes.map(x=>x.id===g.id?{...x,w:Math.max(180,Math.round(s.w+(ev.clientX-s.x)/z)),h:Math.max(110,Math.round(s.h+(ev.clientY-s.y)/z))}:x),updated:Date.now()});};
+ const onResize=(e,g,dir='se')=>{
+  e.stopPropagation();e.preventDefault();setSel(new Set([g.id]));
+  const s={x:e.clientX,y:e.clientY,gx:g.x,gy:g.y,w:g.w||320,h:g.h||220};pushHistory(hist.current,snapNow());
+  const mv=ev=>{
+   const z=vpRef.current.vz,dx=(ev.clientX-s.x)/z,dy=(ev.clientY-s.y)/z;
+   let x=s.gx,y=s.gy,w=s.w,h=s.h;
+   if(dir.includes('e'))w=Math.max(180,s.w+dx);
+   if(dir.includes('s'))h=Math.max(110,s.h+dy);
+   if(dir.includes('w')){w=Math.max(180,s.w-dx);x=s.gx+(s.w-w);}
+   if(dir.includes('n')){h=Math.max(110,s.h-dy);y=s.gy+(s.h-h);}
+   onChange({nodes:graph.current.nodes.map(q=>q.id===g.id?{...q,x:Math.round(x),y:Math.round(y),w:Math.round(w),h:Math.round(h)}:q),updated:Date.now()});
+  };
   const up=()=>{window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);};
   window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);
  };
@@ -310,7 +329,7 @@ export function BoardView({board,projects,onChange,onDelete}){
     onDoubleClick={e=>{if(e.target.closest('.cv-node,.cv-group,.cv-bar,.cv-edge-hit,.cv-edge-input,.cv-ebar'))return;const p=toWorld(e.clientX,e.clientY);addNode(p.x-60,p.y-20);}}
     style={{backgroundSize:gridPx+'px '+gridPx+'px',backgroundPosition:vp.vx+'px '+vp.vy+'px'}}>
     <div className="cv-world" style={{transform:`translate(${vp.vx}px,${vp.vy}px) scale(${vp.vz})`}}>
-     {groups.map(g=><GroupBox key={g.id} g={g} picked={sel.has(g.id)} editing={editing===g.id} dim={dimmed(g)} onDown={onNodeDown} onTitleDone={onGroupTitle} onResize={onResize} onDouble={setEditing}/>)}
+     {groups.map(g=><GroupBox key={g.id} g={g} picked={sel.has(g.id)} editing={editing===g.id} dim={dimmed(g)} dropIn={dropGroup===g.id} count={insideGroup(boxOf(g),items.map(boxOf)).length} onDown={onNodeDown} onTitleDone={onGroupTitle} onResize={onResize} onDouble={setEditing}/>)}
      <svg className="cv-edges" width="1" height="1" overflow="visible">
       <defs>
        <marker id="cv-arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M1,1.5 L9,5 L1,8.5 z" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinejoin="round"/></marker>
@@ -349,6 +368,7 @@ export function BoardView({board,projects,onChange,onDelete}){
      <button className={'icon-btn'+(pop==='tag'?' on':'')} aria-label="Tags" onClick={()=>setPop(pop==='tag'?null:'tag')}><Tag size={16}/></button>
      <i className="sep"/>
      {!isGroup(one)&&<button className="icon-btn" aria-label="Add a connected idea" onClick={()=>addChild(one.id)}><Plus size={15} weight="bold"/></button>}
+     {isGroup(one)&&<button className="cv-txtbtn" aria-label="Select contents" data-tip="Select every idea inside, to align or move them together." data-tip-title="Select contents" onClick={()=>setSel(new Set(insideGroup(boxOf(one),plain().map(boxOf))))}><Selection size={15}/>Select contents</button>}
      {isGroup(one)&&<button className="icon-btn" aria-label="Ungroup" data-tip="Remove the frame, keep the ideas." data-tip-title="Ungroup" onClick={()=>ungroup(one.id)}><X size={15}/></button>}
      <button className="icon-btn danger" aria-label="Delete idea" onClick={removeSelected}><Trash size={15}/></button>
      {pop==='shape'&&<Pop><div className="cv-opts">{SHAPES.map(s=><button key={s} className={(one.shape||'round')===s?'on':''} onClick={()=>{patchIds(ids1,{shape:s});setPop(null);}}>{React.createElement(SHAPE_ICON[s],{size:16})}{SHAPE_NAME[s]}</button>)}</div></Pop>}

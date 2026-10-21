@@ -177,8 +177,8 @@ export function BlockTools({editor,onChange,remember,readOnly}){
      onDragStart={gripDrag} onDragEnd={()=>{st.current.drag=null;setDrop(null);}} onMouseDown={e=>e.stopPropagation()}><DotsSixVertical size={16} weight="bold"/></button>}
    {drop&&<div className="bt-drop" style={{left:drop.x,top:drop.y,width:drop.w,height:drop.h}}/>}
    {lasso&&<div className="bt-lasso" style={{left:lasso.x,top:lasso.y,width:lasso.w,height:lasso.h}}/>}
-   {bar&&<div className="bt-bar" style={{left:Math.max(8,bar.x-250),top:bar.y}} onMouseDown={e=>e.preventDefault()}>
-    <span>{bar.n} {bar.n===1?'block':'blocks'}</span>
+   {bar&&<div className="bt-bar" style={{left:Math.max(8,bar.x-290),top:bar.y}} onMouseDown={e=>e.preventDefault()}>
+    <span className="bt-n">{bar.n} selected</span>
     {bar.n>1&&<button onClick={sideBySide}><Columns size={14}/>Side by side</button>}
     <button className="danger" onClick={deleteSel}><Trash size={14}/>Delete</button>
     <button className="icon-btn" aria-label="Clear selection" onClick={clearSel}><X size={13}/></button>

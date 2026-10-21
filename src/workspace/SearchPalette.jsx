@@ -1,11 +1,11 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {gsap} from 'gsap';
-import {MagnifyingGlass,NotePencil,CheckCircle,BookmarkSimple,FilePdf,Briefcase,Wallet,CalendarBlank,Receipt,ArrowElbowDownLeft} from '@phosphor-icons/react';
+import {MagnifyingGlass,NotePencil,CheckCircle,BookmarkSimple,FilePdf,Briefcase,Wallet,CalendarBlank,Receipt,ArrowElbowDownLeft,TreeStructure} from '@phosphor-icons/react';
 import {api} from './api.js';
 import {TYPES,entries,search,sectionOf} from './search.mjs';
 
-const ICON={notes:NotePencil,tasks:CheckCircle,saved:BookmarkSimple,pdfs:FilePdf,jobs:Briefcase,finance:Wallet,events:CalendarBlank,bills:Receipt};
-const COLOR={notes:'#4f7ea8',tasks:'#567458',saved:'#c9803f',pdfs:'#b4533f',jobs:'#7a6aa8',finance:'#3d8f8f',events:'#a85a7a',bills:'#c9803f'};
+const ICON={notes:NotePencil,tasks:CheckCircle,saved:BookmarkSimple,pdfs:FilePdf,jobs:Briefcase,finance:Wallet,events:CalendarBlank,bills:Receipt,canvas:TreeStructure};
+const COLOR={notes:'#4f7ea8',tasks:'#567458',saved:'#c9803f',pdfs:'#b4533f',jobs:'#7a6aa8',finance:'#3d8f8f',events:'#a85a7a',bills:'#c9803f',canvas:'#4a7ba6'};
 
 // Wraps the matched words in <mark>.
 function Marked({text,q}){

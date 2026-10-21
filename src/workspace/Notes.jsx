@@ -1,5 +1,5 @@
 import React,{useLayoutEffect,useEffect,useMemo,useRef,useState} from 'react';
-import {dateLocale} from './prefs.js';
+import {dateLocale,useLivePrefs} from './prefs.js';
 import {ArrowBendDownRight,Plus,MagnifyingGlass,PushPin,Trash,TextB,TextItalic,TextUnderline,TextStrikethrough,ListBullets,ListNumbers,CheckSquare,Quotes,Code,LinkSimple,Minus,NotePencil,CaretRight,TextT,TextHOne,TextHTwo,TextHThree,FileText,Lightbulb,CalendarBlank,Table,Kanban,ImageSquare,CaretCircleRight,FolderSimple,FolderSimplePlus,ArrowUp,ArrowDown,PencilSimple,DownloadSimple} from '@phosphor-icons/react';
 import {readNoteFile} from './importDoc.js';
 import {PickMenu} from './SavedFolders.jsx';
@@ -76,6 +76,8 @@ const COMMANDS=[
 ];
 
 export function Notes({focusId}){
+ const [settingsRows]=useCollection('settings'),prefs=useLivePrefs(settingsRows),[fonts,setFonts]=useState([]),[scrolled,setScrolled]=useState(false),[dragNote,setDragNote]=useState(null),[dragFolder,setDragFolder]=useState(null),[overF,setOverF]=useState(null);
+ useEffect(()=>{let live=true;api.listFonts().then(l=>{if(live)setFonts(l||[]);});return()=>{live=false;};},[]);
  const [notes,setNotes,ready]=useCollection('notes'),[nfolders,setNfolders]=useCollection('notefolders'),[nfMenu,setNfMenu]=useState(null),[renamingF,setRenamingF]=useState(null);
  const [activeId,setActiveId]=useState(null),[query,setQuery]=useState(''),[confirm,setConfirm]=useState(false),[link,setLink]=useState(null),[linkErr,setLinkErr]=useState(false),[linkPop,setLinkPop]=useState(null),[collapsed,setCollapsed]=useState(()=>new Set());
  const [slash,setSlash]=useState(null),[rowConfirm,setRowConfirm]=useState(null),[mode,setModeRaw]=useState('all'),[menu,setMenu]=useState(null),[exported,setExported]=useState('');
@@ -137,6 +139,7 @@ export function Notes({focusId}){
   return out;
  },[notes,query,collapsed,byId,mode,nfolders]);
  const active=byId.get(activeId)||null;
+ const crumb=(()=>{if(!scrolled||!outline.length)return null;const i=Math.min(activeHead,outline.length-1),cur=outline[i];let top=null;for(let k=i;k>=0;k--){if(outline[k].level===1){top=outline[k];break;}}return {top:top&&top!==cur?top.text:null,cur:cur.text,idx:i};})();
  const setMode=m=>{if(active&&!active.deleted)save();setModeRaw(m);setActiveId(null);loadedId.current=null;};
  const crumbs=useMemo(()=>{const c=[];let n=active;while(n&&n.parent&&byId.has(n.parent)){n=byId.get(n.parent);c.unshift(n);}return c;},[active,byId]);
 
@@ -173,6 +176,14 @@ export function Notes({focusId}){
    }catch(e){setImportMsg(String(e&&e.message||'That file could not be imported.'));}
   }
   setTimeout(()=>setImportMsg(''),6000);
+ };
+ // Drag a page onto a folder to file it there (sub-pages travel with their parent); drag a folder header to reorder.
+ const moveNoteTo=(id,folder)=>{setNotes(l=>l.map(x=>x.id===id?{...x,folder:folder||undefined}:x));};
+ const dropOnFolder=(e,fid)=>{
+  e.preventDefault();setOverF(null);
+  if(dragNote){moveNoteTo(dragNote,fid);setDragNote(null);}
+  else if(dragFolder&&fid&&dragFolder!==fid){setNfolders(l=>{const a=l.findIndex(f=>f.id===dragFolder),b=l.findIndex(f=>f.id===fid);if(a<0||b<0)return l;const n2=[...l],[m]=n2.splice(a,1);n2.splice(b,0,m);return n2;});}
+  setDragFolder(null);
  };
  const create=(parent=null)=>{
   // Pressing + again on a page that is still blank just goes back to it instead of piling up empty pages.
@@ -226,7 +237,7 @@ export function Notes({focusId}){
  };
  const deletePage=id=>{
   const doomed=subtree(id),ts=Date.now();
-  const next=rows.find(r=>!doomed.has(r.n.id));
+  const next=rows.find(r=>r.n&&!doomed.has(r.n.id));
   setNotes(list=>list.map(n=>doomed.has(n.id)?{...n,deleted:ts}:n));
   if(doomed.has(activeId)){setActiveId(next?.n.id||null);loadedId.current=null;}
   setConfirm(false);setRowConfirm(null);
@@ -546,7 +557,7 @@ export function Notes({focusId}){
   const ed=editor.current;if(!ed)return;
   const top=ed.getBoundingClientRect().top+40;let a=0;
   ed.querySelectorAll('h1,h2,h3').forEach((h,i)=>{if(h.getBoundingClientRect().top<=top)a=i;});
-  setActiveHead(a);updateTableBar();
+  setActiveHead(a);setScrolled(ed.scrollTop>100);updateTableBar();
  };
 
  // Slash menu: opens when "/" starts a word, filters as you type.
@@ -718,22 +729,20 @@ export function Notes({focusId}){
      :<BulkBar bulk={bulk} ids={rows.filter(r=>r.n).map(r=>r.n.id)} noun="page" deleteLabel="Move to Trash" onDelete={bulkTrash}/>)}
     <div className="list-scroll">
      {rows.map(({n,depth,kids,head,count})=>head?(
-      <div key={'h'+head.id} className="nf-head">
+      <div key={'h'+head.id} className={'nf-head'+(overF===head.id&&(dragNote||dragFolder)?' drop-over':'')+(dragFolder===head.id?' dragging':'')} draggable={!!head.id&&renamingF!==head.id} onDragStart={e=>{if(!head.id)return;setDragFolder(head.id);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','folder');}} onDragEnd={()=>{setDragFolder(null);setOverF(null);}} onDragOver={e=>{if(dragNote||(dragFolder&&head.id)){e.preventDefault();e.dataTransfer.dropEffect='move';setOverF(head.id);}}} onDragLeave={e=>{if(!e.currentTarget.contains(e.relatedTarget))setOverF(null);}} onDrop={e=>dropOnFolder(e,head.id)}>
        <button className={'nf-caret'+(collapsed.has('f:'+head.id)?'':' open')} aria-label="Show or hide this folder" onClick={()=>toggle('f:'+head.id)}><CaretRight size={11} weight="bold"/></button>
-       {head.id?<FolderSimple size={14}/>:null}
+       {head.id?<FolderSimple size={15} weight="fill" className="nf-ico"/>:null}
        {renamingF===head.id&&head.id
-        ?<input autoFocus className="nf-name" defaultValue={head.name} maxLength={40} onBlur={e=>{const v=e.target.value.trim().slice(0,40);if(v)setNfolders(l=>l.map(f=>f.id===head.id?{...f,name:v}:f));setRenamingF(null);}} onKeyDown={e=>{if(e.key==='Enter'||e.key==='Escape')e.target.blur();}}/>
+        ?<input autoFocus className="nf-name" defaultValue={head.name} maxLength={40} onBlur={e=>{const v=e.target.value.trim().slice(0,40);if(v)setNfolders(l=>l.map(f=>f.id===head.id?{...f,name:v}:f));setRenamingF(null);}} onKeyDown={e=>{if(e.key==='Enter'||e.key==='Escape')e.target.blur();}} onFocus={e=>e.target.select()}/>
         :<b onDoubleClick={()=>head.id&&setRenamingF(head.id)}>{head.name}</b>}
        <em>{count}</em>
        {head.id&&<span className="nf-acts">
-        <button className="icon-btn" aria-label="Move folder up" onClick={()=>setNfolders(l=>{const i=l.findIndex(f=>f.id===head.id);if(i<1)return l;const n2=[...l];[n2[i-1],n2[i]]=[n2[i],n2[i-1]];return n2;})}><ArrowUp size={12}/></button>
-        <button className="icon-btn" aria-label="Move folder down" onClick={()=>setNfolders(l=>{const i=l.findIndex(f=>f.id===head.id);if(i<0||i>=l.length-1)return l;const n2=[...l];[n2[i+1],n2[i]]=[n2[i],n2[i+1]];return n2;})}><ArrowDown size={12}/></button>
         <button className="icon-btn" aria-label="Rename folder" onClick={()=>setRenamingF(head.id)}><PencilSimple size={12}/></button>
         <button className="icon-btn danger" aria-label="Delete folder" onClick={()=>{setNotes(l=>l.map(x=>x.folder===head.id?{...x,folder:undefined}:x));setNfolders(l=>l.filter(f=>f.id!==head.id));}}><Trash size={12}/></button>
        </span>}
       </div>
      ):(
-      <div key={n.id} className={'note-row'+(depth>0?' child':'')+(n.id===activeId?' on':'')+(rowConfirm===n.id?' confirm':'')+(bulk.on?' sel-host':'')} style={{paddingLeft:(bulk.on?42:12)+depth*22}} onClick={()=>{if(bulk.on)return;if(active)save();setActiveId(n.id);}}>
+      <div key={n.id} draggable={!bulk.on&&mode==='all'&&!query} onDragStart={e=>{setDragNote(n.id);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',n.id);}} onDragEnd={()=>{setDragNote(null);setOverF(null);}} onDragOver={e=>{if(dragNote&&dragNote!==n.id&&nfolders.length){e.preventDefault();}}} onDrop={e=>{if(dragNote&&dragNote!==n.id){e.preventDefault();moveNoteTo(dragNote,n.folder||'');setDragNote(null);setOverF(null);}}} className={'note-row'+(dragNote===n.id?' dragging':'')+(depth>0?' child':'')+(n.id===activeId?' on':'')+(rowConfirm===n.id?' confirm':'')+(bulk.on?' sel-host':'')} style={{paddingLeft:(bulk.on?42:12)+depth*22}} onClick={()=>{if(bulk.on)return;if(active)save();setActiveId(n.id);}}>
        <SelectMark bulk={bulk} id={n.id}/>
        <span className="row-top">
         {depth>0&&!query?<ArrowBendDownRight size={13} className="child-mark"/>:null}
@@ -760,7 +769,7 @@ export function Notes({focusId}){
    <section className="note-pane">
     {active?<>
      <div className="note-bar">
-      <span className="crumbs">{crumbs.map(c=><React.Fragment key={c.id}><button onClick={()=>{save();setActiveId(c.id);}}>{c.title||'Untitled'}</button><CaretRight size={10}/></React.Fragment>)}<span className="muted">{words(active.text)} words · edited {ago(active.updated)}</span></span>
+      <span className="crumbs">{crumbs.map(c=><React.Fragment key={c.id}><button onClick={()=>{save();setActiveId(c.id);}}>{c.title||'Untitled'}</button><CaretRight size={10}/></React.Fragment>)}{crumb&&prefs.stickyHeadings!==false?<button className="bar-crumb" onClick={()=>jumpTo(crumb.idx)}>{crumb.top&&<><span>{crumb.top}</span><CaretRight size={10}/></>}<b>{crumb.cur}</b></button>:<span className="muted">{words(active.text)} words · edited {ago(active.updated)}</span>}</span>
       <span className="spacer"/>
       {active.deleted
        ?<><span className="muted">In Trash · {daysLeft(active)} days left</span><button className="ghost" onClick={()=>restorePage(active.id)}><ArrowCounterClockwise size={15}/>Restore</button><button className="ghost danger" onClick={()=>purgePage(active.id)}><Trash size={15}/>Delete forever</button></>
@@ -775,6 +784,7 @@ export function Notes({focusId}){
      </div>
      <div className="toolbar">
       <Select compact keepFocus label="Text style" value="p" onChange={v=>fmt('formatBlock',v)} options={[{value:'p',label:'Text'},{value:'h1',label:'Heading 1'},{value:'h2',label:'Heading 2'},{value:'h3',label:'Heading 3'}]}/>
+      <Select compact keepFocus label="Font" value="" placeholder="Font" onChange={v=>{const ed=editor.current;ed.focus();run('styleWithCSS',true);run('fontName',v==='__default'?(prefs.noteFont||'Geist Variable'):v);run('styleWithCSS',false);save();}} options={[{value:'__default',label:'Default font'},...fonts.map(f=>({value:f,label:f}))]}/>
       <i className="sep"/>
       {Tool({icon:TextB,label:"Bold",onClick:()=>fmt('bold')})}
       {Tool({icon:TextItalic,label:"Italic",onClick:()=>fmt('italic')})}

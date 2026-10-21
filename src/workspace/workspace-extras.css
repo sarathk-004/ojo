@@ -27,7 +27,6 @@
 .ws .nf-head:hover .nf-acts{display:inline-flex}
 .ws .nf-head:hover em{display:none}
 .ws .nf-acts .icon-btn{width:22px;height:22px}
-.ws[data-sticky=on] .note-body h1,.ws[data-sticky=on] .note-body h2,.ws[data-sticky=on] .note-body h3{position:sticky;top:0;z-index:3;background:var(--card);padding-top:6px;padding-bottom:6px;margin-top:0}
 
 .ws .nf-msg{margin:4px 14px;font-size:12.5px}
 
@@ -123,3 +122,44 @@
 .ws .cv-bar-top{flex-wrap:nowrap;align-items:flex-start;gap:12px}
 .ws .cv-bar-top .cv-title{flex:1 1 150px;min-width:110px;height:36px}
 .ws .cv-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:8px;flex:0 1 auto;min-width:0}
+
+/* Folders in the notes list: calmer headers, drop targets */
+.ws .nf-head{margin:8px 6px 2px;padding:7px 8px;border-radius:10px;gap:7px;cursor:default;transition:background .12s}
+.ws .nf-head:hover{background:var(--sage-soft)}
+.ws .nf-head.drop-over{background:var(--sage-soft);box-shadow:inset 0 0 0 1.5px var(--sage)}
+.ws .nf-head.dragging{opacity:.5}
+.ws .nf-ico{color:var(--sage);flex:none}
+.ws .nf-head b{font-size:13px;font-weight:600}
+.ws .note-row.dragging{opacity:.45}
+/* Block selection bar */
+.ws .bt-bar{white-space:nowrap;gap:2px;padding:4px;border-radius:11px}
+.ws .bt-bar .bt-n{font-size:12.5px;color:var(--muted);padding:0 10px 0 8px;white-space:nowrap}
+.ws .bt-bar button:not(.icon-btn){white-space:nowrap;flex:none}
+.ws .bt-bar .icon-btn{width:28px;height:28px;display:grid;place-items:center}
+.ws .note-body .blk-sel{background:color-mix(in srgb,var(--sage) 10%,transparent);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--sage) 55%,transparent);border-radius:8px}
+/* Section name while scrolling a note */
+.ws .sticky-crumb{position:absolute;left:28px;z-index:6;display:inline-flex;align-items:center;gap:6px;max-width:calc(100% - 120px);padding:4px 12px;border-radius:999px;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(6px);border:1px solid var(--line);font-size:12px;color:var(--muted);box-shadow:0 2px 8px #2c3a2514;animation:crumbin .18s ease-out backwards}
+.ws .sticky-crumb b{font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ws .sticky-crumb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px}
+@keyframes crumbin{from{opacity:0;transform:translateY(-4px)}}
+
+/* Groups: grab from any side, resize from every edge, show what they hold */
+.ws .cv-group{box-sizing:border-box}
+.ws .cv-group.picked{box-shadow:0 0 0 2px color-mix(in srgb,var(--sage) 30%,transparent)}
+.ws .cv-group.drop-in{border-style:solid;border-color:var(--sage);background:color-mix(in srgb,var(--sage) 14%,transparent)}
+.ws .cv-dropnote{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);font-size:12px;color:var(--sage);background:var(--card);border:1px solid var(--sage);border-radius:999px;padding:2px 10px;pointer-events:none;white-space:nowrap}
+.ws .cv-count-chip{font-style:normal;font-size:11.5px;color:var(--muted)}
+.ws .cv-group::after{content:"";position:absolute;inset:-6px;border-radius:20px;pointer-events:none}
+.ws .cv-rz{position:absolute;z-index:3}
+.ws .cv-rz.n,.ws .cv-rz.s{left:14px;right:14px;height:10px;cursor:ns-resize}
+.ws .cv-rz.e,.ws .cv-rz.w{top:14px;bottom:14px;width:10px;cursor:ew-resize}
+.ws .cv-rz.n{top:-5px}.ws .cv-rz.s{bottom:-5px}.ws .cv-rz.e{right:-5px}.ws .cv-rz.w{left:-5px}
+.ws .cv-rz.ne,.ws .cv-rz.nw,.ws .cv-rz.se,.ws .cv-rz.sw{width:16px;height:16px}
+.ws .cv-rz.ne{top:-7px;right:-7px;cursor:nesw-resize}.ws .cv-rz.nw{top:-7px;left:-7px;cursor:nwse-resize}
+.ws .cv-rz.se{bottom:-7px;right:-7px;cursor:nwse-resize}.ws .cv-rz.sw{bottom:-7px;left:-7px;cursor:nesw-resize}
+.ws .cv-group.picked .cv-rz.ne::before,.ws .cv-group.picked .cv-rz.nw::before,.ws .cv-group.picked .cv-rz.se::before,.ws .cv-group.picked .cv-rz.sw::before{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--card);border:2px solid var(--sage)}
+.ws .cv-group-head{pointer-events:auto;cursor:grab;padding:2px 0}
+
+.ws .bar-crumb{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%;padding:3px 10px;border-radius:999px;background:var(--sage-soft);font-size:12px;color:var(--muted);animation:crumbin .18s ease-out backwards}
+.ws .bar-crumb b{font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ws .bar-crumb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px}

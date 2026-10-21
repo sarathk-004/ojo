@@ -48,7 +48,10 @@ export function Calendar({focusId}){
   jobs.filter(j=>j.nextDate&&j.nextDate>=today&&j.status!=='Rejected').forEach(j=>out.push({id:'j'+j.id,date:j.nextDate,time:'',title:j.company+' · '+(j.nextStep||'Follow up'),color:'#7a6aa8'}));
   for(const b of bills)for(const d of occurrences(b,today,end))out.push({id:'b'+b.id+d,date:d,time:'',title:b.name+' due',color:'#c9803f'});
   tasks.filter(t=>t.date&&t.date>=today&&!t.repeat&&!t.done).forEach(t=>out.push({id:'t'+t.id,date:t.date,time:t.reminder?t.reminder.slice(11,16):'',title:t.title,color:'#567458'}));
-  return out.sort((a,b)=>(a.date+(a.time||'99:99')).localeCompare(b.date+(b.time||'99:99'))).slice(0,8);
+  // The same thing saved as both an event and a task is shown once (the one with a time wins).
+  const seen=new Map();
+  for(const it of out){const k=it.date+'|'+it.title.trim().toLowerCase();const old=seen.get(k);if(!old||(!old.time&&it.time))seen.set(k,it);}
+  return [...seen.values()].sort((a,b)=>(a.date+(a.time||'99:99')).localeCompare(b.date+(b.time||'99:99'))).slice(0,8);
  },[events,jobs,bills,tasks,today]);
 
  const wheelAcc=useRef({n:0,t:0});

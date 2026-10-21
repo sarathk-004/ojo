@@ -92,7 +92,7 @@ export function PrefsPanel(){
    <section>
     <h4>Notes</h4>
     <Row title="Writing font" hint="Any font installed on this computer."><Select compact label="Writing font" value={p.noteFont} onChange={v=>set({noteFont:v})} options={[{value:'',label:'ojo default (Geist)'},...fonts.map(f=>({value:f,label:f})),...(p.noteFont&&!fonts.includes(p.noteFont)?[{value:p.noteFont,label:p.noteFont}]:[])]}/></Row>
-    <Row title="Sticky headings" hint="The current heading stays at the top while you scroll."><Check2 on={p.stickyHeadings} onChange={v=>set({stickyHeadings:v})}>Keep headings in view</Check2></Row>
+    <Row title="Section name while scrolling" hint="A small label with the heading you are under."><Check2 on={p.stickyHeadings} onChange={v=>set({stickyHeadings:v})}>Show the label</Check2></Row>
    </section>
 
    <section>
