@@ -129,7 +129,7 @@ export function Notes({focusId}){
   const place=(list,depthStart)=>{for(const n of list){const count=(kids.get(n.id)||[]).length;out.push({n,depth:0,kids:count});if(count&&!collapsed.has(n.id))walk(n.id,1);}};
   const known=new Set(nfolders.map(f=>f.id));
   const loose=tops.filter(n=>!n.folder||!known.has(n.folder));
-  if(loose.length)out.push({head:{id:'',name:'Pages'},count:loose.length});
+  out.push({head:{id:'',name:'Pages'},count:loose.length});
   if(!collapsed.has('f:')||false)place(loose);
   for(const f of nfolders){
    const mine=tops.filter(n=>n.folder===f.id);
@@ -178,6 +178,9 @@ export function Notes({focusId}){
   setTimeout(()=>setImportMsg(''),6000);
  };
  // Drag a page onto a folder to file it there (sub-pages travel with their parent); drag a folder header to reorder.
+ const ghost=(e,label,kind)=>{
+  try{const host=document.querySelector('.ws')||document.body,g=document.createElement('div');g.className='dnd-ghost';g.textContent=label||'Untitled';host.appendChild(g);e.dataTransfer.setDragImage(g,14,16);setTimeout(()=>g.remove(),0);}catch(_){}
+ };
  const moveNoteTo=(id,folder)=>{setNotes(l=>l.map(x=>x.id===id?{...x,folder:folder||undefined}:x));};
  const dropOnFolder=(e,fid)=>{
   e.preventDefault();setOverF(null);
@@ -729,7 +732,7 @@ export function Notes({focusId}){
      :<BulkBar bulk={bulk} ids={rows.filter(r=>r.n).map(r=>r.n.id)} noun="page" deleteLabel="Move to Trash" onDelete={bulkTrash}/>)}
     <div className="list-scroll">
      {rows.map(({n,depth,kids,head,count})=>head?(
-      <div key={'h'+head.id} className={'nf-head'+(overF===head.id&&(dragNote||dragFolder)?' drop-over':'')+(dragFolder===head.id?' dragging':'')} draggable={!!head.id&&renamingF!==head.id} onDragStart={e=>{if(!head.id)return;setDragFolder(head.id);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','folder');}} onDragEnd={()=>{setDragFolder(null);setOverF(null);}} onDragOver={e=>{if(dragNote||(dragFolder&&head.id)){e.preventDefault();e.dataTransfer.dropEffect='move';setOverF(head.id);}}} onDragLeave={e=>{if(!e.currentTarget.contains(e.relatedTarget))setOverF(null);}} onDrop={e=>dropOnFolder(e,head.id)}>
+      <div key={'h'+head.id} className={'nf-head'+(overF===head.id&&(dragNote||dragFolder)?' drop-over':'')+(dragFolder===head.id?' dragging':'')} draggable={!!head.id&&renamingF!==head.id} onDragStart={e=>{if(!head.id)return;ghost(e,head.name);setDragFolder(head.id);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','folder');}} onDragEnd={()=>{setDragFolder(null);setOverF(null);}} onDragOver={e=>{if(dragNote||(dragFolder&&head.id)){e.preventDefault();e.dataTransfer.dropEffect='move';setOverF(head.id);}}} onDragLeave={e=>{if(!e.currentTarget.contains(e.relatedTarget))setOverF(null);}} onDrop={e=>dropOnFolder(e,head.id)}>
        <button className={'nf-caret'+(collapsed.has('f:'+head.id)?'':' open')} aria-label="Show or hide this folder" onClick={()=>toggle('f:'+head.id)}><CaretRight size={11} weight="bold"/></button>
        {head.id?<FolderSimple size={15} weight="fill" className="nf-ico"/>:null}
        {renamingF===head.id&&head.id
@@ -742,7 +745,7 @@ export function Notes({focusId}){
        </span>}
       </div>
      ):(
-      <div key={n.id} draggable={!bulk.on&&mode==='all'&&!query} onDragStart={e=>{setDragNote(n.id);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',n.id);}} onDragEnd={()=>{setDragNote(null);setOverF(null);}} onDragOver={e=>{if(dragNote&&dragNote!==n.id&&nfolders.length){e.preventDefault();}}} onDrop={e=>{if(dragNote&&dragNote!==n.id){e.preventDefault();moveNoteTo(dragNote,n.folder||'');setDragNote(null);setOverF(null);}}} className={'note-row'+(dragNote===n.id?' dragging':'')+(depth>0?' child':'')+(n.id===activeId?' on':'')+(rowConfirm===n.id?' confirm':'')+(bulk.on?' sel-host':'')} style={{paddingLeft:(bulk.on?42:12)+depth*22}} onClick={()=>{if(bulk.on)return;if(active)save();setActiveId(n.id);}}>
+      <div key={n.id} draggable={!bulk.on&&mode==='all'&&!query} onDragStart={e=>{ghost(e,n.title);setDragNote(n.id);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',n.id);}} onDragEnd={()=>{setDragNote(null);setOverF(null);}} onDragOver={e=>{if(dragNote&&dragNote!==n.id&&nfolders.length){e.preventDefault();}}} onDrop={e=>{if(dragNote&&dragNote!==n.id){e.preventDefault();moveNoteTo(dragNote,n.folder||'');setDragNote(null);setOverF(null);}}} className={'note-row'+(dragNote===n.id?' dragging':'')+(depth>0?' child':'')+(n.id===activeId?' on':'')+(rowConfirm===n.id?' confirm':'')+(bulk.on?' sel-host':'')} style={{paddingLeft:(bulk.on?42:12)+depth*22}} onClick={()=>{if(bulk.on)return;if(active)save();setActiveId(n.id);}}>
        <SelectMark bulk={bulk} id={n.id}/>
        <span className="row-top">
         {depth>0&&!query?<ArrowBendDownRight size={13} className="child-mark"/>:null}

@@ -70,6 +70,6 @@ export function Tooltip(){
   return()=>{clear();document.removeEventListener('pointerover',over);document.removeEventListener('pointerout',out);document.removeEventListener('pointerdown',clear,true);document.removeEventListener('scroll',clear,true);window.removeEventListener('blur',clear);};
  },[]);
  if(!tip)return null;
- const left=Math.max(10,Math.min(tip.x,window.innerWidth-10));
+ const left=Math.max(130,Math.min(tip.x,window.innerWidth-130));
  return <div className={'ojo-tip'+(tip.flip?' up':'')} role="tooltip" style={{left,top:tip.flip?undefined:tip.top,bottom:tip.flip?window.innerHeight-tip.above:undefined}}><b>{tip.title}</b>{tip.help&&<span>{tip.help}</span>}</div>;
 }

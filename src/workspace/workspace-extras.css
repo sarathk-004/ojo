@@ -163,3 +163,24 @@
 .ws .bar-crumb{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%;padding:3px 10px;border-radius:999px;background:var(--sage-soft);font-size:12px;color:var(--muted);animation:crumbin .18s ease-out backwards}
 .ws .bar-crumb b{font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ws .bar-crumb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px}
+
+/* Tooltips never squeeze into a narrow column */
+.ojo-tip{width:max-content;max-width:min(260px,calc(100vw - 20px));white-space:normal;overflow-wrap:normal;word-break:normal}
+.ojo-tip b{white-space:nowrap}
+/* One look for every rename field */
+.ws ::selection{background:color-mix(in srgb,var(--sage) 28%,transparent);color:inherit}
+.ws .nf-name,.ws .cv-group-input,.ws .folder-new input,.ws .rename-field{height:28px;box-sizing:border-box;padding:0 9px;border:1px solid var(--sage);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;font-weight:600;font-size:13px;outline:0;box-shadow:0 0 0 3px color-mix(in srgb,var(--sage) 16%,transparent);min-width:0}
+.ws .cv-group-input{width:auto;min-width:96px;max-width:100%;border-bottom:1px solid var(--sage)}
+.ws .cv-edit{caret-color:var(--sage)}
+/* Canvas export menu and toast */
+.ws .cv-export{position:relative;display:inline-flex}
+.ws .cv-expmenu{left:auto;right:0;min-width:210px;padding:6px;display:flex;flex-direction:column;gap:2px}
+.ws .cv-expmenu button{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:0;border-radius:9px;background:none;text-align:left;cursor:pointer;color:var(--ink)}
+.ws .cv-expmenu button:hover{background:var(--sage-soft)}
+.ws .cv-expmenu span{display:flex;flex-direction:column;line-height:1.25}
+.ws .cv-expmenu b{font-weight:600;font-size:13px}
+.ws .cv-expmenu i{font-style:normal;font-size:12px;color:var(--muted)}
+.ws .cv-toast{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:20;padding:8px 14px;border-radius:999px;background:#2c332b;color:#f4f1e6;font-size:12.5px;white-space:nowrap;pointer-events:none}
+/* Compact chip shown while dragging a page or folder */
+.ws .dnd-ghost{position:fixed;left:-400px;top:-400px;max-width:220px;padding:7px 14px;border-radius:10px;background:#fbfaf5;border:1px solid #cfd6c8;box-shadow:0 6px 18px #1c241933;font-size:13px;font-weight:600;color:#2c332b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ws .nf-head.empty-head b{color:var(--muted)}

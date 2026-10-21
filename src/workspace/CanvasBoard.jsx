@@ -1,6 +1,7 @@
 import React,{useCallback,useEffect,useLayoutEffect,useRef,useState} from 'react';
-import {Plus,Trash,ArrowUUpLeft,ArrowUUpRight,MagnifyingGlassPlus,MagnifyingGlassMinus,ArrowsIn,Sparkle,Smiley,TextT,TextB,TextItalic,ChatCircleText,FrameCorners,GridFour,Tag,Square,Circle,Diamond,Hexagon,Rectangle,ArrowRight,ArrowsHorizontal,Minus,AlignLeft,AlignRight,AlignTop,AlignBottom,AlignCenterHorizontal,AlignCenterVertical,ArrowsOutLineHorizontal,ArrowsOutLineVertical,TextAa,X,TreeStructure,Selection} from '@phosphor-icons/react';
+import {Plus,Trash,ArrowUUpLeft,ArrowUUpRight,MagnifyingGlassPlus,MagnifyingGlassMinus,ArrowsIn,Sparkle,Smiley,TextT,TextB,TextItalic,ChatCircleText,FrameCorners,GridFour,Tag,Square,Circle,Diamond,Hexagon,Rectangle,ArrowRight,ArrowsHorizontal,Minus,AlignLeft,AlignRight,AlignTop,AlignBottom,AlignCenterHorizontal,AlignCenterVertical,ArrowsOutLineHorizontal,ArrowsOutLineVertical,TextAa,X,TreeStructure,Selection,ArrowLineUp,FileSvg,FilePng,FileJpg} from '@phosphor-icons/react';
 import {Select} from './Select.jsx';
+import {exportBoard} from './canvasExport.js';
 import {Glyph,ICON_NAMES} from './icons.jsx';
 import {NODE_COLORS,NODE_W,NODE_H,SHAPES,FONTS,SIZES,EDGE_COLORS,newNode,newEdge,newGroup,isGroup,kindOf,hasEdge,parentOf,childSpot,anchors,tidy,fitView,zoomAt,withoutNodes,snapMove,snapGrid,nearestBox,insideGroup,frameAround,alignBoxes,allTags,cleanTag,makeHistory,pushHistory,undo as histUndo,redo as histRedo} from './canvas.mjs';
 
@@ -55,7 +56,7 @@ function GroupBox({g,picked,editing,dim,dropIn,count,onDown,onTitleDone,onResize
   <div data-id={g.id} className={'cv-group'+(picked?' picked':'')+(dim?' dim':'')+(dropIn?' drop-in':'')} style={{left:g.x,top:g.y,width:g.w,height:g.h,'--nc':NODE_COLORS[g.color]||NODE_COLORS.slate}} onPointerDown={e=>onDown(e,g)} onDoubleClick={e=>{e.stopPropagation();onDouble(g.id);}}>
    <div className="cv-group-head">
     {editing
-     ?<input autoFocus className="cv-group-input" value={title} maxLength={60} onChange={e=>setTitle(e.target.value)} onFocus={e=>e.target.select()} onPointerDown={e=>e.stopPropagation()} onBlur={()=>onTitleDone(g.id,title.trim()||'Group')} onKeyDown={e=>{e.stopPropagation();if(e.key==='Enter'||e.key==='Escape')e.target.blur();}}/>
+     ?<input autoFocus className="cv-group-input" size={Math.max(8,Math.min(30,title.length+2))} value={title} maxLength={60} onChange={e=>setTitle(e.target.value)} onFocus={e=>e.target.select()} onPointerDown={e=>e.stopPropagation()} onBlur={()=>onTitleDone(g.id,title.trim()||'Group')} onKeyDown={e=>{e.stopPropagation();if(e.key==='Enter'||e.key==='Escape')e.target.blur();}}/>
      :<b>{g.text||'Group'}</b>}
     <em className="cv-count-chip">{count} {count===1?'idea':'ideas'}</em>
     {(g.tags||[]).map(t=><span key={t} className="cv-tag">#{t}</span>)}
@@ -72,7 +73,7 @@ export function BoardView({board,projects,onChange,onDelete}){
  const nodes=board.nodes||[],edges=board.edges||[];
  const [vp,setVp]=useState({vx:board.vx||0,vy:board.vy||0,vz:board.vz||1});
  const [sel,setSel]=useState(()=>new Set()),[selEdge,setSelEdge]=useState(null),[editing,setEditing]=useState(null),[editEdge,setEditEdge]=useState(null);
- const [dropOn,setDropOn]=useState(null),[link,setLink]=useState(null),[sizes,setSizes]=useState({}),[pop,setPop]=useState(null),[tidying,setTidying]=useState(false);
+ const [expMenu,setExpMenu]=useState(false),[expMsg,setExpMsg]=useState(''),[dropOn,setDropOn]=useState(null),[link,setLink]=useState(null),[sizes,setSizes]=useState({}),[pop,setPop]=useState(null),[tidying,setTidying]=useState(false);
  const [dropGroup,setDropGroup]=useState(null),[guides,setGuides]=useState([]),[marquee,setMarquee]=useState(null),[grid,setGrid]=useState(()=>{try{return localStorage.getItem('tnkr-ws-canvas-grid')==='1';}catch{return false;}}),[filter,setFilter]=useState(''),[tagDraft,setTagDraft]=useState('');
  const dragGroupRef=useRef(null),surf=useRef(null),hist=useRef(makeHistory()),graph=useRef({nodes,edges}),vpRef=useRef(vp),fresh=useRef(null),sizesRef=useRef(sizes),gridRef=useRef(grid);
  graph.current={nodes,edges};vpRef.current=vp;sizesRef.current=sizes;gridRef.current=grid;
@@ -257,6 +258,7 @@ export function BoardView({board,projects,onChange,onDelete}){
  useEffect(()=>{
   const el=surf.current;if(!el)return;
   const h=e=>{
+   if(e.target.closest&&e.target.closest('.cv-pop,.cv-bar,.cv-ebar,.cv-bar-top,.nh-pop,.pop,.sel-menu,.pick-menu'))return;
    e.preventDefault();
    const r=el.getBoundingClientRect();
    if(e.ctrlKey||e.metaKey)setVp(v=>zoomAt(v,Math.exp(-e.deltaY*.0085),e.clientX-r.left,e.clientY-r.top));
@@ -322,9 +324,16 @@ export function BoardView({board,projects,onChange,onDelete}){
     </div>
     <button className="icon-btn cv-quiet" data-tip="Lines the ideas up as a tree, left to right." data-tip-title="Tidy up" aria-label="Tidy up" disabled={!edges.length} onClick={doTidy}><Sparkle size={17}/></button>
     <button className="primary cv-add" onClick={()=>{const c=centre();addNode(c.x-60,c.y-20);}}><Plus size={15} weight="bold"/>Idea</button>
+    <div className="cv-export">
+     <button className="icon-btn cv-quiet" aria-label="Export drawing" data-tip="Save this board as an SVG, PNG or JPG picture." data-tip-title="Export" disabled={!nodes.length} onClick={()=>setExpMenu(m=>!m)}><ArrowLineUp size={17}/></button>
+     {expMenu&&<div className="cv-pop cv-expmenu" onPointerDown={e=>e.stopPropagation()}>
+      {[['svg','SVG','Sharp at any size',FileSvg],['png','PNG','Picture with sharp edges',FilePng],['jpg','JPG','Smaller file',FileJpg]].map(([k,n,d,I])=><button key={k} onClick={async()=>{setExpMenu(false);try{const ok=await exportBoard(k,board.title,nodes,edges,sizesRef.current);setExpMsg(ok?'Saved as '+n:'Nothing to export yet');}catch(err){setExpMsg('Could not export');}setTimeout(()=>setExpMsg(''),2200);}}><I size={18}/><span><b>{n}</b><i>{d}</i></span></button>)}
+     </div>}
+    </div>
     <button className="icon-btn cv-quiet danger" aria-label="Delete board" onClick={onDelete}><Trash size={16}/></button>
     </div>
    </div>
+   {expMsg&&<div className="cv-toast" role="status">{expMsg}</div>}
    <div ref={surf} className="cv-surface" tabIndex={0} onPointerDown={onSurfaceDown} onKeyDown={onKey}
     onDoubleClick={e=>{if(e.target.closest('.cv-node,.cv-group,.cv-bar,.cv-edge-hit,.cv-edge-input,.cv-ebar'))return;const p=toWorld(e.clientX,e.clientY);addNode(p.x-60,p.y-20);}}
     style={{backgroundSize:gridPx+'px '+gridPx+'px',backgroundPosition:vp.vx+'px '+vp.vy+'px'}}>
