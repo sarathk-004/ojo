@@ -5,6 +5,7 @@ import {api} from './api.js';
 import {useFileUrl} from './hooks.js';
 import {ICON_NAMES,Glyph} from './icons.jsx';
 import {placeImage,panBy} from './coverfit.mjs';
+import {DITHERS,ditherStyle} from './dither.js';
 
 // Gradients that sit well with the sage and paper palette.
 export const COVERS=[
@@ -24,6 +25,7 @@ function Cover({cover,live,adjusting,onPan}){
   const ro=new ResizeObserver(measure);ro.observe(el);return()=>ro.disconnect();
  },[el]);
  if(!cover)return null;
+ if(cover.type==='dither')return <div className="nh-cover-art nh-dither" style={ditherStyle(cover.id,192,40)}/>;
  if(cover.type!=='image')return <div className="nh-cover-art" style={{background:(COVERS.find(c=>c.id===cover.id)||COVERS[0]).css}}/>;
  const pos=live||{x:cover.x??50,y:cover.y??50,zoom:cover.zoom??1},p=placeImage(box,nat,pos);
  const down=e=>{if(!adjusting)return;e.preventDefault();drag.current={x:e.clientX,y:e.clientY,pos};e.currentTarget.setPointerCapture(e.pointerId);};
@@ -88,7 +90,7 @@ export function NoteHead({note,readOnly,onChange}){
     {note.icon&&<button className="nh-remove" onClick={()=>pickIcon('')}><Trash size={13}/>Remove icon</button>}
    </div>}
    {menu==='cover'&&<div className="nh-pop nh-covers" ref={box}>
-    <div className="nh-swatches">{COVERS.map(c=><button key={c.id} aria-label={'Cover '+c.id} className={note.cover&&note.cover.id===c.id?'on':''} style={{background:c.css}} onClick={()=>{onChange({cover:{type:'gradient',id:c.id}});setMenu(null);}}/>)}</div>
+    <div className="nh-swatches">{DITHERS.map(d=><button key={d.id} aria-label={'Dithered cover '+d.name} className={'nh-dsw'+(note.cover&&note.cover.id===d.id?' on':'')} style={ditherStyle(d.id,48,12)} onClick={()=>{onChange({cover:{type:'dither',id:d.id}});setMenu(null);}}/>)}{COVERS.map(c=><button key={c.id} aria-label={'Cover '+c.id} className={note.cover&&note.cover.id===c.id?'on':''} style={{background:c.css}} onClick={()=>{onChange({cover:{type:'gradient',id:c.id}});setMenu(null);}}/>)}</div>
     <button className="nh-upload" onClick={()=>file.current?.click()}><UploadSimple size={14}/>Upload an image</button>
     <input ref={file} type="file" accept="image/*" hidden onChange={e=>{upload(e.target.files[0]);e.target.value='';}}/>
    </div>}

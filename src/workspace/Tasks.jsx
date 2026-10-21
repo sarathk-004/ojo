@@ -1,7 +1,7 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {dateLocale} from './prefs.js';
 import {DateField,TimeField} from './Pickers.jsx';
-import {Plus,Trash,PencilSimple,Check,Repeat,Bell,CalendarBlank,Flame,Star,Timer,Cube,CheckSquare,X,Warning,MoonStars} from '@phosphor-icons/react';
+import {Plus,Trash,PencilSimple,Check,Repeat,Bell,CalendarBlank,Flame,Star,Timer,Cube,CheckSquare,DotsSixVertical,X,Warning,SunHorizon} from '@phosphor-icons/react';
 import {belongs,dayKey,newTask,toggleTask,completedToday,habitStats,syncMasterDaily,masterDailyTask,normalizeListOrder,recurLabel,isDailyTask,firstDate,newSubtask,subtaskProgress,toggleSubtask,moveTask,snoozeDate} from '../tasks.mjs';
 import {Select} from './Select.jsx';
 import {Modal} from './Modal.jsx';
@@ -66,7 +66,7 @@ export function Tasks({go,focusId}){
  const undo=useUndo();
  const [closing,setClosing]=useState(focusId==='shutdown');
  useEffect(()=>{if(focusId==='shutdown')setClosing(true);},[focusId]);
- const [noting,setNoting]=useState(null),[dragTab,setDragTab]=useState(null),[overTab,setOverTab]=useState(null),[data,setData]=useState(null),[view,setView]=useState('Today'),[quick,setQuick]=useState(''),[editing,setEditing]=useState(null),[open,setOpen]=useState(()=>new Set()),[subDraft,setSubDraft]=useState({}),[layout,setLayout]=useState(()=>{try{return localStorage.getItem('tnkr-ws-tasks-layout')==='board'?'board':'list';}catch{return 'list';}});
+ const [noting,setNoting]=useState(null),[dragTab,setDragTab]=useState(null),[overTab,setOverTab]=useState(null),[data,setData]=useState(null),[view,setViewRaw]=useState(()=>{try{const v=localStorage.getItem('tnkr-ws-tasks-view');return ['Today','Daily','Upcoming','Anytime'].includes(v)?v:'Today';}catch{return 'Today';}}),[quick,setQuick]=useState(''),[editing,setEditing]=useState(null),[open,setOpen]=useState(()=>new Set()),[subDraft,setSubDraft]=useState({}),[layout,setLayout]=useState(()=>{try{return localStorage.getItem('tnkr-ws-tasks-layout')==='board'?'board':'list';}catch{return 'list';}});
  const pickLayout=l=>{setLayout(l);try{localStorage.setItem('tnkr-ws-tasks-layout',l);}catch{}};
  const dataRef=useRef(null);
  const [focusLog]=useCollection('focus');
@@ -88,12 +88,16 @@ export function Tasks({go,focusId}){
   bridge.save({tasks:next.tasks,listOrder:next.listOrder,theme:next.theme,covers:next.covers});
  };
  const [settingsRows]=useCollection('settings'),prefs=useLivePrefs(settingsRows),boardCols=columnsOf(prefs);
+ const setView=v=>{setViewRaw(v);try{localStorage.setItem('tnkr-ws-tasks-view',v);}catch{}};
  const order=useMemo(()=>{const o=normalizeListOrder(data?.listOrder),v=o.filter(x=>!prefs.hiddenLists.includes(x));return v.length?v:o;},[data?.listOrder,prefs.hiddenLists.join()]);
  useEffect(()=>{if(order.length&&!order.includes(view))setView(order[0]);},[order.join()]);
  // Finished one-off tasks stay in Today only on the day they were finished; open ones come first.
  const list=useMemo(()=>{
   const all=(data?.tasks||[]).filter(t=>belongs(t,view)&&!(view==='Today'&&!t.repeat&&t.done&&!(t.doneAt&&dayKey(new Date(t.doneAt))===today)));
-  return [...all.filter(t=>!completedToday(t)),...all.filter(t=>completedToday(t))];
+  const byDate=(a,b)=>((a.date||'9999')+(a.reminder?a.reminder.slice(11,16):'99:99')).localeCompare((b.date||'9999')+(b.reminder?b.reminder.slice(11,16):'99:99'));
+  const open=all.filter(t=>!completedToday(t)),done=all.filter(t=>completedToday(t));
+  if(view==='Upcoming'){open.sort(byDate);done.sort(byDate);}
+  return [...open,...done];
  },[data,view,today]);
  const reorderTabs=(from,to)=>{
   if(from===to||!order.includes(from)||!order.includes(to))return;
@@ -139,6 +143,14 @@ export function Tasks({go,focusId}){
   patchTask(t.id,next);
   if(isDone&&!was)undo.show('“'+t.title+'” done',()=>commit(dataRef.current.tasks.map(x=>x.id===t.id?t:x)));
  };
+ // Rows can be dragged (by their grip) or moved with Alt+Up / Alt+Down; the order is saved.
+ const [dragRow,setDragRow]=useState(null),[overRow,setOverRow]=useState(null);
+ const placeTask=(id,beforeId)=>{
+  const all=dataRef.current.tasks,t=all.find(x=>x.id===id);if(!t||id===beforeId)return;
+  const rest=all.filter(x=>x.id!==id),at=beforeId?rest.findIndex(x=>x.id===beforeId):rest.length;
+  rest.splice(at<0?rest.length:at,0,t);commit(rest);
+ };
+ const nudgeTask=(id,dir)=>{const ids=list.map(x=>x.id),i=ids.indexOf(id),j=i+dir;if(i<0||j<0||j>=ids.length)return;placeTask(id,dir<0?ids[j]:(ids[j+1]||null));};
  const add=e=>{
   e.preventDefault();
   if(!quick.trim())return;
@@ -151,9 +163,9 @@ export function Tasks({go,focusId}){
  const ring=dailies.length?doneToday/dailies.length:0;
 
  return (
-  <div className="tasks">
+  <div className={'tasks'+(layout==='board'?' board-mode':'')}>
    <section className="tasks-main">
-    <div className="tasks-head"><h2>{new Date().toLocaleDateString(dateLocale(),{weekday:'long',day:'numeric',month:'long'})}</h2><span className="spacer"/><div className="seg-toggle layout-toggle" role="group" aria-label="Layout"><button className={layout==='list'?'on':''} aria-label="List view" onClick={()=>pickLayout('list')}><Rows size={15}/>List</button><button className={layout==='board'?'on':''} aria-label="Board view" onClick={()=>pickLayout('board')}><Kanban size={15}/>Board</button></div>{layout==='list'&&<SelectToggle bulk={bulk} disabled={!list.length}/>}<button className="ghost close-day-btn" data-tip="See what you did, move what is left, start tomorrow clean." data-tip-title="Close the day" onClick={()=>setClosing(true)}><MoonStars size={15} weight="fill"/>Close the day</button></div>
+    <div className="tasks-head"><h2>{new Date().toLocaleDateString(dateLocale(),{weekday:'long',day:'numeric',month:'long'})}</h2><span className="spacer"/><div className="seg-toggle layout-toggle" role="group" aria-label="Layout"><button className={layout==='list'?'on':''} aria-label="List view" onClick={()=>pickLayout('list')}><Rows size={15}/>List</button><button className={layout==='board'?'on':''} aria-label="Board view" onClick={()=>pickLayout('board')}><Kanban size={15}/>Board</button></div>{layout==='list'&&<SelectToggle bulk={bulk} disabled={!list.length}/>}<button className="ghost close-day-btn" data-tip="See what you did, move what is left, start tomorrow clean." data-tip-title="Close the day" onClick={()=>setClosing(true)}><SunHorizon size={15} weight="fill"/>Close the day</button></div>
     <div className="task-tabs">
      {order.map(v=>{const I=ICON[v];return <button key={v} draggable className={(view===v?'on':'')+(dragTab===v?' dragging':'')+(overTab===v&&dragTab&&dragTab!==v?' over-tab':'')} onClick={()=>{setView(v);setEditing(null);}} onDragStart={e=>{setDragTab(v);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/tnkr-tab',v);}} onDragOver={e=>{if(dragTab){e.preventDefault();setOverTab(v);}}} onDrop={e=>{e.preventDefault();reorderTabs(dragTab,v);setDragTab(null);setOverTab(null);}} onDragEnd={()=>{setDragTab(null);setOverTab(null);}} onKeyDown={e=>{if(e.altKey&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){e.preventDefault();const i=order.indexOf(v),j=i+(e.key==='ArrowLeft'?-1:1);if(order[j])reorderTabs(v,order[j]);}}}><I size={15} weight={view===v?'fill':'regular'}/>{v}<em>{counts[v]}</em></button>;})}
     </div>
@@ -168,8 +180,9 @@ export function Tasks({go,focusId}){
       const done=completedToday(t),streak=t.repeat?habitStats(t).current:0;
       return editing===t.id
        ?<Editor key={t.id} task={t} onCancel={()=>setEditing(null)} onSave={c=>{patchTask(t.id,c);setEditing(null);}}/>
-       :<div key={t.id} className={'task-row'+(done?' done':'')+((open.has(t.id)||noting===t.id||(!t.repeat&&!done&&t.date&&t.date<today))?' tall':'')+(bulk.on?' sel-host sel-tasks':'')} onClick={e=>{if(bulk.on)return;if(e.target.closest('button,input,a,textarea,[contenteditable],.sub-list,.snooze-row,.task-note-rich'))return;setNoting(n=>n===t.id?null:t.id);}}>
+       :<div key={t.id} onDragOver={e=>{if(dragRow&&dragRow!==t.id){e.preventDefault();setOverRow(t.id);}}} onDrop={e=>{e.preventDefault();if(dragRow)placeTask(dragRow,t.id);setDragRow(null);setOverRow(null);}} className={'task-row'+(dragRow===t.id?' dragging':'')+(overRow===t.id&&dragRow?' drop-here':'')+(done?' done':'')+((open.has(t.id)||noting===t.id||(!t.repeat&&!done&&t.date&&t.date<today))?' tall':'')+(bulk.on?' sel-host sel-tasks':'')} onClick={e=>{if(bulk.on)return;if(e.target.closest('button,input,a,textarea,[contenteditable],.sub-list,.snooze-row,.task-note-rich'))return;setNoting(n=>n===t.id?null:t.id);}}>
          <SelectMark bulk={bulk} id={t.id}/>
+         {view!=='Upcoming'&&!bulk.on&&<button type="button" className="task-grip" aria-label="Drag to reorder" draggable onDragStart={e=>{setDragRow(t.id);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',t.id);const r=e.currentTarget.closest('.task-row');if(r)e.dataTransfer.setDragImage(r,20,20);}} onDragEnd={()=>{setDragRow(null);setOverRow(null);}} onKeyDown={e=>{if(e.altKey&&(e.key==='ArrowUp'||e.key==='ArrowDown')){e.preventDefault();nudgeTask(t.id,e.key==='ArrowUp'?-1:1);}}}><DotsSixVertical size={14} weight="bold"/></button>}
          <button className={'tick'+(done?' on':'')} aria-label={done?'Mark not done':'Mark done'} onClick={()=>{patchTask(t.id,toggleTask(t));if(!done)undo.show('“'+t.title+'” done',()=>commit(dataRef.current.tasks.map(x=>x.id===t.id?toggleTask(x):x)));}}>{done&&<Check size={13} weight="bold"/>}</button>
          <div className="task-text">
           <b>{t.title}</b>

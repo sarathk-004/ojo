@@ -22,7 +22,8 @@ export const DEFAULTS={
  accent:'sage',scale:'default',density:'comfortable',noteWidth:'standard',
  hiddenPlaces:[],startPage:'last',hiddenLists:[],layout:'list',columns:DEFAULT_COLUMNS,
  codeTheme:'dark',codeSize:13,tabWidth:2,lineNumbers:true,
- weekStart:1,dateFormat:'dmy',sound:true,snooze:10,captureKey:''
+ weekStart:1,dateFormat:'dmy',sound:true,snooze:10,captureKey:'',
+ noteFont:'',stickyHeadings:true
 };
 export const getPrefs=settings=>({...DEFAULTS,...((settings&&settings[0]&&settings[0].prefs)||{})});
 
@@ -56,10 +57,11 @@ export function applyPrefs(p){
  const cols=columnsOf(p).map(c=>`.ws .tb-col[data-col="${c.id}"]{--col:${COLUMN_COLORS[c.color]||COLUMN_COLORS.slate}}`).join('\n');
  el.textContent=`.ws{--sage:${a.sage};--sage-soft:${a.soft};--accent-dark:${a.dark};--code-size:${+p.codeSize||13}px;--code-lh:${Math.round((+p.codeSize||13)*1.55)}px}
 .ws .note-body{max-width:${widths[p.noteWidth]||widths.standard}}
+${p.noteFont?`.ws .note-body,.ws .note-title{font-family:"${String(p.noteFont).replace(/["\\]/g,'')}",'Geist Variable',sans-serif}`:''}
 ${cols}
 ${CODE_LIGHT}`;
  const root=document.querySelector('.ws');
- if(root){root.dataset.density=p.density;root.dataset.codetheme=p.codeTheme;root.dataset.lines=p.lineNumbers===false?'off':'on';}
+ if(root){root.dataset.density=p.density;root.dataset.codetheme=p.codeTheme;root.dataset.lines=p.lineNumbers===false?'off':'on';root.dataset.sticky=p.stickyHeadings===false?'off':'on';}
  document.documentElement.dataset.density=p.density;
 }
 

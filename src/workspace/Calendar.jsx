@@ -1,4 +1,4 @@
-import React,{useEffect,useMemo,useState} from 'react';
+import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {dateLocale,weekStart,dowNames} from './prefs.js';
 import {DateField,TimeField} from './Pickers.jsx';
 import {CaretLeft,CaretRight,CaretDown,Plus,Trash,Check,CalendarBlank,CaretRight as Chev} from '@phosphor-icons/react';
@@ -42,8 +42,22 @@ export function Calendar({focusId}){
   Object.values(map).forEach(l=>l.sort((a,b)=>(a.time||'99').localeCompare(b.time||'99')));
   return map;
  },[events,tasks,jobs,bills,cells]);
- const upcoming=useMemo(()=>events.filter(e=>e.date>=today).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||''))).slice(0,6),[events,today]);
+ const upcoming=useMemo(()=>{
+  const out=[],end=dayKey(new Date(Date.now()+60*86400000));
+  events.filter(e=>e.date>=today).forEach(e=>out.push({id:'e'+e.id,date:e.date,time:e.time||'',title:e.title,color:e.color}));
+  jobs.filter(j=>j.nextDate&&j.nextDate>=today&&j.status!=='Rejected').forEach(j=>out.push({id:'j'+j.id,date:j.nextDate,time:'',title:j.company+' · '+(j.nextStep||'Follow up'),color:'#7a6aa8'}));
+  for(const b of bills)for(const d of occurrences(b,today,end))out.push({id:'b'+b.id+d,date:d,time:'',title:b.name+' due',color:'#c9803f'});
+  tasks.filter(t=>t.date&&t.date>=today&&!t.repeat&&!t.done).forEach(t=>out.push({id:'t'+t.id,date:t.date,time:t.reminder?t.reminder.slice(11,16):'',title:t.title,color:'#567458'}));
+  return out.sort((a,b)=>(a.date+(a.time||'99:99')).localeCompare(b.date+(b.time||'99:99'))).slice(0,8);
+ },[events,jobs,bills,tasks,today]);
 
+ const wheelAcc=useRef({n:0,t:0});
+ const onWheelMonth=e=>{
+  if(e.target.closest('.cal-side'))return;
+  const w=wheelAcc.current,now=Date.now();
+  if(now-w.t>260)w.n=0;w.t=now;w.n+=e.deltaY;
+  if(Math.abs(w.n)>90&&now-(w.lock||0)>380){w.lock=now;go(w.n>0?1:-1);w.n=0;}
+ };
  const go=n=>setCursor(c=>{const d=new Date(c.y,c.m+n,1);return {y:d.getFullYear(),m:d.getMonth()};});
  const pick=key=>{setSelected(key);setEditing(null);setForm(blank(key));};
  const jumpToday=()=>{const d=new Date();setCursor({y:d.getFullYear(),m:d.getMonth()});pick(today);};
@@ -75,7 +89,7 @@ export function Calendar({focusId}){
  const allDay=byDay[selected]||[],dayTasks=allDay.filter(i=>i.type==='task'),dayItems=allDay.filter(i=>i.type!=='task');
 
  return (
-  <div className="calendar">
+  <div className="calendar" onWheel={onWheelMonth}>
    <section className="cal-main">
     <div className="cal-head">
      <div className="cal-title">

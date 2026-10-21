@@ -2,7 +2,7 @@ const {BrowserWindow,ipcMain,screen,shell,dialog,nativeImage,net,Notification,gl
 const {fileURLToPath}=require('node:url');
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const quiet=require('./quiet.cjs');
-const COLLECTIONS=['notes','events','saved','pdfs','finance','budgets','jobs','settings','reminders','nudgelog','bills','focus','wins','reviews','folders','projects','boards'];
+const COLLECTIONS=['notes','events','saved','pdfs','finance','budgets','jobs','settings','reminders','nudgelog','bills','focus','wins','reviews','folders','projects','boards','notefolders'];
 const MAX_FILE=200*1024*1024;
 const ENT={amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",nbsp:' ',mdash:'—',ndash:'–',hellip:'…',rsquo:'’',lsquo:'‘',rdquo:'”',ldquo:'“'};
 const decode=s=>s.replace(/&(#x?[0-9a-f]+|\w+);/gi,(m,e)=>{
@@ -26,7 +26,7 @@ function readable(html){
 module.exports=function workspace({root,userData,getTasks,addTask,aumid,resetTasks}){
  const dir=path.join(userData,'Workspace'),files=path.join(dir,'files'),db=path.join(dir,'workspace.json');
  fs.mkdirSync(files,{recursive:true});
- let data={notes:[],events:[],saved:[],pdfs:[],finance:[],budgets:[],jobs:[],settings:[],reminders:[],nudgelog:[],bills:[],focus:[],wins:[],reviews:[],folders:[],projects:[],boards:[]},win,notch,timer,classify;
+ let data={notes:[],events:[],saved:[],pdfs:[],finance:[],budgets:[],jobs:[],settings:[],reminders:[],nudgelog:[],bills:[],focus:[],wins:[],reviews:[],folders:[],projects:[],boards:[],notefolders:[]},win,notch,timer,classify;
  const classifyReady=import('../src/workspace/classify.mjs').then(m=>{classify=m;});
  try{data={...data,...JSON.parse(fs.readFileSync(db,'utf8'))};}catch{}
  // PDFs now live in Save later; fold in any from the earlier PDFs-only library.
@@ -390,6 +390,19 @@ module.exports=function workspace({root,userData,getTasks,addTask,aumid,resetTas
   return true;
  });
  ipcMain.handle('ws-load',()=>({...data,tasks:getTasks()}));
+ // The fonts installed on this computer, for the note font choice. Read once, with Windows' own font list.
+ let fontCache=null;
+ ipcMain.handle('ws-fonts',()=>{
+  if(fontCache)return fontCache;
+  return new Promise(res=>{
+   try{
+    require('child_process').execFile('powershell.exe',['-NoProfile','-NonInteractive','-Command',"Add-Type -AssemblyName System.Drawing; (New-Object System.Drawing.Text.InstalledFontCollection).Families | ForEach-Object { $_.Name }"],{windowsHide:true,timeout:9000,maxBuffer:4e6},(err,out)=>{
+     const list=err?[]:String(out).split(/\r?\n/).map(x=>x.trim()).filter(x=>x&&x.length<60);
+     fontCache=[...new Set(list)].sort((a,b)=>a.localeCompare(b));res(fontCache);
+    });
+   }catch{res([]);}
+  });
+ });
  ipcMain.handle('ws-save',(_,name,items)=>{
   if(!COLLECTIONS.includes(name)||!Array.isArray(items)||items.length>50000)throw Error('Invalid collection');
   if(name==='nudgelog')return true;

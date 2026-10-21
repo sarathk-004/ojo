@@ -1,7 +1,8 @@
-import React from 'react';
+import React,{useEffect,useState} from 'react';
 import {Check,Plus,Trash,ArrowUp,ArrowDown} from '@phosphor-icons/react';
 import {useCollection,uid} from './hooks.js';
 import {Select} from './Select.jsx';
+import {api} from './api.js';
 import {ACCENTS,SCALES,COLUMN_COLORS,CAPTURE_KEYS,DEFAULTS,DEFAULT_COLUMNS,columnsOf,useLivePrefs,publishPrefs} from './prefs.js';
 
 const PLACES=[['notes','Notes'],['calendar','Calendar'],['saved','Saved'],['pdfs','PDFs'],['finance','Finance'],['canvas','Canvas'],['jobs','Job tracker']];
@@ -27,6 +28,8 @@ export function PrefsPanel(){
  const p=useLivePrefs(settings);
  const set=change=>{publishPrefs({...p,...change});setSettings(l=>[{...(l[0]||{id:'settings'}),prefs:{...DEFAULTS,...((l[0]&&l[0].prefs)||{}),...change}},...l.slice(1)]);};
  const toggleIn=(key,v,on)=>set({[key]:on?[...p[key].filter(x=>x!==v),v]:p[key].filter(x=>x!==v)});
+ const [fonts,setFonts]=useState([]);
+ useEffect(()=>{let live=true;api.listFonts().then(l=>{if(live)setFonts(l||[]);});return()=>{live=false;};},[]);
  const cols=columnsOf(p);
  const setCols=next=>set({columns:next});
  const middleIds=cols.slice(1,-1).map(c=>c.id);
@@ -84,6 +87,12 @@ export function PrefsPanel(){
       <button className="link-btn" disabled={cols.length>=6} onClick={addCol}><Plus size={13}/>Add a column</button>
      </div>
     </Row>
+   </section>
+
+   <section>
+    <h4>Notes</h4>
+    <Row title="Writing font" hint="Any font installed on this computer."><Select compact label="Writing font" value={p.noteFont} onChange={v=>set({noteFont:v})} options={[{value:'',label:'ojo default (Geist)'},...fonts.map(f=>({value:f,label:f})),...(p.noteFont&&!fonts.includes(p.noteFont)?[{value:p.noteFont,label:p.noteFont}]:[])]}/></Row>
+    <Row title="Sticky headings" hint="The current heading stays at the top while you scroll."><Check2 on={p.stickyHeadings} onChange={v=>set({stickyHeadings:v})}>Keep headings in view</Check2></Row>
    </section>
 
    <section>

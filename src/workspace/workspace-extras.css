@@ -1,0 +1,58 @@
+/* Tasks: reorder grip, board mode, drop marker */
+.ws .task-grip{width:18px;align-self:stretch;display:grid;place-items:center;color:var(--muted);opacity:0;cursor:grab;flex:none;margin:0 -4px 0 -8px;border-radius:6px}
+.ws .task-row:hover .task-grip,.ws .task-grip:focus-visible{opacity:.7}
+.ws .task-grip:active{cursor:grabbing}
+.ws .task-row.dragging{opacity:.45}
+.ws .task-row.drop-here{box-shadow:0 -3px 0 0 var(--sage)}
+.ws .tasks.board-mode{grid-template-columns:minmax(0,1fr)}
+.ws .tasks.board-mode .tasks-side{display:none}
+.ws .tasks.board-mode .tasks-main{max-width:none}
+/* Sidebar footer: left aligned */
+.ws .nav-foot{justify-content:flex-start}
+.ws .nav-foot button:not(.only-icon){justify-content:flex-start;padding-left:12px}
+
+/* Icons without a tile; dithered covers; folders in the notes list; sticky headings */
+.ws .nh-icon{background:transparent;box-shadow:none;font-size:56px;width:76px;height:76px;border-radius:0}
+.ws .nh-icon:hover:not(:disabled){transform:scale(1.06)}
+.ws .nh-dither,.ws .nh-dsw{image-rendering:pixelated}
+.ws .nh-dsw{border:2px solid transparent;border-radius:8px;height:28px}
+.ws .nh-dsw.on{border-color:var(--accent-dark)}
+.ws .nf-head{display:flex;align-items:center;gap:6px;padding:10px 10px 4px 12px;font-size:12.5px;color:var(--muted)}
+.ws .nf-head b{font-weight:600;color:var(--ink);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ws .nf-head em{font-style:normal;font-size:12px}
+.ws .nf-name{flex:1;min-width:0;height:24px;border:1px solid var(--line);border-radius:7px;background:var(--card);padding:0 6px;font:inherit;font-weight:600;outline:0}
+.ws .nf-caret{width:18px;height:18px;display:grid;place-items:center;border-radius:5px;color:var(--muted)}
+.ws .nf-caret svg{transition:transform .15s}.ws .nf-caret.open svg{transform:rotate(90deg)}
+.ws .nf-acts{display:none;gap:0}
+.ws .nf-head:hover .nf-acts{display:inline-flex}
+.ws .nf-head:hover em{display:none}
+.ws .nf-acts .icon-btn{width:22px;height:22px}
+.ws[data-sticky=on] .note-body h1,.ws[data-sticky=on] .note-body h2,.ws[data-sticky=on] .note-body h3{position:sticky;top:0;z-index:3;background:var(--card);padding-top:6px;padding-bottom:6px;margin-top:0}
+
+.ws .nf-msg{margin:4px 14px;font-size:12.5px}
+
+/* Columns and block tools */
+.ws .note-body .cols{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:22px;margin:10px 0}
+.ws .note-body .cols[data-n="2"]{--n:2}.ws .note-body .cols[data-n="3"]{--n:3}.ws .note-body .cols[data-n="4"]{--n:4}
+.ws .note-body .col{min-width:0;padding:4px 8px;border-radius:10px;outline:1px dashed transparent;outline-offset:-1px;transition:outline-color .15s}
+.ws .note-body .cols:hover>.col,.ws .note-body .col:focus-within{outline-color:color-mix(in srgb,var(--ink) 16%,transparent)}
+.ws .note-body .blk-sel{background:color-mix(in srgb,var(--sage) 13%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--sage) 50%,transparent);border-radius:6px}
+.ws .bt-grip{position:fixed;z-index:30;width:22px;height:26px;display:grid;place-items:center;border-radius:6px;color:var(--muted);cursor:grab;background:transparent}
+.ws .bt-grip:hover{background:var(--sage-soft);color:var(--ink)}
+.ws .bt-grip:active{cursor:grabbing}
+.ws .bt-drop{position:fixed;z-index:31;background:var(--sage);border-radius:2px;pointer-events:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--sage) 22%,transparent)}
+.ws .bt-lasso{position:fixed;z-index:31;border:1.5px solid var(--sage);background:color-mix(in srgb,var(--sage) 12%,transparent);border-radius:4px;pointer-events:none}
+.ws .bt-bar{position:fixed;z-index:32;display:flex;align-items:center;gap:4px;padding:4px 6px;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 18px #2c3a2522;font-size:12.5px}
+.ws .bt-bar>span{color:var(--muted);padding:0 6px}
+.ws .bt-bar button:not(.icon-btn){display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:7px;font-size:12.5px}
+.ws .bt-bar button:not(.icon-btn):hover{background:var(--sage-soft)}
+.ws .bt-bar .danger{color:#a8473b}
+
+/* The notes list header holds five actions: they compress instead of overflowing */
+.ws .notes-list{container:nlist/inline-size}
+.ws .notes-list .list-head{gap:6px}
+.ws .notes-list .head-actions{gap:4px}
+.ws .notes-list .head-actions .round{width:32px;height:32px;padding:0;display:inline-grid;place-items:center}
+@container nlist (max-width:440px){
+ .ws .notes-list .select-toggle{font-size:0;gap:0;padding:0;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center}
+}

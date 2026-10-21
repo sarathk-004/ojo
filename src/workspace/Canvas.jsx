@@ -6,6 +6,7 @@ import {Select} from './Select.jsx';
 import {NoteHead,COVERS} from './NoteHead.jsx';
 import {Glyph,ICON_NAMES} from './icons.jsx';
 import {useFileUrl} from './hooks.js';
+import {ditherStyle} from './dither.js';
 import {NODE_COLORS,NODE_W,NODE_H,newNode,newEdge,newBoard,newProject,hasEdge,parentOf,childSpot,anchors,tidy,fitView,zoomAt,withoutNodes,makeHistory,pushHistory,undo as histUndo,redo as histRedo} from './canvas.mjs';
 
 const VIEW_KEY='tnkr-ws-canvas-view';
@@ -15,6 +16,7 @@ const readView=()=>{try{return JSON.parse(localStorage.getItem(VIEW_KEY))||null;
 function CoverThumb({cover}){
  const url=useFileUrl(cover&&cover.type==='image'?cover.fileId:null,'image/*');
  if(!cover)return <div className="cv-thumb empty"><TreeStructure size={22} weight="light"/></div>;
+ if(cover.type==='dither')return <div className="cv-thumb" style={ditherStyle(cover.id,96,24)}/>;
  if(cover.type==='image')return <div className="cv-thumb">{url&&<img src={url} alt="" draggable={false} style={{objectPosition:(cover.x??50)+'% '+(cover.y??50)+'%'}}/>}</div>;
  return <div className="cv-thumb" style={{background:(COVERS.find(c=>c.id===cover.id)||COVERS[0]).css}}/>;
 }

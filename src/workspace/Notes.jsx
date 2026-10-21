@@ -1,6 +1,9 @@
 import React,{useLayoutEffect,useEffect,useMemo,useRef,useState} from 'react';
 import {dateLocale} from './prefs.js';
-import {ArrowBendDownRight,Plus,MagnifyingGlass,PushPin,Trash,TextB,TextItalic,TextUnderline,TextStrikethrough,ListBullets,ListNumbers,CheckSquare,Quotes,Code,LinkSimple,Minus,NotePencil,CaretRight,TextT,TextHOne,TextHTwo,TextHThree,FileText,Lightbulb,CalendarBlank,Table,Kanban,ImageSquare,CaretCircleRight} from '@phosphor-icons/react';
+import {ArrowBendDownRight,Plus,MagnifyingGlass,PushPin,Trash,TextB,TextItalic,TextUnderline,TextStrikethrough,ListBullets,ListNumbers,CheckSquare,Quotes,Code,LinkSimple,Minus,NotePencil,CaretRight,TextT,TextHOne,TextHTwo,TextHThree,FileText,Lightbulb,CalendarBlank,Table,Kanban,ImageSquare,CaretCircleRight,FolderSimple,FolderSimplePlus,ArrowUp,ArrowDown,PencilSimple,DownloadSimple} from '@phosphor-icons/react';
+import {readNoteFile} from './importDoc.js';
+import {PickMenu} from './SavedFolders.jsx';
+import {BlockTools,normalise} from './BlockTools.jsx';
 import {gsap} from 'gsap';
 import {Glyph} from './icons.jsx';
 import {ScrollToPlugin} from 'gsap/ScrollToPlugin';
@@ -66,12 +69,14 @@ const COMMANDS=[
  {id:'image',name:'Image',hint:'Upload or paste a picture',icon:ImageSquare,keys:'image picture photo upload img'},
  {id:'link',name:'Link',hint:'Add a web link',icon:LinkSimple,keys:'link url web href'},
  {id:'toggle',name:'Toggle list',hint:'Content you can fold away',icon:CaretCircleRight,keys:'toggle collapse fold details accordion'},
+ {id:'cols2',name:'2 columns',hint:'Two blocks side by side',icon:SquaresFour,keys:'columns side by side two 2 layout'},
+ {id:'cols3',name:'3 columns',hint:'Three blocks side by side',icon:SquaresFour,keys:'columns side by side three 3 layout'},
  {id:'divider',name:'Divider',hint:'Visually divide blocks',icon:Minus,keys:'divider line hr rule ---'},
  {id:'date',name:'Today’s date',hint:'Insert the date',icon:CalendarBlank,keys:'date today now'}
 ];
 
 export function Notes({focusId}){
- const [notes,setNotes,ready]=useCollection('notes');
+ const [notes,setNotes,ready]=useCollection('notes'),[nfolders,setNfolders]=useCollection('notefolders'),[nfMenu,setNfMenu]=useState(null),[renamingF,setRenamingF]=useState(null);
  const [activeId,setActiveId]=useState(null),[query,setQuery]=useState(''),[confirm,setConfirm]=useState(false),[link,setLink]=useState(null),[linkErr,setLinkErr]=useState(false),[linkPop,setLinkPop]=useState(null),[collapsed,setCollapsed]=useState(()=>new Set());
  const [slash,setSlash]=useState(null),[rowConfirm,setRowConfirm]=useState(null),[mode,setModeRaw]=useState('all'),[menu,setMenu]=useState(null),[exported,setExported]=useState('');
  // Pop-over menus (templates, export) close on any outside click.
@@ -116,14 +121,27 @@ export function Notes({focusId}){
     if(count&&!collapsed.has(n.id))walk(n.id,depth+1);
    }
   };
-  walk('',0);return out;
- },[notes,query,collapsed,byId,mode]);
+  if(!nfolders.length){walk('',0);return out;}
+  // With folders, top-level pages sit under their folder, in the folder order the user chose.
+  const tops=[...(kids.get('')||[])].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||b.updated-a.updated);
+  const place=(list,depthStart)=>{for(const n of list){const count=(kids.get(n.id)||[]).length;out.push({n,depth:0,kids:count});if(count&&!collapsed.has(n.id))walk(n.id,1);}};
+  const known=new Set(nfolders.map(f=>f.id));
+  const loose=tops.filter(n=>!n.folder||!known.has(n.folder));
+  if(loose.length)out.push({head:{id:'',name:'Pages'},count:loose.length});
+  if(!collapsed.has('f:')||false)place(loose);
+  for(const f of nfolders){
+   const mine=tops.filter(n=>n.folder===f.id);
+   out.push({head:f,count:mine.length});
+   if(!collapsed.has('f:'+f.id))place(mine);
+  }
+  return out;
+ },[notes,query,collapsed,byId,mode,nfolders]);
  const active=byId.get(activeId)||null;
  const setMode=m=>{if(active&&!active.deleted)save();setModeRaw(m);setActiveId(null);loadedId.current=null;};
  const crumbs=useMemo(()=>{const c=[];let n=active;while(n&&n.parent&&byId.has(n.parent)){n=byId.get(n.parent);c.unshift(n);}return c;},[active,byId]);
 
  useEffect(()=>{if(focusId&&byId.has(focusId))setActiveId(focusId);},[focusId]);
- useEffect(()=>{if(ready&&!activeId&&rows[0])setActiveId(rows[0].n.id);},[ready,rows,activeId]);
+ useEffect(()=>{const first=rows.find(r=>r.n);if(ready&&!activeId&&first)setActiveId(first.n.id);},[ready,rows,activeId]);
 
  // Keep page-link chips in the open note labelled with their page's current title.
  const refreshLinks=()=>{
@@ -143,6 +161,19 @@ export function Notes({focusId}){
  },[active,byId]);
 
  const patch=(id,change)=>setNotes(list=>list.map(n=>n.id===id?{...n,...change}:n));
+ // Bring in a Word document, Markdown, text or HTML file as a new page.
+ const importInput=useRef(null),[importMsg,setImportMsg]=useState('');
+ const importFiles=async files=>{
+  for(const f of [...files||[]]){
+   try{
+    const r=await readNoteFile(f);
+    const n={id:uid(),title:r.title,html:r.html,text:plain(r.html),pinned:false,parent:null,created:Date.now(),updated:Date.now()};
+    setNotes(list=>[n,...list]);setModeRaw('all');setActiveId(n.id);setQuery('');loadedId.current=null;
+    setImportMsg('Imported “'+r.title+'”.');
+   }catch(e){setImportMsg(String(e&&e.message||'That file could not be imported.'));}
+  }
+  setTimeout(()=>setImportMsg(''),6000);
+ };
  const create=(parent=null)=>{
   // Pressing + again on a page that is still blank just goes back to it instead of piling up empty pages.
   const blank=!parent&&byId&&active&&!active.title&&!(active.text||'').trim()&&!active.parent;
@@ -164,6 +195,7 @@ export function Notes({focusId}){
   const c=editor.current.cloneNode(true);
   c.querySelectorAll('img[data-file]').forEach(i=>i.removeAttribute('src'));
   serializeCode(editor.current,c);
+  c.querySelectorAll('.blk-sel').forEach(e=>{e.classList.remove('blk-sel');if(!e.getAttribute('class'))e.removeAttribute('class');});
   return c.innerHTML;
  };
  const hydrateImages=()=>{
@@ -390,6 +422,16 @@ export function Notes({focusId}){
    saveRef.current&&saveRef.current();
   }
  }).current;
+ // Columns: a row of side-by-side blocks, each column an ordinary place to type.
+ const insertColumns=n=>{
+  const ed=editor.current;ed.focus();
+  const sel=window.getSelection();let blk=null;
+  if(sel.rangeCount){let nd=sel.anchorNode;while(nd&&nd.parentNode!==ed)nd=nd.parentNode;if(nd&&nd.nodeType===1)blk=nd;}
+  const cs=document.createElement('div');cs.className='cols';cs.dataset.n=String(n);
+  for(let i=0;i<n;i++){const c=document.createElement('div');c.className='col';c.innerHTML='<p><br></p>';cs.appendChild(c);}
+  if(blk&&blk.tagName==='P'&&!blk.textContent.trim())blk.replaceWith(cs);else if(blk)blk.after(cs);else ed.appendChild(cs);
+  normalise(ed);caretTo(cs.querySelector('.col p'));saveRef.current&&saveRef.current();
+ };
  const insertCodeBlock=()=>{
   const ed=editor.current;ed.focus();
   const sel=window.getSelection();let blk=null;
@@ -545,6 +587,8 @@ export function Notes({focusId}){
    case 'table':run('insertHTML',TABLE_HTML());break;
    case 'board':run('insertHTML',KANBAN_HTML());break;
    case 'toggle':run('insertHTML',TOGGLE_HTML);break;
+   case 'cols2':insertColumns(2);break;
+   case 'cols3':insertColumns(3);break;
    case 'link':openLink();return;
    case 'image':{
     const s2=window.getSelection();range.current=s2.rangeCount?s2.getRangeAt(0).cloneRange():null;
@@ -656,20 +700,39 @@ export function Notes({focusId}){
     <div className="list-head">
      <h2>Notes</h2>
      <span className="head-actions">
-      <SelectToggle bulk={bulk} disabled={!rows.length}/>
+      <SelectToggle bulk={bulk} disabled={!rows.some(r=>r.n)}/>
       <span className="pop-anchor"><button className="ghost round" aria-label="New from template" onClick={()=>setMenu(m=>m==='tpl'?null:'tpl')}><SquaresFour size={16}/></button>
        {menu==='tpl'&&<div className="pop tpl"><div className="pop-title">Start from a template</div>{TEMPLATES.map(t=><button key={t.id} onClick={()=>createFrom(t.id)}><b>{t.name}</b><span>{t.hint}</span></button>)}</div>}
       </span>
+      <button className="ghost round" aria-label="Import a document" data-tip="Bring in a Word document, Markdown, text or HTML file as a note." data-tip-title="Import" onClick={()=>importInput.current&&importInput.current.click()}><DownloadSimple size={16}/></button>
+      <input ref={importInput} type="file" hidden multiple accept=".docx,.md,.markdown,.txt,.html,.htm" onChange={e=>{importFiles(e.target.files);e.target.value='';}}/>
+      <button className="ghost round" aria-label="New folder" onClick={()=>{const f={id:uid(),name:'New folder',created:Date.now()};setNfolders(l=>[...l,f]);setRenamingF(f.id);}}><FolderSimplePlus size={16}/></button>
       <button className="primary round" aria-label="New note" onClick={()=>create(null)}><Plus size={16} weight="bold"/></button>
      </span>
     </div>
+    {importMsg&&<p className="muted nf-msg" role="status">{importMsg}</p>}
     <label className="search"><MagnifyingGlass size={15}/><input placeholder="Search notes" value={query} onChange={e=>setQuery(e.target.value)}/></label>
     <ShelfTabs compact mode={mode} setMode={setMode} counts={tabCounts} onEmpty={emptyTrash}/>
     {bulk.on&&(mode==='trash'
-     ?<BulkBar bulk={bulk} ids={rows.map(r=>r.n.id)} noun="page" deleteLabel="Delete forever" confirmDelete onDelete={bulkPurge}><button className="bulk-act" disabled={!bulk.count} onClick={()=>bulkRestore([...bulk.sel])}>Restore</button></BulkBar>
-     :<BulkBar bulk={bulk} ids={rows.map(r=>r.n.id)} noun="page" deleteLabel="Move to Trash" onDelete={bulkTrash}/>)}
+     ?<BulkBar bulk={bulk} ids={rows.filter(r=>r.n).map(r=>r.n.id)} noun="page" deleteLabel="Delete forever" confirmDelete onDelete={bulkPurge}><button className="bulk-act" disabled={!bulk.count} onClick={()=>bulkRestore([...bulk.sel])}>Restore</button></BulkBar>
+     :<BulkBar bulk={bulk} ids={rows.filter(r=>r.n).map(r=>r.n.id)} noun="page" deleteLabel="Move to Trash" onDelete={bulkTrash}/>)}
     <div className="list-scroll">
-     {rows.map(({n,depth,kids})=>(
+     {rows.map(({n,depth,kids,head,count})=>head?(
+      <div key={'h'+head.id} className="nf-head">
+       <button className={'nf-caret'+(collapsed.has('f:'+head.id)?'':' open')} aria-label="Show or hide this folder" onClick={()=>toggle('f:'+head.id)}><CaretRight size={11} weight="bold"/></button>
+       {head.id?<FolderSimple size={14}/>:null}
+       {renamingF===head.id&&head.id
+        ?<input autoFocus className="nf-name" defaultValue={head.name} maxLength={40} onBlur={e=>{const v=e.target.value.trim().slice(0,40);if(v)setNfolders(l=>l.map(f=>f.id===head.id?{...f,name:v}:f));setRenamingF(null);}} onKeyDown={e=>{if(e.key==='Enter'||e.key==='Escape')e.target.blur();}}/>
+        :<b onDoubleClick={()=>head.id&&setRenamingF(head.id)}>{head.name}</b>}
+       <em>{count}</em>
+       {head.id&&<span className="nf-acts">
+        <button className="icon-btn" aria-label="Move folder up" onClick={()=>setNfolders(l=>{const i=l.findIndex(f=>f.id===head.id);if(i<1)return l;const n2=[...l];[n2[i-1],n2[i]]=[n2[i],n2[i-1]];return n2;})}><ArrowUp size={12}/></button>
+        <button className="icon-btn" aria-label="Move folder down" onClick={()=>setNfolders(l=>{const i=l.findIndex(f=>f.id===head.id);if(i<0||i>=l.length-1)return l;const n2=[...l];[n2[i+1],n2[i]]=[n2[i],n2[i+1]];return n2;})}><ArrowDown size={12}/></button>
+        <button className="icon-btn" aria-label="Rename folder" onClick={()=>setRenamingF(head.id)}><PencilSimple size={12}/></button>
+        <button className="icon-btn danger" aria-label="Delete folder" onClick={()=>{setNotes(l=>l.map(x=>x.folder===head.id?{...x,folder:undefined}:x));setNfolders(l=>l.filter(f=>f.id!==head.id));}}><Trash size={12}/></button>
+       </span>}
+      </div>
+     ):(
       <div key={n.id} className={'note-row'+(depth>0?' child':'')+(n.id===activeId?' on':'')+(rowConfirm===n.id?' confirm':'')+(bulk.on?' sel-host':'')} style={{paddingLeft:(bulk.on?42:12)+depth*22}} onClick={()=>{if(bulk.on)return;if(active)save();setActiveId(n.id);}}>
        <SelectMark bulk={bulk} id={n.id}/>
        <span className="row-top">
@@ -683,6 +746,7 @@ export function Notes({focusId}){
           </span>
          :<span className="row-actions-inline">
            <button className={'row-add'+(n.favorite?' fav-on':'')} aria-label={n.favorite?'Remove from favorites':'Add to favorites'} onClick={e=>{e.stopPropagation();patch(n.id,{favorite:!n.favorite});}}><Star size={12} weight={n.favorite?'fill':'regular'}/></button>
+           <button className={'row-add'+(n.folder?' fav-on':'')} aria-label="Move to folder" onClick={e=>{e.stopPropagation();const r=e.currentTarget.getBoundingClientRect();setNfMenu({kind:'folder',ids:[n.id],x:r.right,y:r.bottom,current:n.folder});}}><FolderSimple size={12} weight={n.folder?'fill':'regular'}/></button>
            <button className="row-add" aria-label="Add sub-page" onClick={e=>{e.stopPropagation();create(n.id);}}><Plus size={12} weight="bold"/></button>
            <button className="row-del" aria-label="Move to trash" onClick={e=>{e.stopPropagation();deletePage(n.id);}}><Trash size={12}/></button>
           </span>}
@@ -736,6 +800,7 @@ export function Notes({focusId}){
      <div ref={editor} className="note-body" contentEditable={!active.deleted} suppressContentEditableWarning spellCheck data-placeholder="Write, or press / for commands"
       onInput={onInput} onPaste={onPaste} onKeyDown={onKeyDown} onMouseMove={showBlockBar} onMouseLeave={e=>{if(!e.relatedTarget?.closest?.('.block-bar')){blockEl.current=null;setBlockBar(null);}}} onKeyUp={e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key))detectSlash();}} onClick={onEditorClick} onBlur={()=>{setTimeout(()=>setSlash(null),120);}} onFocus={()=>setTimeout(trackCode,0)}
       onScroll={onBodyScroll} onDragStart={onDragStart} onDragOver={onDragOver} onDrop={onDrop} onDragEnd={endDrag}/>
+     <BlockTools key={active.id} editor={editor} readOnly={!!active.deleted} remember={rememberPage} onChange={()=>saveRef.current&&saveRef.current()}/>
      <input ref={fileInput} type="file" accept="image/*" multiple hidden onChange={e=>{insertImages(e.target.files);e.target.value='';}}/>
      {outline.length>0&&<nav className="outline" aria-label="On this page">
       <div className="outline-dashes">{outline.map((h,i)=><i key={i} className={'dash l'+h.level+(i===activeHead?' on':'')}/>)}</div>
@@ -755,6 +820,7 @@ export function Notes({focusId}){
       <LangPicker value={codeBar.value} noAuto onChange={changeLang}/>
      </div>}
      {undoNote.node}
+     {nfMenu&&<PickMenu menu={nfMenu} folders={nfolders} onClose={()=>setNfMenu(null)} onFolder={id=>{setNotes(l=>l.map(x=>nfMenu.ids.includes(x.id)?{...x,folder:id||undefined}:x));setNfMenu(null);}} onRemind={()=>setNfMenu(null)} onNewFolder={name=>{const t=name.trim().slice(0,40);if(!t)return;const f={id:uid(),name:t,created:Date.now()};setNfolders(l=>[...l,f]);setNotes(l=>l.map(x=>nfMenu.ids.includes(x.id)?{...x,folder:f.id}:x));setNfMenu(null);}}/>}
      {blockBar&&<div className="block-bar" style={{left:blockBar.x,top:blockBar.y}} onMouseDown={e=>e.preventDefault()} onMouseLeave={()=>{blockEl.current=null;setBlockBar(null);}}><button className="danger" onClick={deleteBlock}><Trash size={13}/>Delete {blockBar.name}</button></div>}
      {tableBar&&<div className="table-bar" style={{left:tableBar.x,top:tableBar.y}} onMouseDown={e=>e.preventDefault()}>
       <button onClick={()=>tableOp('row+')}>+ Row</button><button onClick={()=>tableOp('col+')}>+ Column</button>

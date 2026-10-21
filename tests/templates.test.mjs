@@ -10,7 +10,7 @@ test('every template is well formed',()=>{
   const html=t.html(new Date());
   assert.ok(/<h2>/.test(html)||/class="todo"/.test(html),t.id+' has structure');
   // every opened tag is closed
-  for(const tag of ['h2','p','ul','li','blockquote','table','tr','th','td']){
+  for(const tag of ['h2','p','ul','li','blockquote','table','tr','th','td','div']){
    const open=(html.match(new RegExp('<'+tag+'[ >]','g'))||[]).length,close=(html.match(new RegExp('</'+tag+'>','g'))||[]).length;
    assert.equal(open,close,t.id+' '+tag);
   }

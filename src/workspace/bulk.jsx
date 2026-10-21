@@ -14,7 +14,7 @@ export function useBulk(){
 
 // The button that turns selecting on (or off again).
 export function SelectToggle({bulk,disabled}){
- return <button className={'ghost select-toggle'+(bulk.on?' on':'')} disabled={disabled&&!bulk.on} onClick={()=>bulk.on?bulk.stop():bulk.start()}><CheckSquare size={15}/>{bulk.on?'Cancel':'Select'}</button>;
+ return <button className={'ghost select-toggle'+(bulk.on?' on':'')} data-tip="Pick several items to act on together." data-tip-title={bulk.on?'Cancel selecting':'Select'} disabled={disabled&&!bulk.on} onClick={()=>bulk.on?bulk.stop():bulk.start()}><CheckSquare size={15}/>{bulk.on?'Cancel':'Select'}</button>;
 }
 
 // A bar above the list: select all, how many are chosen, and the actions.
