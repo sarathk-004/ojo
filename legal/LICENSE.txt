@@ -161,6 +161,8 @@ Included software and fonts
   - mammoth, by Michael Williamson, BSD-2-Clause licence (reads Word documents when you import them).
   - GSAP, by GreenSock, used under the GreenSock Standard "no charge" licence (gsap.com/standard-license).
   - Phosphor Icons (@phosphor-icons/react), by Helena Zhang and Tobias Fried, MIT licence.
+  - Motion for React (motion), by Motion B.V. and contributors, MIT licence: animations across the workspace.
+  - The stacked undo notices follow the free "Toast stack" block from Bencho (bencho.dev, by Lorenzo Cabra), MIT licence.
   - ojo itself, by the ojo contributors, MIT licence.
   - Simple Icons (simple-icons, and an earlier release of it kept for logos since withdrawn), by the Simple Icons contributors, CC0 1.0 licence: the shapes used to show service logos next to bills.
   - Geist font (@fontsource-variable/geist), by Vercel, SIL Open Font License 1.1.

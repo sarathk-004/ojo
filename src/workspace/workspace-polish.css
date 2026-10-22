@@ -23,7 +23,7 @@
 .ws button:focus:not(:focus-visible){outline:none}
 
 /* Motion: one shared easing family. Quick out, gentle settle. */
-.ws{--ease-out:cubic-bezier(.2,.8,.2,1);--ease-spring:cubic-bezier(.3,1.35,.5,1);--t-fast:.14s;--t-base:.22s}
+.ws{--ease-out:cubic-bezier(.2,.8,.2,1);--ease-spring:cubic-bezier(.22,1,.36,1);--t-fast:.14s;--t-base:.22s}
 .ws button,.ws .task-row,.ws .card,.ws .bill-row,.ws .note-row,.ws .nav-item,.ws .filter{transition-timing-function:var(--ease-out)}
 
 /* Scrolling stays inside the pane that is scrolling */

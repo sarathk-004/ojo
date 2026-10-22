@@ -12,6 +12,7 @@ import {StatementImport} from './StatementImport.jsx';
 import {vendorName,vendorStats} from './vendor.mjs';
 import {useUndo} from './Undo.jsx';
 import {useBulk,SelectToggle,BulkBar,SelectMark} from './bulk.jsx';
+import {Pill} from './motionkit.jsx';
 
 const blank=type=>({id:null,type,amount:'',category:type==='income'?'salary':'food',date:dayKey(),note:''});
 
@@ -78,7 +79,7 @@ function TxnForm({initial,sym,onSave,onDelete}){
  return (
   <form className="txn-form" onSubmit={submit}>
    <div className="seg-toggle">
-    {['expense','income'].map(t=><button type="button" key={t} className={f.type===t?'on '+t:''} onClick={()=>setF(s=>({...s,type:t,category:t==='income'?'salary':'food'}))}>{t==='expense'?<ArrowUpRight size={15}/>:<ArrowDownLeft size={15}/>}{t==='expense'?'Expense':'Income'}</button>)}
+    {['expense','income'].map(t=><button type="button" key={t} className={f.type===t?'on '+t:''} onClick={()=>setF(s=>({...s,type:t,category:t==='income'?'salary':'food'}))}>{f.type===t&&<Pill group="txntype"/>}{t==='expense'?<ArrowUpRight size={15}/>:<ArrowDownLeft size={15}/>}{t==='expense'?'Expense':'Income'}</button>)}
    </div>
    <label className="amount-field"><span>{sym}</span><input autoFocus inputMode="decimal" placeholder="0" value={f.amount} onChange={e=>{setErr('');set('amount')(e);}}/></label>
    {err&&<p className="error">{err}</p>}

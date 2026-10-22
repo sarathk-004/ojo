@@ -1,5 +1,6 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useId} from 'react';
 import {Star,Trash,ArrowCounterClockwise} from '@phosphor-icons/react';
+import {Pill} from './motionkit.jsx';
 
 // Shared by Notes, Saved and PDFs: All / Favorites / Trash. Deleting only moves an item to Trash
 // (it gets a `deleted` timestamp); it is removed for good from Trash, or automatically after 30 days.
@@ -15,10 +16,10 @@ export const inMode=(i,mode)=>mode==='trash'?!!i.deleted:!i.deleted&&(mode!=='fa
 export const daysLeft=i=>Math.max(0,Math.ceil(TRASH_DAYS-(Date.now()-i.deleted)/86400000));
 
 export function ShelfTabs({mode,setMode,counts,onEmpty,compact}){
- const [asking,setAsking]=useState(false);
+ const [asking,setAsking]=useState(false),pid=useId();
  useEffect(()=>{setAsking(false);},[mode,counts.trash]);
  const tab=(id,label,n,icon)=>(
-  <button key={id} role="tab" aria-selected={mode===id} className={mode===id?'on':''} onClick={()=>setMode(id)}>{icon}{label}{n>0&&<em>{n}</em>}</button>
+  <button key={id} role="tab" aria-selected={mode===id} className={mode===id?'on':''} onClick={()=>setMode(id)}>{mode===id&&<Pill group={'shelf'+pid}/>}{icon}{label}{n>0&&<em>{n}</em>}</button>
  );
  return (
   <div className={'shelf-tabs'+(compact?' compact':'')}>

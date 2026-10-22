@@ -16,6 +16,9 @@ export function Calendar({focusId}){
  const [jobs]=useCollection('jobs'),[bills]=useCollection('bills');
  const today=dayKey();
  const [cursor,setCursor]=useState(()=>{const d=new Date();return {y:d.getFullYear(),m:d.getMonth()};});
+ // Which way the month moved, so the grid can slide in from that side
+ const dir=useRef(0),prevKey=useRef(cursor.y*12+cursor.m);
+ {const k=cursor.y*12+cursor.m;if(k!==prevKey.current){dir.current=k>prevKey.current?1:-1;prevKey.current=k;}}
  const [selected,setSelected]=useState(today);
  // Tasks are not what the calendar is for: they sit in a section that opens and closes (remembered on this computer).
  const [tasksOpen,setTasksOpen]=useState(()=>{try{return localStorage.getItem('tnkr-ws-cal-tasks')==='open';}catch{return false;}});
@@ -118,7 +121,7 @@ export function Calendar({focusId}){
      <button className="icon-btn" aria-label="Next month" onClick={()=>go(1)}><CaretRight size={16}/></button>
     </div>
     <div className="cal-grid dow">{dowNames(DOW).map(d=><span key={d}>{d}</span>)}</div>
-    <div className="cal-grid days">
+    <div key={cursor.y+'-'+cursor.m} className={'cal-grid days'+(dir.current>0?' swap-next':dir.current<0?' swap-prev':'')}>
      {cells.map(c=>{
       const items=byDay[c.key]||[];
       return (

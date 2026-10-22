@@ -55,7 +55,7 @@ export function NoteHead({note,readOnly,onChange}){
   if(id){onChange({cover:{type:'image',fileId:id,x:50,y:50,zoom:1}});setAdjust({x:50,y:50,zoom:1});}
   setMenu(null);
  };
- const pickIcon=n=>{onChange({icon:n||undefined});setMenu(null);if(n&&icon.current)gsap.fromTo(icon.current,{scale:.4,rotate:-20},{scale:1,rotate:0,duration:.5,ease:'back.out(2.4)'});};
+ const pickIcon=n=>{onChange({icon:n||undefined});setMenu(null);if(n&&icon.current)gsap.fromTo(icon.current,{scale:.85,opacity:0},{scale:1,opacity:1,duration:.24,ease:'power3.out'});};
  const has=!!note.cover,isPhoto=has&&note.cover.type==='image';
  const startAdjust=()=>{setMenu(null);setAdjust({x:note.cover.x??50,y:note.cover.y??50,zoom:note.cover.zoom??1});};
  const saveAdjust=()=>{onChange({cover:{...note.cover,x:adjust.x,y:adjust.y,zoom:adjust.zoom}});setAdjust(null);};

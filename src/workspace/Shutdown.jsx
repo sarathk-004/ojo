@@ -51,7 +51,7 @@ export function Shutdown({go,onClose}){
  const close=()=>{
   setSettings([{...settings[0],id:'settings',lastShutdown:today}]);
   setClosing(true);
-  requestAnimationFrame(()=>gsap.fromTo('.sd-closed-tick',{scale:.3,rotate:-40,opacity:0},{scale:1,rotate:0,opacity:1,duration:.6,ease:'back.out(2.2)'}));
+  requestAnimationFrame(()=>gsap.fromTo('.sd-closed-tick',{scale:.3,rotate:-40,opacity:0},{scale:1,rotate:0,opacity:1,duration:.6,ease:'power3.out'}));
  };
  useEffect(()=>{if(card.current)gsap.fromTo(card.current.children,{y:14,opacity:0},{y:0,opacity:1,duration:.4,stagger:.07,ease:'power2.out'});},[!!data]);
 

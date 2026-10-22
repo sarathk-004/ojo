@@ -35,7 +35,7 @@
 
 /* As a sheet over the task list */
 .sheet-back{position:fixed;inset:0;z-index:60;background:#1d231b88;display:flex;justify-content:center;align-items:flex-start;padding:5vh 24px;backdrop-filter:blur(2px);animation:ws-fade .18s}
-.sheet{width:min(940px,100%);max-height:90vh;background:var(--paper);border-radius:26px;box-shadow:0 30px 80px #0006;overflow:hidden;display:flex;flex-direction:column;animation:ws-pop .3s cubic-bezier(.3,1.2,.5,1)}
+.sheet{width:min(940px,100%);max-height:90vh;background:var(--paper);border-radius:26px;box-shadow:0 30px 80px #0006;overflow:hidden;display:flex;flex-direction:column;animation:ws-pop .3s cubic-bezier(.22,1,.36,1)}
 .sheet .shutdown{padding:22px 26px 26px;height:auto;max-height:90vh}
 .close-day-btn{display:inline-flex;align-items:center;gap:6px}
 .tasks-head{display:flex;align-items:baseline;gap:12px}

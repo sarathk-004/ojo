@@ -1,0 +1,206 @@
+/* ojo design system: tokens and the shared states of every control.
+   Loaded after the page styles and before dark mode, so it is the one place that decides how things look and behave.
+   Rules of the system:
+   - Hover changes colour or surface only. Nothing moves, grows or changes size on hover.
+   - Selected, focused, hovered and pressed states keep the same geometry (borders are always present, only their colour changes).
+   - The loud filled button is the one primary action of a page. Selections are quiet surfaces.
+   - Selected items in tabs, segmented controls and the sidebar share one sliding pill (.pill-bg, Motion layoutId). */
+
+.ws{
+ /* Surfaces */
+ --surface:var(--card);
+ --sunken:#ebe7dc;          /* tracks, quiet selected fills */
+ --sunken-2:#e4dfd2;        /* selected fill on paper */
+ --hover:#e9e5da;           /* hover on paper */
+ --hover-card:#f2efe7;      /* hover on a card */
+ --line-strong:#d4cfc1;
+ /* Text */
+ --text:var(--ink);
+ --text-2:#4c5248;
+ --text-3:var(--muted);
+ --text-faint:#9da293;
+ /* Type scale */
+ --fs-xs:11.5px;--fs-sm:12.5px;--fs-base:14px;--fs-md:15px;--fs-lg:17px;--fs-title:22px;
+ --lh-tight:1.25;--lh-base:1.5;
+ /* Spacing scale (4px) */
+ --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s7:28px;--s8:32px;
+ /* Control heights and radii */
+ --h-xs:24px;--h-sm:28px;--h-md:32px;--h-lg:36px;
+ --r-xs:6px;--r-sm:8px;--r-md:10px;--r-lg:14px;--r-xl:18px;--r-pill:999px;
+ /* Elevation: hairline plus a soft, short shadow; never a halo */
+ --shadow-1:0 1px 2px #2c3a2512,0 0 0 1px #2c3a250f;
+ --shadow-pop:0 1px 2px #2c3a2514,0 10px 28px -6px #2c3a2530,0 0 0 1px #2c3a2514;
+ --shadow-dialog:0 2px 6px #1c24191a,0 28px 64px -16px #1c241955;
+ --ring:0 0 0 3px color-mix(in srgb,var(--sage) 22%,transparent);
+ /* Motion (same numbers as motionkit.jsx) */
+ --dur-hover:.12s;--dur-press:.09s;--dur-tip:.15s;--dur-pop:.18s;--dur-dialog:.22s;--dur-move:.24s;--dur-panel:.26s;
+ --ease-out:cubic-bezier(.22,1,.36,1);
+ --ease-inout:cubic-bezier(.4,0,.2,1);
+ --ease-quick:cubic-bezier(.2,0,0,1);
+ --ease-in:cubic-bezier(.4,0,1,1);
+ --ease-spring:var(--ease-out);
+ --t-fast:var(--dur-hover);--t-base:var(--dur-move);
+ --rise:4px;
+}
+
+/* ---------- Hover never moves anything ---------- */
+.ws .icon-btn:hover:not(:disabled),.ws .nav-item:hover,.ws .nh-icon:hover:not(:disabled),.ws .nh-grid button:hover,.ws .nh-swatches button:hover,.ws .hl-colors>button:not(.hl-act):hover,.ws .task-row:hover,.ws .card:hover,.ws .job-card:hover,.ws .tb-card:hover,.ws .bill-row:hover,.ws .note-row:hover{transform:none}
+.ws .task-row:hover{box-shadow:none;border-color:var(--line-strong)}
+.ws .nh-grid button:hover{background:var(--hover)}
+
+/* ---------- Buttons ---------- */
+.ws .primary{min-height:var(--h-md);padding:0 14px;border-radius:var(--r-md);font-weight:600;gap:7px}
+.ws .primary.small{min-height:var(--h-sm);padding:0 12px;border-radius:var(--r-sm)}
+.ws .primary.round{width:var(--h-md);height:var(--h-md);min-height:0;padding:0;border-radius:50%}
+.ws .primary:hover:not(:disabled){background:color-mix(in srgb,var(--accent-dark) 88%,#fff)}
+.ws .ghost{min-height:var(--h-md);padding:0 11px;border-radius:var(--r-md);color:var(--text-2)}
+.ws .ghost:hover:not(:disabled){background:var(--hover);color:var(--text)}
+.ws .icon-btn,.ws .bar-btn{width:var(--h-md);height:var(--h-md);border-radius:var(--r-sm);color:var(--text-2)}
+.ws .icon-btn:hover:not(:disabled),.ws .bar-btn:hover:not(:disabled){background:var(--hover);color:var(--text)}
+.ws .icon-btn.danger:hover:not(:disabled){background:#f3dcd5;color:var(--danger)}
+.ws .bar-btn.on{color:var(--text-2)}
+.ws button:disabled{opacity:.42}
+
+/* ---------- Text fields: the border is always there, focus only changes its colour and adds a soft ring ---------- */
+.ws .search{height:var(--h-lg);border-radius:var(--r-md);transition:border-color var(--dur-hover) var(--ease-quick),box-shadow var(--dur-hover) var(--ease-quick)}
+.ws .search:focus-within{border-color:color-mix(in srgb,var(--sage) 60%,var(--line));box-shadow:var(--ring)}
+.ws .modal input:not([type=checkbox]):not([type=radio]),.ws .modal textarea{transition:border-color var(--dur-hover) var(--ease-quick),box-shadow var(--dur-hover) var(--ease-quick)}
+.ws .modal input:not([type=checkbox]):not([type=radio]):focus,.ws .modal textarea:focus{border-color:color-mix(in srgb,var(--sage) 60%,var(--line));box-shadow:var(--ring)}
+
+/* ---------- The sliding pill ---------- */
+.ws .has-pill{position:relative;isolation:isolate}
+.ws .pill-bg{position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none}
+
+/* Sidebar */
+.ws .nav-item{position:relative;isolation:isolate;min-height:38px;border-radius:var(--r-md);color:var(--text-2)}
+.ws button.nav-item:hover:not(.on){background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.ws .nav-item.on{background:transparent;box-shadow:none;color:var(--text)}
+.ws .nav-item .pill-bg{background:var(--surface);box-shadow:var(--shadow-1)}
+
+/* Page tabs (Tasks, Planner, ... / Finance, Bills) and segmented controls: a track with a raised pill */
+.ws .subnav{background:var(--sunken);padding:3px;gap:2px;border-radius:var(--r-pill)}
+.ws .subnav button{position:relative;isolation:isolate;min-height:28px;padding:0 13px;border-radius:var(--r-pill);font-weight:500;color:var(--text-2)}
+.ws .subnav button:hover:not(.on){background:transparent;color:var(--text)}
+.ws .subnav button.on{background:transparent;color:var(--text);font-weight:600}
+.ws .subnav .pill-bg{background:var(--surface);box-shadow:var(--shadow-1)}
+
+.ws .shelf-tabs .seg,.ws .seg-toggle,.ws .view-toggle{background:var(--sunken);padding:3px;gap:2px;border-radius:var(--r-md)}
+.ws .shelf-tabs .seg button,.ws .seg-toggle button,.ws .view-toggle button{position:relative;isolation:isolate;min-height:28px;border-radius:var(--r-sm);color:var(--text-2);font-weight:500}
+.ws .shelf-tabs .seg button:hover:not(.on),.ws .seg-toggle button:hover:not(.on),.ws .view-toggle button:hover:not(.on){background:transparent;color:var(--text)}
+.ws .shelf-tabs .seg button.on,.ws .seg-toggle button.on,.ws .view-toggle button.on{background:transparent;box-shadow:none;color:var(--text);font-weight:600}
+.ws .shelf-tabs .seg .pill-bg,.ws .seg-toggle .pill-bg,.ws .view-toggle .pill-bg{background:var(--surface);box-shadow:var(--shadow-1)}
+
+/* View tabs inside a page (Today, Daily, ...): no track, a quiet pill */
+.ws .task-tabs{gap:2px}
+.ws .task-tabs button{position:relative;isolation:isolate;min-height:32px;padding:0 12px;border-radius:var(--r-pill);color:var(--text-2);font-weight:500}
+.ws .task-tabs button:hover:not(.on){background:color-mix(in srgb,var(--ink) 5%,transparent);color:var(--text)}
+.ws .task-tabs button.on{background:transparent;color:var(--text);font-weight:600}
+.ws .task-tabs .pill-bg{background:var(--sunken-2)}
+.ws .task-tabs em{color:var(--text-3);opacity:1}
+.ws .task-tabs button.on svg{color:var(--sage)}
+
+/* Filter chips: outlined; selected is a quiet fill, same border width either way */
+.ws .filter{min-height:var(--h-sm);padding:0 12px;border:1px solid var(--line)!important;background:transparent;color:var(--text-2)}
+.ws .filter:hover:not(.on){background:var(--hover);color:var(--text)}
+.ws .filter.on{background:var(--sunken-2);border-color:transparent!important;color:var(--text);font-weight:600}
+.ws .filter.on em{color:var(--text-3)}
+
+/* ---------- Surfaces that float: menus, popovers, pickers ---------- */
+.ws :is(.pop,.sel-menu,.pk,.nh-pop,.pick-menu,.cv-pop,.slash,.hl-pop,.cal-picker){border-radius:var(--r-lg);box-shadow:var(--shadow-pop);border-color:transparent}
+.ws :is(.pop,.sel-menu,.pick-menu,.slash) :is(button,[role=menuitem],[role=option]){border-radius:var(--r-sm)}
+.lang-menu{box-shadow:var(--shadow-pop)!important;border-color:transparent!important}
+@keyframes sel-in{from{opacity:0;transform:translateY(-4px)}}
+
+/* ---------- Dialogs and sheets (entrance and exit are driven by Motion in Modal.jsx) ---------- */
+.modal-back{animation:none;background:#1d231b6b;backdrop-filter:blur(3px)}
+.ws .modal{animation:none;border-radius:var(--r-xl);box-shadow:var(--shadow-dialog)}
+.ws .modal header{padding:16px 16px 8px 22px}
+.sheet-back{animation:ws-fade var(--dur-dialog) var(--ease-out);background:#1d231b6b}
+.sheet{animation:sheetIn var(--dur-panel) var(--ease-out);box-shadow:var(--shadow-dialog)!important}
+@keyframes sheetIn{from{opacity:0;transform:translateY(10px)}}
+.sp-back{animation:ws-fade var(--dur-pop) var(--ease-out);background:#2a2e2666}
+.sp{box-shadow:var(--shadow-dialog)!important}
+
+/* ---------- Undo toast stack ---------- */
+.toast-stack{position:fixed;left:50%;bottom:24px;z-index:70;width:360px;margin-left:-180px;pointer-events:none}
+.toast-stack .undo-toast{position:absolute;left:0;right:0;bottom:0;transform-origin:50% 100%;pointer-events:auto;justify-content:flex-start;animation:none;box-shadow:0 1px 2px #1c241930,0 12px 28px -8px #1c241966}
+.toast-stack .undo-toast span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toast-stack .undo-toast .toast-x{width:24px;height:24px;padding:0;display:grid;place-items:center;background:none;opacity:.6}
+.toast-stack .undo-toast .toast-x:hover{opacity:1;background:#fffef91f}
+.ws .undo-toast{left:auto;transform:none}
+
+/* ---------- Lists ---------- */
+.ws .task-row{border-radius:var(--r-lg)}
+.ws .task-list-ws{position:relative}
+.ws .nf-head{min-height:34px}
+.ws .nf-head .nf-acts{height:24px;align-items:center}
+.ws .nf-caret svg{transition:transform var(--dur-move) var(--ease-inout)}
+
+/* ---------- Page titles share one size and weight ---------- */
+.ws .tasks-head h2,.ws .list-head h2,.ws .saved-head h2,.ws .bills-head h2,.ws .jobs-head h2,.ws .cal-head h2,.ws .cv-side h2{font-size:var(--fs-title);font-weight:600;letter-spacing:-.035em}
+
+/* ---------- Daily habits: a calmer ring and a compact history grid ---------- */
+.ws .habit-card{gap:14px}
+.ws .heat{gap:3px;width:auto;align-self:center;grid-template-columns:repeat(12,14px);grid-template-rows:repeat(7,14px)}
+.ws .heat i{width:14px;height:14px;aspect-ratio:auto;border-radius:4px;background:var(--sunken-2)}
+.ws .heat i.on{background:var(--sage)}
+.ws .ring-wrap svg circle:first-child{stroke:var(--sunken-2)}
+
+/* ---------- Empty list ---------- */
+.ws .empty-list{display:flex;flex-direction:column;align-items:center;gap:6px;padding:56px 16px;text-align:center;color:var(--text-3)}
+.ws .empty-list svg{color:var(--text-faint);margin-bottom:4px}
+.ws .empty-list b{color:var(--text);font-weight:600;font-size:var(--fs-md)}
+.ws .empty-list span{font-size:var(--fs-sm)}
+.ws .modal:focus{outline:none}
+
+/* Icon actions in a header are all the same quiet button; only the page's main action is filled */
+.ws .ghost.round{width:var(--h-md);height:var(--h-md);min-height:0;padding:0;justify-content:center;border-radius:var(--r-sm);background:transparent;color:var(--text-2)}
+.ws .ghost.round:hover:not(:disabled){background:var(--hover);color:var(--text)}
+
+/* Preset choices (timer lengths): a quiet selected surface, the filled button stays "Start" */
+.ws .fx-chips button{min-height:var(--h-sm);padding:0 13px;background:transparent;border:1px solid var(--line);color:var(--text-2);font-weight:500}
+.ws .fx-chips button:hover:not(.on){background:var(--hover);color:var(--text)}
+.ws .fx-chips button.on{background:var(--sunken-2);border-color:transparent;color:var(--text);font-weight:600}
+
+/* When the page header already offers the main action, the empty state repeats it quietly */
+.ws :is(.jobs,.fin) .empty-state .primary{background:transparent;color:var(--text)!important;box-shadow:inset 0 0 0 1px var(--line-strong)}
+.ws :is(.jobs,.fin) .empty-state .primary:hover:not(:disabled){background:var(--hover)}
+
+/* Selected rows in side lists: the same raised surface everywhere (Notes, Canvas, PDFs) */
+.ws .cv-row:hover:not(.on){background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.ws .cv-row.on{background:var(--surface);box-shadow:var(--shadow-1);font-weight:600}
+.ws .note-row.on{box-shadow:var(--shadow-1)}
+
+/* Calendar: chips use the width of their day, the chosen day has a single clean ring */
+.ws .cell .chips{width:100%}
+.ws .cell .chip{display:block;max-width:100%}
+.ws .cell{transition:border-color var(--dur-hover) var(--ease-quick),background-color var(--dur-hover) var(--ease-quick)}
+.ws .cell:hover:not(.picked){border-color:var(--line-strong)}
+.ws .cell.picked{border-color:var(--sage);box-shadow:none}
+
+/* Calendar: the new month slides in a few pixels from the direction you moved */
+.ws .cal-grid.days.swap-next{animation:calNext var(--dur-move) var(--ease-out)}
+.ws .cal-grid.days.swap-prev{animation:calPrev var(--dur-move) var(--ease-out)}
+@keyframes calNext{from{opacity:.25;transform:translateY(10px)}}
+@keyframes calPrev{from{opacity:.25;transform:translateY(-10px)}}
+
+/* A repeated action inside cards (Log one) is outlined, never the loud fill */
+.ws .ghost.log-one{min-height:var(--h-sm);padding:0 12px;border-radius:var(--r-sm);box-shadow:inset 0 0 0 1px var(--line-strong);color:var(--text);font-weight:600;gap:6px}
+.ws .ghost.log-one:hover:not(:disabled){background:var(--hover)}
+
+/* Weekly review: the summary strip always fills its rows (no empty tinted cell), prompts grow with what you write */
+.ws .rv-stats{display:flex;flex-wrap:wrap;max-width:none}
+.ws .rv-stats>.rv-stat{flex:1 1 140px;min-width:0}
+.ws .rv-prompts textarea{resize:none;field-sizing:content;min-height:92px;max-height:320px}
+
+/* Sidebar and side panels open and close on the shared panel curve */
+.ws{transition:grid-template-columns var(--dur-panel) var(--ease-inout)}
+.ws .ws-nav{overflow:hidden;transition:opacity var(--dur-pop) var(--ease-out),padding var(--dur-panel) var(--ease-inout)}
+.ws .nav-item{white-space:nowrap}
+
+/* Folder headers: the actions sit over the count on hover, so nothing in the row changes size */
+.ws .nf-head{position:relative}
+.ws .nf-head .nf-acts{display:inline-flex;position:absolute;right:8px;top:50%;transform:translateY(-50%);gap:2px;visibility:hidden;opacity:0;transition:opacity var(--dur-hover) var(--ease-quick)}
+.ws .nf-head:hover .nf-acts,.ws .nf-head:focus-within .nf-acts{visibility:visible;opacity:1}
+.ws .nf-head em,.ws .nf-head:hover em{display:inline;transition:opacity var(--dur-hover) var(--ease-quick)}
+.ws .nf-head:hover em,.ws .nf-head:focus-within em{opacity:0}

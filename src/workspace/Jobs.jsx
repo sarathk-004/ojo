@@ -10,6 +10,7 @@ import {STATUSES,STATUS_COLORS,SOURCES,PRIORITIES,newJob,moveJob,stats,followUps
 import {dayKey} from '../tasks.mjs';
 import {useUndo} from './Undo.jsx';
 import {useBulk,SelectToggle,BulkBar,SelectMark} from './bulk.jsx';
+import {Pill} from './motionkit.jsx';
 
 const today=()=>dayKey();
 const fmtDate=d=>d?new Date(d+'T00:00').toLocaleDateString(dateLocale(),{day:'numeric',month:'short'}):'';
@@ -108,8 +109,8 @@ export function Jobs({focusId}){
    <header className="jobs-head">
     <h2>Job applications</h2>
     <div className="view-toggle">
-     <button className={view==='board'?'on':''} onClick={()=>setViewSaved('board')} aria-label="Board view"><Kanban size={16}/>Board</button>
-     <button className={view==='list'?'on':''} onClick={()=>setViewSaved('list')} aria-label="List view"><Rows size={16}/>List</button>
+     <button className={view==='board'?'on':''} onClick={()=>setViewSaved('board')} aria-label="Board view">{view==='board'&&<Pill group="jobview"/>}<Kanban size={16}/>Board</button>
+     <button className={view==='list'?'on':''} onClick={()=>setViewSaved('list')} aria-label="List view">{view==='list'&&<Pill group="jobview"/>}<Rows size={16}/>List</button>
     </div>
     <span className="spacer"/>
     <label className="search"><input placeholder="Search" value={query} onChange={e=>setQuery(e.target.value)}/></label>

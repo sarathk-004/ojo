@@ -9,7 +9,7 @@
 .nh-cover-acts button:hover{background:#fff}
 .nh-row{position:relative;z-index:2;display:flex;align-items:flex-end;gap:12px;min-height:8px;padding-top:6px}
 .nh.has-cover .nh-row{margin-top:-30px}
-.nh-icon{font-size:52px;line-height:1;width:70px;height:70px;border-radius:18px;display:grid;place-items:center;background:var(--card);box-shadow:0 2px 10px #3c4c3322;transition:transform .2s cubic-bezier(.3,1.5,.5,1)}
+.nh-icon{font-size:52px;line-height:1;width:70px;height:70px;border-radius:18px;display:grid;place-items:center;background:var(--card);box-shadow:0 2px 10px #3c4c3322;transition:transform .2s cubic-bezier(.22,1,.36,1)}
 .nh-icon:hover:not(:disabled){transform:scale(1.08) rotate(-4deg)}
 .nh-add{display:flex;gap:6px;opacity:0;transition:opacity .2s;padding-top:10px}
 .nh:hover .nh-add,.nh-add:focus-within{opacity:1}

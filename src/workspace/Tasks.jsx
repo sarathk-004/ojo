@@ -7,11 +7,13 @@ import {Select} from './Select.jsx';
 import {Modal} from './Modal.jsx';
 import {TaskBoard,columnOf} from './TaskBoard.jsx';
 import {useLivePrefs,columnsOf} from './prefs.js';
-import {Rows,Kanban} from '@phosphor-icons/react';
+import {Rows,Kanban,Tray} from '@phosphor-icons/react';
 import {Shutdown} from './Shutdown.jsx';
 import {TaskNote} from './TaskNote.jsx';
 import {useBulk,SelectToggle,BulkBar,SelectMark} from './bulk.jsx';
 import {useUndo} from './Undo.jsx';
+import {Pill,rowOut} from './motionkit.jsx';
+import {motion,AnimatePresence} from 'motion/react';
 
 import {useCollection} from './hooks.js';
 import {totalsByTask,fmtDur} from './focus.mjs';
@@ -165,9 +167,9 @@ export function Tasks({go,focusId}){
  return (
   <div className={'tasks'+(layout==='board'?' board-mode':'')}>
    <section className="tasks-main">
-    <div className="tasks-head"><h2>{new Date().toLocaleDateString(dateLocale(),{weekday:'long',day:'numeric',month:'long'})}</h2><span className="spacer"/><div className="seg-toggle layout-toggle" role="group" aria-label="Layout"><button className={layout==='list'?'on':''} aria-label="List view" onClick={()=>pickLayout('list')}><Rows size={15}/>List</button><button className={layout==='board'?'on':''} aria-label="Board view" onClick={()=>pickLayout('board')}><Kanban size={15}/>Board</button></div>{layout==='list'&&<SelectToggle bulk={bulk} disabled={!list.length}/>}<button className="ghost close-day-btn" data-tip="See what you did, move what is left, start tomorrow clean." data-tip-title="Close the day" onClick={()=>setClosing(true)}><SunHorizon size={15} weight="fill"/>Close the day</button></div>
+    <div className="tasks-head"><h2>{new Date().toLocaleDateString(dateLocale(),{weekday:'long',day:'numeric',month:'long'})}</h2><span className="spacer"/><div className="seg-toggle layout-toggle" role="group" aria-label="Layout"><button className={layout==='list'?'on':''} aria-label="List view" onClick={()=>pickLayout('list')}>{layout==='list'&&<Pill group="tasklayout"/>}<Rows size={15}/>List</button><button className={layout==='board'?'on':''} aria-label="Board view" onClick={()=>pickLayout('board')}>{layout==='board'&&<Pill group="tasklayout"/>}<Kanban size={15}/>Board</button></div>{layout==='list'&&<SelectToggle bulk={bulk} disabled={!list.length}/>}<button className="ghost close-day-btn" data-tip="See what you did, move what is left, start tomorrow clean." data-tip-title="Close the day" onClick={()=>setClosing(true)}><SunHorizon size={15} weight="fill"/>Close the day</button></div>
     <div className="task-tabs">
-     {order.map(v=>{const I=ICON[v];return <button key={v} draggable className={(view===v?'on':'')+(dragTab===v?' dragging':'')+(overTab===v&&dragTab&&dragTab!==v?' over-tab':'')} onClick={()=>{setView(v);setEditing(null);}} onDragStart={e=>{setDragTab(v);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/tnkr-tab',v);}} onDragOver={e=>{if(dragTab){e.preventDefault();setOverTab(v);}}} onDrop={e=>{e.preventDefault();reorderTabs(dragTab,v);setDragTab(null);setOverTab(null);}} onDragEnd={()=>{setDragTab(null);setOverTab(null);}} onKeyDown={e=>{if(e.altKey&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){e.preventDefault();const i=order.indexOf(v),j=i+(e.key==='ArrowLeft'?-1:1);if(order[j])reorderTabs(v,order[j]);}}}><I size={15} weight={view===v?'fill':'regular'}/>{v}<em>{counts[v]}</em></button>;})}
+     {order.map(v=>{const I=ICON[v];return <button key={v} draggable className={(view===v?'on':'')+(dragTab===v?' dragging':'')+(overTab===v&&dragTab&&dragTab!==v?' over-tab':'')} onClick={()=>{setView(v);setEditing(null);}} onDragStart={e=>{setDragTab(v);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/tnkr-tab',v);}} onDragOver={e=>{if(dragTab){e.preventDefault();setOverTab(v);}}} onDrop={e=>{e.preventDefault();reorderTabs(dragTab,v);setDragTab(null);setOverTab(null);}} onDragEnd={()=>{setDragTab(null);setOverTab(null);}} onKeyDown={e=>{if(e.altKey&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){e.preventDefault();const i=order.indexOf(v),j=i+(e.key==='ArrowLeft'?-1:1);if(order[j])reorderTabs(v,order[j]);}}}>{view===v&&<Pill group="tasktabs"/>}<I size={15} weight={view===v?'fill':'regular'}/>{v}<em>{counts[v]}</em></button>;})}
     </div>
     {overdue.length>0&&view==='Today'&&<div className="overdue-bar"><Warning size={16} weight="fill"/><b>{overdue.length} overdue</b><span className="spacer"/><button onClick={()=>moveAll(today)}>All to today</button><button onClick={()=>moveAll(snoozeDate('tomorrow'))}>All to tomorrow</button></div>}
     {bulk.on&&<BulkBar bulk={bulk} ids={list.map(t=>t.id)} noun="task" onDelete={bulkDelete}><button className="bulk-act" disabled={!bulk.count} onClick={()=>bulkDone([...bulk.sel])}><Check size={14} weight="bold"/>Mark done</button></BulkBar>}
@@ -176,11 +178,12 @@ export function Tasks({go,focusId}){
      {editing&&<Modal title="Edit task" onClose={()=>setEditing(null)}><Editor task={dataRef.current.tasks.find(x=>x.id===editing)||{title:''}} onCancel={()=>setEditing(null)} onSave={c=>{patchTask(editing,c);setEditing(null);}}/></Modal>}
     </>}
     {layout==='list'&&<div className="task-list-ws">
+     <AnimatePresence initial={false} mode="popLayout">
      {list.map(t=>{
       const done=completedToday(t),streak=t.repeat?habitStats(t).current:0;
       return editing===t.id
        ?<Editor key={t.id} task={t} onCancel={()=>setEditing(null)} onSave={c=>{patchTask(t.id,c);setEditing(null);}}/>
-       :<div key={t.id} onDragOver={e=>{if(dragRow&&dragRow!==t.id){e.preventDefault();setOverRow(t.id);}}} onDrop={e=>{e.preventDefault();if(dragRow)placeTask(dragRow,t.id);setDragRow(null);setOverRow(null);}} className={'task-row'+(dragRow===t.id?' dragging':'')+(overRow===t.id&&dragRow?' drop-here':'')+(done?' done':'')+((open.has(t.id)||noting===t.id||(!t.repeat&&!done&&t.date&&t.date<today))?' tall':'')+(bulk.on?' sel-host sel-tasks':'')} onClick={e=>{if(bulk.on)return;if(e.target.closest('button,input,a,textarea,[contenteditable],.sub-list,.snooze-row,.task-note-rich'))return;setNoting(n=>n===t.id?null:t.id);}}>
+       :<motion.div key={t.id} layout="position" exit={rowOut} onDragOver={e=>{if(dragRow&&dragRow!==t.id){e.preventDefault();setOverRow(t.id);}}} onDrop={e=>{e.preventDefault();if(dragRow)placeTask(dragRow,t.id);setDragRow(null);setOverRow(null);}} className={'task-row'+(dragRow===t.id?' dragging':'')+(overRow===t.id&&dragRow?' drop-here':'')+(done?' done':'')+((open.has(t.id)||noting===t.id||(!t.repeat&&!done&&t.date&&t.date<today))?' tall':'')+(bulk.on?' sel-host sel-tasks':'')} onClick={e=>{if(bulk.on)return;if(e.target.closest('button,input,a,textarea,[contenteditable],.sub-list,.snooze-row,.task-note-rich'))return;setNoting(n=>n===t.id?null:t.id);}}>
          <SelectMark bulk={bulk} id={t.id}/>
          {view!=='Upcoming'&&!bulk.on&&<button type="button" className="task-grip" aria-label="Drag to reorder" draggable onDragStart={e=>{setDragRow(t.id);e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',t.id);const r=e.currentTarget.closest('.task-row');if(r)e.dataTransfer.setDragImage(r,20,20);}} onDragEnd={()=>{setDragRow(null);setOverRow(null);}} onKeyDown={e=>{if(e.altKey&&(e.key==='ArrowUp'||e.key==='ArrowDown')){e.preventDefault();nudgeTask(t.id,e.key==='ArrowUp'?-1:1);}}}><DotsSixVertical size={14} weight="bold"/></button>}
          <button className={'tick'+(done?' on':'')} aria-label={done?'Mark not done':'Mark done'} onClick={()=>{patchTask(t.id,toggleTask(t));if(!done)undo.show('“'+t.title+'” done',()=>commit(dataRef.current.tasks.map(x=>x.id===t.id?toggleTask(x):x)));}}>{done&&<Check size={13} weight="bold"/>}</button>
@@ -206,9 +209,10 @@ export function Tasks({go,focusId}){
          {!done&&go&&<button className="icon-btn" aria-label="Focus on this task" onClick={()=>go('focus',t.id)}><Timer size={15}/></button>}
          <button className="icon-btn" aria-label="Edit" onClick={()=>setEditing(t.id)}><PencilSimple size={15}/></button>
          <button className="icon-btn danger" aria-label="Delete" onClick={()=>removeTask(t)}><Trash size={15}/></button>
-        </div>;
+        </motion.div>;
      })}
-     {!list.length&&<p className="muted pad">{view==='Today'?'A little space to begin.':'Nothing here yet.'}</p>}
+     </AnimatePresence>
+     {!list.length&&<div className="empty-list">{view==='Today'?<SunHorizon size={28}/>:<Tray size={28}/>}<b>{view==='Today'?'Nothing planned for today':view==='Daily'?'No daily habits yet':view==='Upcoming'?'Nothing coming up':'Nothing here yet'}</b><span>{view==='Daily'?'Add one below and it repeats every day.':'Add a task below.'}</span></div>}
     </div>}
     <form className="task-add" onSubmit={add}>
      <input placeholder={`Add a task${view==='Today'?' for today':view==='Daily'?' that repeats daily':''}…`} value={quick} onChange={e=>setQuick(e.target.value)}/>
@@ -219,7 +223,7 @@ export function Tasks({go,focusId}){
     <div className="side-card habit-card">
      <h3>Daily habits</h3>
      <div className="ring-wrap">
-      <svg width="104" height="104" viewBox="0 0 104 104"><circle cx="52" cy="52" r="44" fill="none" stroke="#e4e0d2" strokeWidth="9"/><circle cx="52" cy="52" r="44" fill="none" stroke="#567458" strokeWidth="9" strokeLinecap="round" strokeDasharray={2*Math.PI*44} strokeDashoffset={2*Math.PI*44*(1-ring)} transform="rotate(-90 52 52)" style={{transition:'stroke-dashoffset .6s cubic-bezier(.3,1.4,.5,1)'}}/></svg>
+      <svg width="104" height="104" viewBox="0 0 104 104"><circle cx="52" cy="52" r="44" fill="none" stroke="currentColor" strokeWidth="9" className="ring-track"/><circle cx="52" cy="52" r="44" fill="none" stroke="var(--sage)" strokeWidth="9" strokeLinecap="round" strokeDasharray={2*Math.PI*44} strokeDashoffset={2*Math.PI*44*(1-ring)} transform="rotate(-90 52 52)" style={{transition:'stroke-dashoffset .5s cubic-bezier(.22,1,.36,1)'}}/></svg>
       <div className="ring-num"><b>{doneToday}</b><span>of {dailies.length}</span></div>
      </div>
      <div className="stat-row"><div><b>{master.current}</b><span>current streak</span></div><div><b>{master.best}</b><span>best</span></div><div><b>{master.total}</b><span>perfect days</span></div></div>

@@ -1,48 +1,44 @@
-/* Small motions that make the workspace feel alive. All of them switch off for people who prefer reduced motion. */
+/* Motion. Every movement says something: a state changed, something arrived, something left.
+   Hover never moves anything; it only changes colour or surface. Presses give a small, quick give on compact controls only.
+   Durations and curves come from the tokens in workspace-system.css. All of it switches off for reduced motion. */
 
-/* Buttons press in and rise on hover */
-.ws button{transition:transform .14s cubic-bezier(.3,1.5,.5,1),background .15s,box-shadow .18s,color .15s,border-color .15s,opacity .15s}
-.ws button:active:not(:disabled){transform:scale(.95)}
-.ws .primary:hover:not(:disabled){box-shadow:0 8px 20px #2f3a2c40}
-.ws .primary:active:not(:disabled){transform:scale(.97)}
-.ws .icon-btn:hover:not(:disabled){transform:scale(1.12)}
-.ws .nav-item{transition:background .15s,transform .18s cubic-bezier(.3,1.4,.5,1)}
-.ws .nav-item:hover:not(.on){transform:translateX(3px)}
-.ws .nav-item.on svg{animation:navPop .4s cubic-bezier(.3,1.6,.5,1)}
-@keyframes navPop{0%{transform:scale(.7) rotate(-12deg)}100%{transform:none}}
+/* Hover and press: colour and surface only, on one quick curve */
+.ws button{transition:background-color var(--dur-hover) var(--ease-quick),color var(--dur-hover) var(--ease-quick),border-color var(--dur-hover) var(--ease-quick),box-shadow var(--dur-hover) var(--ease-quick),opacity var(--dur-hover) var(--ease-quick),transform var(--dur-press) var(--ease-quick)}
+.ws button:active:not(:disabled){transform:none}
+/* Compact controls get a small, quick give when pressed (never rows, tabs, cells or navigation) */
+.ws :is(.primary,.icon-btn,.bar-btn,.tool,.ghost.round,.primary.round,.round):active:not(:disabled){transform:scale(.96)}
+.ws .primary:hover:not(:disabled){box-shadow:none}
 
-/* Ticks and check boxes spring when they are switched on */
-.ws .tick.on,.ws .pl-tick.on{animation:tickPop .4s cubic-bezier(.3,1.6,.5,1)}
-.ws .tick.on svg,.ws .pl-tick.on svg{animation:tickDraw .32s ease-out .05s both}
-.ws input[type=checkbox]:checked{animation:tickPop .32s cubic-bezier(.3,1.6,.5,1)}
-@keyframes tickPop{0%{transform:scale(.72)}55%{transform:scale(1.22)}100%{transform:scale(1)}}
-@keyframes tickDraw{from{opacity:0;transform:scale(.3) rotate(-25deg)}}
-.task-row.done .task-text b{transition:color .35s}
-.task-row{transition:background .2s,border-color .2s,box-shadow .2s,transform .2s cubic-bezier(.3,1.4,.5,1)}
-.task-row:hover{box-shadow:0 6px 18px #3c4c3315}
+/* Navigation: the active pill slides between items (Motion layoutId); hover is a surface tint only */
+.ws .nav-item{transition:background-color var(--dur-hover) var(--ease-quick),color var(--dur-hover) var(--ease-quick)}
 
-/* New things slide in, one after another */
-.task-row,.bill-row,.sd-row,.pl-task,.note-row,.card,.rv-card,.rv-stat,.fx-card,.sd-card,.bill-stats>div,.pl-habit,.sd-win,.rv-write{animation:rowIn .36s cubic-bezier(.2,.8,.3,1) both}
-:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(2){animation-delay:.04s}
-:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(3){animation-delay:.08s}
-:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(4){animation-delay:.12s}
-:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(5){animation-delay:.16s}
-:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(n+6){animation-delay:.2s}
-@keyframes rowIn{from{opacity:0;transform:translateY(10px) scale(.985)}}
-.pl-block{animation:blockIn .42s cubic-bezier(.3,1.5,.5,1) both}
-@keyframes blockIn{from{opacity:0;transform:scale(.92)}}
+/* Ticks: a short, settled confirmation, no overshoot */
+.ws .tick.on,.ws .pl-tick.on{animation:tickIn var(--dur-pop) var(--ease-out)}
+.ws .tick.on svg,.ws .pl-tick.on svg{animation:tickDraw var(--dur-pop) var(--ease-out) 40ms both}
+.ws input[type=checkbox]:checked{animation:tickIn var(--dur-pop) var(--ease-out)}
+@keyframes tickIn{0%{transform:scale(.86)}100%{transform:scale(1)}}
+@keyframes tickDraw{from{opacity:0;transform:scale(.6)}}
+.task-row.done .task-text b{transition:color var(--dur-move) var(--ease-inout)}
+.task-row{transition:background-color var(--dur-hover) var(--ease-quick),border-color var(--dur-hover) var(--ease-quick),box-shadow var(--dur-hover) var(--ease-quick)}
 
-/* Each page eases in when you switch to it */
-:is(.tasks,.notes,.saved,.pdfs,.fin,.jobs,.planner,.focus,.bills,.review,.reminders,.cal-main){animation:pageIn .34s cubic-bezier(.2,.8,.3,1) backwards}
-@keyframes pageIn{from{opacity:0;transform:translateY(8px)}}
+/* New rows fade in where they will sit (a few pixels of travel, no scaling, a short stagger for the first few) */
+.task-row,.bill-row,.sd-row,.pl-task,.note-row,.card,.rv-card,.rv-stat,.fx-card,.sd-card,.bill-stats>div,.pl-habit,.sd-win,.rv-write{animation:rowIn var(--dur-move) var(--ease-out) backwards}
+:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(2){animation-delay:20ms}
+:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(3){animation-delay:40ms}
+:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(4){animation-delay:60ms}
+:is(.task-row,.bill-row,.note-row,.card,.rv-card,.rv-stat,.bill-stats>div,.pl-task):nth-child(n+5){animation-delay:80ms}
+@keyframes rowIn{from{opacity:0;transform:translateY(var(--rise))}}
+.pl-block{animation:blockIn var(--dur-pop) var(--ease-out) backwards}
+@keyframes blockIn{from{opacity:0}}
 
-/* Tabs and chips */
-.task-tabs button,.shelf-tabs .seg button,.filter,.fx-chips button,.week-pick button{transition:background .18s,color .18s,transform .14s cubic-bezier(.3,1.5,.5,1)}
+/* A page eases in when you switch to it (opacity and a few pixels only) */
+:is(.tasks,.notes,.saved,.pdfs,.fin,.jobs,.planner,.focus,.bills,.review,.reminders,.cal-main,.canvas-page){animation:pageIn var(--dur-panel) var(--ease-out) backwards}
+@keyframes pageIn{from{opacity:0;transform:translateY(var(--rise))}}
 
-.snooze-row button,.sd-acts button,.sd-bulk button,.overdue-bar button{transition:background .15s,transform .14s cubic-bezier(.3,1.5,.5,1)}
+/* Tabs and chips: colour only */
+.task-tabs button,.shelf-tabs .seg button,.filter,.fx-chips button,.week-pick button,.subnav button{transition:background-color var(--dur-hover) var(--ease-quick),color var(--dur-hover) var(--ease-quick)}
 
-
-/* Pop-ups */
+/* Pop-ups: fade with a short rise from their anchor */
 .undo-toast{animation:none}
 .pk,.sel-menu,.nh-pop,.pop{transform-origin:top center}
 
@@ -50,12 +46,12 @@
  .ws *,.ws *::before,.ws *::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
 }
 
-/* Hover hints and small board motions */
-.ojo-tip{position:fixed;z-index:400;transform:translateX(-50%);max-width:230px;display:flex;flex-direction:column;gap:2px;padding:7px 10px;border-radius:9px;background:#2c332b;color:#f4f1e6;font-size:12px;line-height:1.35;pointer-events:none;animation:tipin .14s ease-out backwards;box-shadow:0 6px 16px #0003}
+/* Hover hints: quick fade, minimal travel */
+.ojo-tip{position:fixed;z-index:400;transform:translateX(-50%);max-width:230px;display:flex;flex-direction:column;gap:2px;padding:7px 10px;border-radius:9px;background:#2c332b;color:#f4f1e6;font-size:12px;line-height:1.35;pointer-events:none;animation:tipin var(--dur-tip,.15s) var(--ease-out,ease-out) backwards;box-shadow:0 6px 16px #0003}
 .ojo-tip b{font-weight:600;font-size:12px}
 .ojo-tip span{opacity:.78;font-size:11.5px}
-@keyframes tipin{from{opacity:0;transform:translateX(-50%) translateY(3px)}}
-.tb-card{animation:tbin .22s cubic-bezier(.2,.8,.2,1) backwards}
-@keyframes tbin{from{opacity:0;transform:translateY(5px)}}
+@keyframes tipin{from{opacity:0;transform:translateX(-50%) translateY(2px)}}
+.tb-card{animation:tbin var(--dur-move) var(--ease-out) backwards}
+@keyframes tbin{from{opacity:0;transform:translateY(var(--rise))}}
 .tb-card:active{cursor:grabbing}
 @media (prefers-reduced-motion:reduce){.ojo-tip,.tb-card{animation:none}}

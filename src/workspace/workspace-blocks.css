@@ -60,7 +60,7 @@
 .outline .dash{display:block;height:3px;border-radius:2px;background:#cfcabb;transition:background .15s,width .15s}
 .outline .dash.l1{width:20px}.outline .dash.l2{width:14px}.outline .dash.l3{width:9px}
 .outline .dash.on{background:var(--accent-dark)}
-.outline-panel{position:absolute;right:0;top:0;width:230px;max-height:min(60vh,420px);overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 36px #2c3a2526;padding:8px;display:flex;flex-direction:column;gap:1px;opacity:0;transform:translateX(10px) scale(.97);transform-origin:top right;pointer-events:none;transition:opacity .16s,transform .2s cubic-bezier(.3,1.2,.5,1)}
+.outline-panel{position:absolute;right:0;top:0;width:230px;max-height:min(60vh,420px);overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 36px #2c3a2526;padding:8px;display:flex;flex-direction:column;gap:1px;opacity:0;transform:translateX(10px) scale(.97);transform-origin:top right;pointer-events:none;transition:opacity .16s,transform .2s cubic-bezier(.22,1,.36,1)}
 .outline:hover .outline-panel{opacity:1;transform:none;pointer-events:auto}
 .outline:hover .outline-dashes{opacity:0}
 .outline-panel b{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);padding:4px 8px}

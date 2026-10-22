@@ -6,6 +6,7 @@ import {api} from './api.js';
 import {Select} from './Select.jsx';
 import {fmtClock,fmtDur,sumSeconds,totalsByTask,perDay,startOfDay,dayOf} from './focus.mjs';
 import {completedToday,belongs} from '../tasks.mjs';
+import {Pill} from './motionkit.jsx';
 
 const bridge=typeof window!=='undefined'?window.taskit:null;
 const FOCUS_MINS=[15,25,45,60],BREAK_MINS=[5,10,15];
@@ -77,7 +78,7 @@ export function Focus({focusId}){
   if(focus)wasRunning.current=focus.kind;
   else if(wasRunning.current){const next=stopped.current?wasRunning.current:(wasRunning.current==='focus'?'break':'focus');setKind(next);setMins(next==='focus'?25:5);setSecs(0);wasRunning.current=null;stopped.current=false;}
  },[focus]);
- useEffect(()=>{if(focus&&done.current)gsap.fromTo(done.current,{scale:.96},{scale:1,duration:.3,ease:'back.out(2)'});},[focus?.startedAt]);
+ useEffect(()=>{if(focus&&done.current)gsap.fromTo(done.current,{scale:.96},{scale:1,duration:.3,ease:'power3.out'});},[focus?.startedAt]);
  const choices=kind==='focus'?FOCUS_MINS:BREAK_MINS;
 
  return (
@@ -85,8 +86,8 @@ export function Focus({focusId}){
    <div className="fx-grid">
     <section className="fx-card fx-timer" ref={done}>
      {!focus&&<div className="seg-toggle fx-kind">
-      <button className={kind==='focus'?'on':''} onClick={()=>{setKind('focus');setMins(25);setSecs(0);}}><Target size={15}/>Focus</button>
-      <button className={kind==='break'?'on':''} onClick={()=>{setKind('break');setMins(5);setSecs(0);}}><Coffee size={15}/>Break</button>
+      <button className={kind==='focus'?'on':''} onClick={()=>{setKind('focus');setMins(25);setSecs(0);}}>{kind==='focus'&&<Pill group="fxkind"/>}<Target size={15}/>Focus</button>
+      <button className={kind==='break'?'on':''} onClick={()=>{setKind('break');setMins(5);setSecs(0);}}>{kind==='break'&&<Pill group="fxkind"/>}<Coffee size={15}/>Break</button>
      </div>}
      <Ring fraction={fraction} tone={(focus?focus.kind:kind)}>
       {focus

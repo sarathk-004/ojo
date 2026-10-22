@@ -20,7 +20,7 @@ export function SearchPalette({onClose,go}){
  const [q,setQ]=useState(''),[data,setData]=useState(null),[type,setType]=useState('all'),[idx,setIdx]=useState(0);
  const box=useRef(null),listRef=useRef(null);
  useEffect(()=>{api.load().then(setData);},[]);
- useEffect(()=>{gsap.fromTo(box.current,{opacity:0,y:-14,scale:.98},{opacity:1,y:0,scale:1,duration:.22,ease:'power3.out'});},[]);
+ useEffect(()=>{gsap.fromTo(box.current,{opacity:0,y:-6},{opacity:1,y:0,duration:.2,ease:'power3.out'});},[]);
  const list=useMemo(()=>data?entries(data):[],[data]);
  const counts=useMemo(()=>{const c={};for(const e of list)c[e.type]=(c[e.type]||0)+1;return c;},[list]);
  const results=useMemo(()=>q.trim()?search(data||{},q,{list,types:type==='all'?null:[type],limit:40}):[],[q,list,type,data]);

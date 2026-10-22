@@ -19,7 +19,7 @@ export function NudgeToast(){
   if(!cur||!card.current||shown.current===cur.id)return;
   shown.current=cur.id;
   gsap.fromTo(card.current,{y:30,opacity:0,scale:.96},{y:0,opacity:1,scale:1,duration:.5,ease:'power3.out'});
-  gsap.fromTo('.emoji',{scale:.4,rotate:-20},{scale:1,rotate:0,duration:.6,ease:'back.out(2.2)',delay:.1});
+  gsap.fromTo('.emoji',{scale:.4,rotate:-20},{scale:1,rotate:0,duration:.6,ease:'power3.out',delay:.1});
  },[cur?.id]);
  // Tell the main process where the buttons are once the card has settled, so a click Windows does not
  // deliver to this window can still be recognised.

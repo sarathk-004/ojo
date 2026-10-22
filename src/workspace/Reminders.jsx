@@ -112,7 +112,7 @@ export function Reminders(){
          <span className="muted">{nextText(r,l)}</span>
          <div className="nudge-log">
           <button className="icon-btn" aria-label="Remove one" disabled={!count} onClick={()=>api.nudgeLog(r.id,-1)}><Minus size={14}/></button>
-          <button className="primary small" onClick={()=>api.nudgeLog(r.id,1)}><Plus size={13} weight="bold"/>Log one</button>
+          <button className="ghost log-one" onClick={()=>api.nudgeLog(r.id,1)}><Plus size={13} weight="bold"/>Log one</button>
          </div>
         </div>
        </div>

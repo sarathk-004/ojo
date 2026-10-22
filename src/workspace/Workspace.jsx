@@ -25,6 +25,7 @@ import './workspace-settings.css';
 import './workspace-polish.css';
 import './workspace-narrow.css';
 import './workspace-extras.css';
+import './workspace-system.css';
 import './workspace-dark.css';
 import {Settings} from './Settings.jsx';
 import {Tooltip} from './Tooltip.jsx';
@@ -51,6 +52,7 @@ import './workspace-canvas.css';
 import {fmtClock} from './focus.mjs';
 import {api} from './api.js';
 import {SearchPalette} from './SearchPalette.jsx';
+import {Pill} from './motionkit.jsx';
 
 const SECTIONS=[
  {id:'tasks',name:'Tasks',icon:CheckCircle,view:Tasks,panel:true},
@@ -195,14 +197,14 @@ export function Workspace(){
      {order.filter(id=>id==='tasks'||!prefs.hiddenPlaces.includes(id)).map(id=>{const s=GROUPS.find(x=>x.id===id),Icon=s.icon;return (
       <button key={id} ref={el=>{itemRefs.current[id]=el;}} draggable className={'nav-item'+(group.id===id?' on':'')+(dragging===id?' dragging':'')}
        onClick={()=>openGroup(s)} onDragStart={e=>onDragStart(e,id)} onDragOver={e=>onDragOver(e,id)} onDragEnd={endDrag} onKeyDown={e=>onNavKey(e,id)}>
-       <Icon size={18} weight={group.id===id?'fill':'regular'}/>{s.name}{id==='tasks'&&running&&<em className="nav-timer">{running.paused?'paused':fmtClock(runLeft)}</em>}<DotsSixVertical className="grip" size={14} weight="bold"/>
+       {group.id===id&&<Pill group="nav"/>}<Icon size={18} weight={group.id===id?'fill':'regular'}/>{s.name}{id==='tasks'&&running&&<em className="nav-timer">{running.paused?'paused':fmtClock(runLeft)}</em>}<DotsSixVertical className="grip" size={14} weight="bold"/>
       </button>
      );})}
      {customised&&<button className="nav-reset" onClick={reset}>Reset order</button>}
     </div>
     <div className="nav-foot"><button onClick={()=>setShowSettings(true)}><GearSix size={17}/>Settings</button><button className="only-icon" aria-label={dark?'Switch to light mode':'Switch to dark mode'} onClick={flipTheme}>{dark?<Sun size={17}/>:<Moon size={17}/>}</button></div>
    </nav>
-   <main className="ws-main"><div className="drag-strip"/>{group.items.length>1&&<div className="subnav-row"><div className="subnav">{group.items.map(i=>{const m=SECTIONS.find(x=>x.id===i);return <button key={i} className={section===i?'on':''} onClick={()=>go(i)}>{m.name}{i==='focus'&&running&&<em>{running.paused?'paused':fmtClock(runLeft)}</em>}</button>;})}</div></div>}
+   <main className="ws-main"><div className="drag-strip"/>{group.items.length>1&&<div className="subnav-row"><div className="subnav">{group.items.map(i=>{const m=SECTIONS.find(x=>x.id===i);return <button key={i} className={section===i?'on':''} onClick={()=>go(i)}>{section===i&&<Pill group="subnav"/>}{m.name}{i==='focus'&&running&&<em>{running.paused?'paused':fmtClock(runLeft)}</em>}</button>;})}</div></div>}
     <div className="bars">
      {navClosed&&<button className="bar-btn" aria-label="Show sidebar" onClick={()=>setNavClosed(false)}><SidebarSimple size={18} weight="fill"/></button>}
      {meta.panel&&<button className={'bar-btn'+(panelClosed?'':' on')} aria-label={panelClosed?'Show side panel':'Hide side panel'} onClick={()=>setPanelClosed(v=>!v)}><Columns size={18}/></button>}
